@@ -21,16 +21,32 @@
         android:layout_centerHorizontal="true"
         android:ellipsize="marquee" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/mainVIewLoadModelText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/mainVIewAppName"
+        android:layout_above="@id/mainViewScroll"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="3dp"
+        android:text="Model loaded"
+        android:textColor="#470852"
+        android:textSize="20sp" />
+
+    <ScrollView
+        android:id="@+id/mainViewScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/mainVIewInputText">
+
         <TextView
+            android:id="@+id/mainViewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:text="Hi"/>
+            android:textSize="20sp"
+            android:text="Hi" />
 
     </ScrollView>
 
