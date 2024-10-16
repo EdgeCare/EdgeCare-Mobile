@@ -41,8 +41,7 @@ class HealthReportAdapter(
             binding.textViewSnippet.text = report.text.take(100) // Show first 100 chars as snippet
 
             binding.root.setOnClickListener {
-
-                (report)
+                onItemClick(report)
             }
         }
     }

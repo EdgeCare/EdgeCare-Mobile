@@ -8,21 +8,8 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <TextView
-        android:id="@+id/mainVIewAppName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#470852"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        android:ellipsize="marquee" />
 
-
-<!--    <ScrollView-->
+    <!--    <ScrollView-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="wrap_content"-->
 <!--        android:layout_below="@id/mainVIewAppName"-->
@@ -36,27 +23,41 @@
 <!--    </ScrollView>-->
 
 
-        <Button
-            android:id="@+id/btn_persona_activity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="50dp"
-            android:text="Add Personna"
-            android:layout_marginTop="50dp"
-            android:layout_marginStart="20dp"/>
+    <TextView
+        android:id="@+id/mainVIewAppName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:ellipsize="marquee"
+        android:text="@string/app_name"
+        android:textColor="#470852"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_persona_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="50dp"
+        android:text="Add Personna" />
 
     <Button
         android:id="@+id/selectFileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
         android:text="Select Text File" />
+
+
     <Button
         android:id="@+id/viewReportsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Saved Reports"
-        android:layout_marginTop="16dp" />
-
+        android:layout_marginTop="160dp"
+        android:text="View Saved Reports" />
 
     <EditText
         android:id="@+id/mainVIewInputText"
