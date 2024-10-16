@@ -20,6 +20,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 objectBoxKotlin = { module = "io.objectbox:objectbox-gradle-plugin", version = "4.0.2" }
+recyclerview = {group="androidx.recyclerview", name = "recyclerview" ,version= "1.3.2" }
+cardView= {group = "androidx.cardview" ,name ="cardview", version = "1.0.0"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

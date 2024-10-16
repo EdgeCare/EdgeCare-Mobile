@@ -1,4 +1,4 @@
-package com.example.edgecare
+package com.example.edgecare.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,9 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.edgecare.ObjectBox
+import com.example.edgecare.R
+import com.example.edgecare.models.Persona
 import io.objectbox.Box
 import io.objectbox.BoxStore
 

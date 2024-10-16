@@ -1,4 +1,4 @@
-package com.example.edgecare
+package com.example.edgecare.models
 
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
