@@ -103,10 +103,13 @@ class MainActivity : AppCompatActivity() {
             // Compute embedding
             val embedding = EmbeddingUtils.computeEmbedding(text)
             // Create HealthReport object
-            val report = HealthReport(text = text, embedding = embedding)
-            // Save to ObjectBox
-            healthReportBox.put(report)
-            Toast.makeText(this, "Health report saved successfully", Toast.LENGTH_SHORT).show()
+            if(embedding != null) {
+                val report = HealthReport(text = text, embedding = embedding)
+                // Save to ObjectBox
+                healthReportBox.put(report)
+                Toast.makeText(this, "Health report saved successfully", Toast.LENGTH_SHORT).show()
+            }
+            else Toast.makeText(this, "Failed to save health report", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(this, "Failed to save health report", Toast.LENGTH_SHORT).show()
