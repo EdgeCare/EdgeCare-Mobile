@@ -10,5 +10,5 @@ import io.objectbox.annotation.Id
 data class HealthReport(
     @Id var id: Long = 0,
     var text: String = "",
-    @HnswIndex(dimensions = 2) var embedding: FloatArray? = null,
+    @HnswIndex(dimensions = 384) var embedding: FloatArray? = null,
 )

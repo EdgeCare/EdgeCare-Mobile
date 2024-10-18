@@ -53,4 +53,5 @@ dependencies {
     implementation(libs.objectBoxKotlin)
     implementation (libs.recyclerview)
     implementation (libs.cardView)
+    implementation (libs.gson)
 }
