@@ -21,8 +21,6 @@ data class Persona(
 //    var healthGoals: String?,
     var smoking: Boolean,
     var alcoholConsumption: Boolean,
-    var consentDataProcessing: Boolean,
-    var privacyPolicyAgreement: Boolean,
     // Optional fields can be nullable
 //    var familyMedicalHistory: String?,
 //    var sleepHabits: String?,

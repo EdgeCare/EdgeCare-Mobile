@@ -122,8 +122,6 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 it.height = heightEditText.text.toString().toDouble()
                 it.smoking = smokingCheckBox.isChecked
                 it.alcoholConsumption = alcoholCheckBox.isChecked
-                it.consentDataProcessing = true
-                it.privacyPolicyAgreement = true
                 userDetailsBox.put(it)
             }
         }
@@ -136,8 +134,6 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 height = heightEditText.text.toString().toDouble(),
                 smoking = smokingCheckBox.isChecked,
                 alcoholConsumption = alcoholCheckBox.isChecked,
-                consentDataProcessing = true,
-                privacyPolicyAgreement = true
             )
             userDetailsBox.put(userDetail)
         }
