@@ -6,22 +6,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
-
-
-    <!--    <ScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_below="@id/mainVIewAppName"-->
-<!--        android:layout_above="@id/mainVIewInputText">-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="20dp"-->
-<!--            android:text="Hi"/>-->
-
-<!--    </ScrollView>-->
-
+    tools:context=".activities.MainActivity"
+    android:background="#FFFFFF">
 
     <TextView
         android:id="@+id/mainVIewAppName"
@@ -37,27 +23,34 @@
 
     <Button
         android:id="@+id/btn_persona_activity"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="50dp"
-        android:text="Add Personna" />
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="20dp"
+        android:background="#D1C4E9"
+        android:elevation="4dp"
+        android:text="Add Persona" />
 
     <Button
         android:id="@+id/selectFileButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="300dp"
-        android:text="Select Text File" />
-
+        android:text="Upload Text File"
+        android:background="#D1C4E9"
+        android:elevation="4dp" />
 
     <Button
         android:id="@+id/viewReportsButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="160dp"
-        android:text="View Saved Reports" />
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="400dp"
+        android:text="View Saved Reports"
+        android:background="#D1C4E9"
+        android:elevation="4dp" />
 
     <EditText
         android:id="@+id/mainVIewInputText"
@@ -68,8 +61,11 @@
         android:layout_marginHorizontal="20dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_marginVertical="20dp"
-        android:inputType="text" />
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="#FFFFFF"
+        android:elevation="2dp" />
 
 </RelativeLayout>

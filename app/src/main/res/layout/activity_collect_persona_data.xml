@@ -114,25 +114,6 @@
             android:buttonTint="#0000FF"
             android:layout_marginBottom="10dp" />
 
-        <!-- Data Processing Consent Field -->
-        <CheckBox
-            android:id="@+id/consentCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="I consent to data processing"
-            android:textColor="#000080"
-            android:buttonTint="#0000FF"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Privacy Policy Agreement Field -->
-        <CheckBox
-            android:id="@+id/privacyPolicyCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="I agree to the privacy policy"
-            android:textColor="#000080"
-            android:buttonTint="#0000FF"
-            android:layout_marginBottom="20dp" />
 
         <!-- Submit Button -->
         <Button
@@ -144,7 +125,20 @@
             android:textColor="#FFFFFF"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/editBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:background="@drawable/button_style"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"/>
 
     </LinearLayout>
 </ScrollView>
