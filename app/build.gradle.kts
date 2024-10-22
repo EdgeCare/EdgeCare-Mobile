@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.*
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -40,12 +42,12 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(files("libs/onnxruntime-android-1.17.3.aar"))
     implementation(files("libs/onnxruntime-android-1.17.3.aar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
