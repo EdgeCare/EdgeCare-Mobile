@@ -3,6 +3,7 @@ import org.gradle.kotlin.dsl.*
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("io.objectbox")
 }
 
 android {
@@ -35,6 +36,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -44,8 +48,12 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(files("libs/onnxruntime-android-1.17.3.aar"))
+    implementation(files("libs/onnxruntime-android-1.17.3.aar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
+    implementation(libs.objectBoxKotlin)
+    implementation (libs.recyclerview)
+    implementation (libs.cardView)
+    implementation (libs.gson)
 }
