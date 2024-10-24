@@ -13,5 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/assets/deidentifier.onnx
+app/src/main/assets/de-identifier.onnx
 app/src/main/assets/all-MiniLM-L6-V2.onnx

@@ -1,7 +1,5 @@
 package com.example.edgecare.models
 
-import com.example.edgecare.FloatArrayConverter
-import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.HnswIndex
 import io.objectbox.annotation.Id
