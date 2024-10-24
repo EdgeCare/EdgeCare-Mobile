@@ -5,12 +5,10 @@ import io.objectbox.annotation.Id
 
 @Entity
 data class Persona(
-    @Id var id: Long = 0, // ObjectBox requires an ID property
+    @Id var id: Long = 0,
     var name: String,
     var age: Int,
     var gender: String,
-//    var email: String,
-//    var phoneNumber: String,
     var weight: Double,
     var height: Double,
 //    var medicalHistory: String?,

@@ -133,7 +133,7 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 weight = weightEditText.text.toString().toDouble(),
                 height = heightEditText.text.toString().toDouble(),
                 smoking = smokingCheckBox.isChecked,
-                alcoholConsumption = alcoholCheckBox.isChecked,
+                alcoholConsumption = alcoholCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
         }

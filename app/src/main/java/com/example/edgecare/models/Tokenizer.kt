@@ -85,7 +85,7 @@ data class DecoderConfig(
 data class ModelConfig(
     val type: String,
     val unkToken: String,
-    val continuingSubwordPrefix: String,
+    val continuingSubWordPrefix: String,
     val maxInputCharsPerWord: Int,
     val vocab: Map<String, Int>
 )

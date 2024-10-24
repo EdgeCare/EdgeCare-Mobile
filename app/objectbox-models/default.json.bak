@@ -1,0 +1,112 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:6652863456715701453",
+      "lastPropertyId": "3:2184592435534961125",
+      "name": "HealthReport",
+      "properties": [
+        {
+          "id": "1:6328579224325874167",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:9150406551859632337",
+          "name": "text",
+          "type": 9
+        },
+        {
+          "id": "3:2184592435534961125",
+          "name": "embedding",
+          "indexId": "1:3728733707639735558",
+          "type": 28,
+          "flags": 8
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:6013344539829201121",
+      "lastPropertyId": "8:3569108593016446670",
+      "name": "Persona",
+      "properties": [
+        {
+          "id": "1:3003798612579198741",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1737708303922497630",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:1528306570334327383",
+          "name": "age",
+          "type": 5
+        },
+        {
+          "id": "4:3728617748919745537",
+          "name": "gender",
+          "type": 9
+        },
+        {
+          "id": "5:6202123947401992254",
+          "name": "weight",
+          "type": 8
+        },
+        {
+          "id": "6:2064324773885126803",
+          "name": "height",
+          "type": 8
+        },
+        {
+          "id": "7:1692362335494125167",
+          "name": "smoking",
+          "type": 1
+        },
+        {
+          "id": "8:3569108593016446670",
+          "name": "alcoholConsumption",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8017637254302418077",
+      "lastPropertyId": "2:314132186413034112",
+      "name": "ModelDetails",
+      "properties": [
+        {
+          "id": "1:3673610098866765321",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:314132186413034112",
+          "name": "bertModelFilePath",
+          "type": 9
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "3:8017637254302418077",
+  "lastIndexId": "1:3728733707639735558",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
