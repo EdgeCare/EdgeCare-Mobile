@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">EdgeCare</string>
     <string name="message">Message</string>
+    <string name="appLogo">App Logo</string>
 </resources>
