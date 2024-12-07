@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    android:background="@color/background">
+
+    <ImageView
+        android:id="@+id/imageLogo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/appLogo"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/textWelcomeMessage"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="32dp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textWelcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcomeMessage"
+        android:textSize="18sp"
+        android:layout_above="@+id/buttonCreateAccount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonCreateAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/createNewAccount"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@id/buttonLogin"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/textColor2"
+        android:textSize="16sp"
+        android:paddingVertical="12dp"
+        app:backgroundTint="@color/buttonColor1"
+        app:cornerRadius="50dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/login"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/textColor3"
+        android:paddingVertical="12dp"
+        android:textSize="16sp"
+        app:backgroundTint="@color/buttonColor2"
+        app:cornerRadius="50dp"
+        app:strokeColor="@color/buttonColor1"
+        app:strokeWidth="1dp" />
+
+</RelativeLayout>

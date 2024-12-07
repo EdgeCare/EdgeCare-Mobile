@@ -24,7 +24,7 @@ class SplashActivity: AppCompatActivity() {
             if (isLoggedIn) {
                 startActivity(Intent(this, MainActivity::class.java))
             } else {
-//                startActivity(Intent(this, LoginActivity::class.java))
+                startActivity(Intent(this, AuthActivity::class.java))
             }
 
             finish()
@@ -33,6 +33,6 @@ class SplashActivity: AppCompatActivity() {
 
     private fun checkIfUserLoggedIn(): Boolean {
         // [ToDO] - login logic
-        return true
+        return false
     }
 }
