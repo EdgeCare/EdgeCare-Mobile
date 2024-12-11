@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">EdgeCare</string>
     <string name="message">Message</string>
+    <string name="appLogo">App Logo</string>
+    <string name="login">Log In</string>
+    <string name="createNewAccount">Create New Account</string>
+    <string name="welcomeMessage">Welcome!</string>
 </resources>

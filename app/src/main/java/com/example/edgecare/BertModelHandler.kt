@@ -53,17 +53,13 @@ class BertModelHandler(private val context: Context) {
         if (!file.exists()) {
             context.assets.open(assetFileName).use { inputStream ->
                 FileOutputStream(file).use { outputStream ->
-                    val buffer = ByteArray(4 * 1024) // 4KB buffer
-                    var read: Int
-                    while (inputStream.read(buffer).also { read = it } != -1) {
-                        outputStream.write(buffer, 0, read)
-                    }
-                    outputStream.flush()
+                    inputStream.copyTo(outputStream)
                 }
             }
         }
         return file
     }
+
 
     fun prepareInputs(text: String): InputFeatures {
         val tokens = mutableListOf<String>()

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.edgecare.BertModelHandler
+import com.example.edgecare.EdgeCareApp
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
 import com.example.edgecare.models.HealthReport
@@ -47,7 +48,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         ///// BERT model handler /////
-        modelHandler = BertModelHandler(this)
+        val app = application as EdgeCareApp
+        modelHandler = app.modelHandler
 
         val inputEditText = findViewById<EditText>(R.id.mainVIewInputText)
         outputTextView  = findViewById<TextView>(R.id.mainVIewOutputText)
