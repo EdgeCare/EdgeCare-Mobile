@@ -5,4 +5,6 @@
     <string name="login">Log In</string>
     <string name="createNewAccount">Create New Account</string>
     <string name="welcomeMessage">Welcome!</string>
+    <string name="send_icon">Send Icon</string>
+    <string name="input_text_hint">Type a message</string>
 </resources>

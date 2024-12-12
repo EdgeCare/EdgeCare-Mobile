@@ -41,6 +41,10 @@
             android:name=".activities.AuthActivity"
             android:exported="false">
         </activity>
+        <activity
+            android:name=".activities.TestActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>
