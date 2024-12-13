@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/textWelcomeMessage"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/logo_with_name_no_background"
         android:layout_marginBottom="32dp" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -41,7 +41,7 @@
         android:textColor="@color/textColor2"
         android:textSize="16sp"
         android:paddingVertical="12dp"
-        app:backgroundTint="@color/buttonColor1"
+        app:backgroundTint="@color/buttonPrimary"
         app:cornerRadius="50dp" />
 
     <com.google.android.material.button.MaterialButton
@@ -56,9 +56,9 @@
         android:textColor="@color/textColor3"
         android:paddingVertical="12dp"
         android:textSize="16sp"
-        app:backgroundTint="@color/buttonColor2"
+        app:backgroundTint="@color/buttonSecondary"
         app:cornerRadius="50dp"
-        app:strokeColor="@color/buttonColor1"
+        app:strokeColor="@color/buttonPrimary"
         app:strokeWidth="1dp" />
 
 </RelativeLayout>

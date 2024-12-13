@@ -3,11 +3,12 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="16dp">
 
     <ImageView
-        android:layout_width="500dp"
-        android:layout_height="350dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/appLogo"
-        android:src="@mipmap/ic_banner" />
+        android:src="@drawable/logo_with_name_no_background" />
 </LinearLayout>

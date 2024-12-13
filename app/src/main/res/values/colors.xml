@@ -3,8 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background">#FFFEFE</color>
-    <color name="buttonColor1">#3E9EFF</color>
-    <color name="buttonColor2">#FFFEFE</color>
+    <color name="primary">#C8E4FE</color>
+    <color name="secondary">#3E9EFF</color>
+    <color name="buttonPrimary">#3E9EFF</color>
+    <color name="buttonSecondary">#FFFEFE</color>
     <color name="textColor1">#13192A</color>
     <color name="textColor2">#FFFFFFFF</color>
     <color name="textColor3">#3E9EFF</color>
