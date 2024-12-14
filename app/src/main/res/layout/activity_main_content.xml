@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main_content"
+    android:background="@color/background">
+
+    <!-- Chat Area -->
+    <ScrollView
+        android:id="@+id/chatScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@id/bottomInputArea"
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/mainVIewOutputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/output_will_be_displayed_here"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+    </ScrollView>
+
+    <!-- Bottom Input Area -->
+    <LinearLayout
+        android:id="@+id/bottomInputArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/mainVIewInputText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/input_text_hint"
+            android:background="@drawable/edit_text_style"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:paddingVertical="10dp"
+            android:textSize="16sp"
+            android:scrollbars="vertical"
+            android:gravity="top|start"
+            android:maxHeight="250dp"
+            android:overScrollMode="always"/>
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/send_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/send_icon"
+            android:layout_gravity="center_vertical"
+            android:padding="6dp"
+            android:layout_marginStart="6dp"
+            android:scaleType="fitCenter" />
+
+    </LinearLayout>
+</RelativeLayout>
