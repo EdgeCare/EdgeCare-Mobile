@@ -14,44 +14,14 @@
         android:padding="8dp"
         android:fillViewport="true">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/mainVIewOutputText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/btn_persona_activity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:elevation="4dp"
-                android:text="Add Persona" />
-
-            <Button
-                android:id="@+id/selectFileButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:elevation="4dp"
-                android:text="Upload Text File" />
-
-            <Button
-                android:id="@+id/viewReportsButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:elevation="4dp"
-                android:text="View Saved Reports" />
-
-            <TextView
-                android:id="@+id/mainVIewOutputText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/output_will_be_displayed_here"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-        </LinearLayout>
+            android:layout_marginTop="10dp"
+            android:text="@string/output_will_be_displayed_here"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
     </ScrollView>
 
     <!-- Bottom Input Area -->
@@ -74,18 +44,24 @@
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
             android:padding="8dp"
+            android:paddingVertical="10dp"
             android:textSize="16sp"
             android:scrollbars="vertical"
             android:gravity="top|start"
             android:maxHeight="250dp"
             android:overScrollMode="always"/>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/sendButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/send_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/send_icon"
-            android:layout_marginStart="8dp" />
+            android:layout_gravity="center_vertical"
+            android:padding="6dp"
+            android:layout_marginStart="6dp"
+            android:scaleType="fitCenter" />
+
     </LinearLayout>
 </RelativeLayout>
