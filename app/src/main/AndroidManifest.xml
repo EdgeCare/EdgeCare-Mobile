@@ -35,10 +35,14 @@
             android:name=".activities.CollectPersonaDataActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.TopBarActivity"
+            android:exported="true" />
+
+        <activity
             android:name=".activities.MainActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan">
-        </activity>
+            android:windowSoftInputMode="adjustPan"
+            android:exported="false" />
+
         <activity
             android:name=".activities.AuthActivity"
             android:exported="false">

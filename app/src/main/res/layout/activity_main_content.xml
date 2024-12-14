@@ -1,36 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main"
+    android:id="@+id/main_content"
     android:background="@color/background">
-
-    <!-- Top Bar -->
-    <LinearLayout
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/primary"
-        android:paddingHorizontal="16dp"
-        android:layout_alignParentTop="true"
-        android:paddingVertical="8dp"
-        android:elevation="4dp">
-
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_width="160dp"
-            android:layout_height="60dp"
-            android:src="@drawable/logo_with_name_no_background"
-            android:contentDescription="@string/appLogo" />
-    </LinearLayout>
 
     <!-- Chat Area -->
     <ScrollView
         android:id="@+id/chatScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_below="@+id/topBar"
         android:layout_above="@id/bottomInputArea"
+        android:layout_alignParentTop="true"
         android:padding="8dp"
         android:fillViewport="true">
 

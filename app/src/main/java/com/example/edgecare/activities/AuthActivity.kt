@@ -10,7 +10,7 @@ class AuthActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainIntent = Intent(this, MainActivity::class.java)
+        val mainIntent = Intent(this, TopBarActivity::class.java)
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
