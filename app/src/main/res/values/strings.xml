@@ -7,4 +7,8 @@
     <string name="welcomeMessage">Welcome!</string>
     <string name="send_icon">Send Icon</string>
     <string name="input_text_hint">Type a message</string>
+    <string name="add_persona">Add Persona</string>
+    <string name="upload_text_file">Upload Text File</string>
+    <string name="view_saved_reports">View Saved Reports</string>
+    <string name="output_will_be_displayed_here">Output will be displayed here</string>
 </resources>

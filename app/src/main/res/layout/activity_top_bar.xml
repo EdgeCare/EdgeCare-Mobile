@@ -1,0 +1,89 @@
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main Content -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Top Bar -->
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/primary"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:elevation="4dp">
+
+            <!-- Sidebar Toggle Button [ToDo] - Change icon-->
+            <ImageButton
+                android:id="@+id/sidebarToggle"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/send_24"
+                android:contentDescription="@string/send_icon"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:tint="@color/black"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="160dp"
+                android:layout_height="60dp"
+                android:src="@drawable/logo_with_name_no_background"
+                android:contentDescription="@string/appLogo" />
+        </LinearLayout>
+
+        <!-- Chat Content Frame -->
+        <FrameLayout
+            android:id="@+id/chatContentFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize" />
+    </FrameLayout>
+
+    <!-- Navigation Drawer (Sidebar) -->
+    <LinearLayout
+        android:id="@+id/sideBar"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:padding="16dp">
+
+        <!-- Buttons -->
+        <Button
+            android:id="@+id/btn_persona_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:elevation="4dp"
+            android:text="Add Persona" />
+
+        <Button
+            android:id="@+id/selectFileButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:elevation="4dp"
+            android:text="Upload Text File" />
+
+        <Button
+            android:id="@+id/viewReportsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:elevation="4dp"
+            android:text="View Saved Reports" />
+
+        <!-- History -->
+
+    </LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
