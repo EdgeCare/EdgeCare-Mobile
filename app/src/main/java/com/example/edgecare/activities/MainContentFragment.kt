@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +34,7 @@ class MainContentFragment : Fragment() {
     private lateinit var healthReportBox: Box<HealthReport>
     private lateinit var modelHandler: BertModelHandler
     private lateinit var outputTextView: TextView
+    private lateinit var sendButton: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +46,7 @@ class MainContentFragment : Fragment() {
         val inputEditText = view.findViewById<EditText>(R.id.mainVIewInputText)
         outputTextView = view.findViewById(R.id.mainVIewOutputText)
         selectFileButton = view.findViewById(R.id.selectFileButton)
+        sendButton = view.findViewById(R.id.sendButton)
 
         // Set up ObjectBox
         healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
@@ -51,14 +54,14 @@ class MainContentFragment : Fragment() {
         // Initialize BERT model handler
         modelHandler = (requireActivity().application as EdgeCareApp).modelHandler
 
-        // Set up text input listener
-        inputEditText.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val inputText = inputEditText.text.toString()
+        // Set up click listener for the send button
+        sendButton.setOnClickListener {
+            val inputText = inputEditText.text.toString()
+            if (inputText.isNotEmpty()) {
                 processInputText(inputText)
-                true
+                inputEditText.text.clear() // Clear input after processing
             } else {
-                false
+                Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
             }
         }
 
