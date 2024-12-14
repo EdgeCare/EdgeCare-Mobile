@@ -1,179 +1,19 @@
 package com.example.edgecare.activities
 
-import android.app.Activity
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.edgecare.BertModelHandler
-import com.example.edgecare.EdgeCareApp
-import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
-import com.example.edgecare.models.HealthReport
-import com.example.edgecare.utils.EmbeddingUtils
-import com.example.edgecare.utils.FileUtils
-import io.objectbox.Box
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var selectFileButton: Button
-    private lateinit var healthReportBox: Box<HealthReport>
-    private lateinit var modelHandler: BertModelHandler
-    private lateinit var outputTextView: TextView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_content)
+        setContentView(R.layout.activity_top_bar)
 
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        ///// BERT model handler /////
-        val app = application as EdgeCareApp
-        modelHandler = app.modelHandler
-
-        val inputEditText = findViewById<EditText>(R.id.mainVIewInputText)
-        outputTextView  = findViewById<TextView>(R.id.mainVIewOutputText)
-        inputEditText.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || event?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                val inputText = inputEditText.text.toString()
-                processInputText(inputText)
-                true
-            } else {
-                false
-            }
-        }
-
-        ///// ObjectBox /////
-        
-        healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
-        selectFileButton = findViewById(R.id.selectFileButton)
-
-        // Set click listener on the button
-        selectFileButton.setOnClickListener {
-            checkPermissionsAndSelectFile()
-        }
-
-        val button = findViewById<Button>(R.id.btn_persona_activity)
-        button.setOnClickListener {
-            val intent = Intent(this, CollectPersonaDataActivity::class.java)
-            startActivity(intent)
-        }
-
-        val viewReportsButton  = findViewById<Button>(R.id.viewReportsButton)
-        viewReportsButton.setOnClickListener {
-            val intent = Intent(this, ReportListActivity::class.java)
-            startActivity(intent)
+        // Load MainContentActivity fragment <-- Chat Area -->
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, MainContentFragment())
+                .commit()
         }
     }
-
-    private fun checkPermissionsAndSelectFile() {
-        // [TODO] Check if permission is granted. If not, request permission
-
-        // Permission is granted; proceed to select file
-        selectTextFile()
-    }
-
-    private fun selectTextFile() {
-        // Create an intent to select a text file
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = "text/plain"
-        }
-        filePickerLauncher.launch(intent)
-    }
-
-    // Activity Result API for file picker
-    private val filePickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // Handle the result of the file picker
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.also { uri ->
-                // Save the health report
-                saveHealthReport(uri)
-            }
-        }
-    }
-
-    private fun saveHealthReport(fileUri: Uri) {
-        try {
-            // Read text from the selected file
-            val text = FileUtils.readTextFile(contentResolver, fileUri)
-            // Compute embedding
-            val embedding = EmbeddingUtils.computeEmbedding(text)
-            // Create HealthReport object
-            if(embedding != null) {
-                val report = HealthReport(text = text, embedding = embedding)
-                // Save to ObjectBox
-                healthReportBox.put(report)
-                Toast.makeText(this, "Health report saved successfully", Toast.LENGTH_SHORT).show()
-            }
-            else Toast.makeText(this, "Failed to save health report", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Failed to save health report", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // Handle permission request result
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            ) {
-                // Permission granted; proceed to select file
-                selectTextFile()
-            } else {
-                Toast.makeText(this, "Permission denied to read files", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    companion object {
-        private const val PERMISSION_REQUEST_CODE = 100
-    }
-
-    private fun processInputText(text: String) {
-        // Run inference in a coroutine
-        CoroutineScope(Dispatchers.Main).launch {
-            val features = modelHandler.prepareInputs(text)
-            val result = modelHandler.runInference(features)
-            displayResults(result)
-        }
-    }
-
-    private fun displayResults(labeledTokens: List<Pair<String, String>>) {
-        val resultBuilder = StringBuilder()
-        for ((token, label) in labeledTokens) {
-            resultBuilder.append("$token \t-> $label\n")
-        }
-
-        // Update the UI
-        outputTextView.text = resultBuilder.toString()
-    }
-
 }
