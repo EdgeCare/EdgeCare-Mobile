@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.databinding.ActivityCollectPersonaDataBinding
+import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
 import io.objectbox.Box
 import io.objectbox.BoxStore
@@ -60,7 +61,10 @@ class CollectPersonaDataActivity : AppCompatActivity() {
             with(binding) {
                 nameEditText.setText(it.name)
                 ageEditText.setText(it.age.toString())
-                genderEditText.setText(it.gender)
+                if(it.gender == Gender.MALE.displayName)
+                    radioButtonMale.isChecked = true
+                else if(it.gender == Gender.FEMALE.displayName)
+                    radioButtonFemale.isChecked = true
                 weightEditText.setText(it.weight.toString())
                 heightEditText.setText(it.height.toString())
                 smokingCheckBox.isChecked = it.smoking
@@ -69,7 +73,8 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 // Disabling fields to prevent editing
                 nameEditText.isEnabled = false
                 ageEditText.isEnabled = false
-                genderEditText.isEnabled = false
+                radioButtonMale.isEnabled = false
+                radioButtonFemale.isEnabled = false
                 weightEditText.isEnabled = false
                 heightEditText.isEnabled = false
                 smokingCheckBox.isEnabled = false
@@ -84,7 +89,8 @@ class CollectPersonaDataActivity : AppCompatActivity() {
         with(binding) {
             nameEditText.isEnabled = true
             ageEditText.isEnabled = true
-            genderEditText.isEnabled = true
+            radioButtonMale.isEnabled = true
+            radioButtonFemale.isEnabled = true
             weightEditText.isEnabled = true
             heightEditText.isEnabled = true
             smokingCheckBox.isEnabled = true
@@ -98,7 +104,10 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 with(binding) {
                     it.name = nameEditText.text.toString()
                     it.age = ageEditText.text.toString().toInt()
-                    it.gender = genderEditText.text.toString()
+                    if(radioButtonMale.isChecked)
+                        it.gender = Gender.MALE.displayName
+                    else if (radioButtonFemale.isChecked)
+                        it.gender = Gender.FEMALE.displayName
                     it.weight = weightEditText.text.toString().toDouble()
                     it.height = heightEditText.text.toString().toDouble()
                     it.smoking = smokingCheckBox.isChecked
@@ -107,10 +116,17 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 userDetailsBox.put(it)
             }
         } else {
+            val gender:String?
+            if(binding.radioButtonMale.isChecked)
+                gender = Gender.MALE.displayName
+            else if (binding.radioButtonFemale.isChecked)
+                gender = Gender.FEMALE.displayName
+            else
+                gender = null
             val userDetail = Persona(
                 name = binding.nameEditText.text.toString(),
                 age = binding.ageEditText.text.toString().toInt(),
-                gender = binding.genderEditText.text.toString(),
+                gender = gender,
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
                 smoking = binding.smokingCheckBox.isChecked,
