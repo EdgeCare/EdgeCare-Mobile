@@ -5,24 +5,14 @@
     android:background="@color/background">
 
     <!-- Chat Area -->
-    <ScrollView
-        android:id="@+id/chatScrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_above="@id/bottomInputArea"
         android:layout_alignParentTop="true"
         android:padding="8dp"
-        android:fillViewport="true">
-
-        <TextView
-            android:id="@+id/mainVIewOutputText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/output_will_be_displayed_here"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-    </ScrollView>
+        android:clipToPadding="false" />
 
     <!-- Bottom Input Area -->
     <LinearLayout

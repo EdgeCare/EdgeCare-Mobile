@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.BertModelHandler
 import com.example.edgecare.EdgeCareApp
+import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.ActivityMainContentBinding
+import com.example.edgecare.models.ChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +22,8 @@ class MainContentFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var modelHandler: BertModelHandler
+    private lateinit var chatAdapter: ChatAdapter
+    private val chatMessages = mutableListOf<ChatMessage>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,29 +41,39 @@ class MainContentFragment : Fragment() {
             val inputText = binding.mainVIewInputText.text.toString()
             if (inputText.isNotEmpty()) {
                 processInputText(inputText)
-                binding.mainVIewInputText.text.clear() // Clear input after processing
+                binding.mainVIewInputText.text.clear()
             } else {
                 Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        // Initialize Chat RecyclerView
+        chatAdapter = ChatAdapter(chatMessages)
+        binding.chatRecyclerView.apply {
+            adapter = chatAdapter
+            layoutManager = LinearLayoutManager(requireContext())
         }
 
         return view
     }
 
     private fun processInputText(text: String) {
+        // Add user's message to the chat
+        chatMessages.add(ChatMessage(text, true))
+        chatAdapter.notifyItemInserted(chatMessages.size - 1)
+        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+
+        // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
             val features = modelHandler.prepareInputs(text)
             val result = modelHandler.runInference(features)
-            displayResults(result)
-        }
-    }
 
-    private fun displayResults(labeledTokens: List<Pair<String, String>>) {
-        val resultBuilder = StringBuilder()
-        labeledTokens.forEach { (token, label) ->
-            resultBuilder.append("$token -> $label\n")
+            // Add the result as a reply
+            val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
+            chatMessages.add(ChatMessage(responseText, false))
+            chatAdapter.notifyItemInserted(chatMessages.size - 1)
+            binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         }
-        binding.mainVIewOutputText.text = resultBuilder.toString()
     }
 
     override fun onDestroyView() {
