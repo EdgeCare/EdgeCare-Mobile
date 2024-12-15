@@ -4,18 +4,18 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.models.HealthReport
-import com.example.edgecare.databinding.ActivityReportDetailBinding
+import com.example.edgecare.databinding.ActivityViewFullReportBinding
 import io.objectbox.Box
 
 
-class ReportDetailActivity : AppCompatActivity() {
+class ViewFullReportActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityReportDetailBinding
+    private lateinit var binding: ActivityViewFullReportBinding
     private lateinit var healthReportBox: Box<HealthReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityReportDetailBinding.inflate(layoutInflater)
+        binding = ActivityViewFullReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)

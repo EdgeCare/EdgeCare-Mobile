@@ -61,9 +61,9 @@ class CollectPersonaDataActivity : AppCompatActivity() {
             with(binding) {
                 nameEditText.setText(it.name)
                 ageEditText.setText(it.age.toString())
-                if(it.gender == Gender.MALE.displayName)
+                if(Gender.fromDisplayName(it.gender) == Gender.MALE)
                     radioButtonMale.isChecked = true
-                else if(it.gender == Gender.FEMALE.displayName)
+                else if(Gender.fromDisplayName(it.gender) == Gender.FEMALE)
                     radioButtonFemale.isChecked = true
                 weightEditText.setText(it.weight.toString())
                 heightEditText.setText(it.height.toString())
@@ -104,10 +104,7 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 with(binding) {
                     it.name = nameEditText.text.toString()
                     it.age = ageEditText.text.toString().toInt()
-                    if(radioButtonMale.isChecked)
-                        it.gender = Gender.MALE.displayName
-                    else if (radioButtonFemale.isChecked)
-                        it.gender = Gender.FEMALE.displayName
+                    it.gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName
                     it.weight = weightEditText.text.toString().toDouble()
                     it.height = heightEditText.text.toString().toDouble()
                     it.smoking = smokingCheckBox.isChecked
@@ -116,17 +113,10 @@ class CollectPersonaDataActivity : AppCompatActivity() {
                 userDetailsBox.put(it)
             }
         } else {
-            val gender:String?
-            if(binding.radioButtonMale.isChecked)
-                gender = Gender.MALE.displayName
-            else if (binding.radioButtonFemale.isChecked)
-                gender = Gender.FEMALE.displayName
-            else
-                gender = null
             val userDetail = Persona(
                 name = binding.nameEditText.text.toString(),
                 age = binding.ageEditText.text.toString().toInt(),
-                gender = gender,
+                gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName,
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
                 smoking = binding.smokingCheckBox.isChecked,

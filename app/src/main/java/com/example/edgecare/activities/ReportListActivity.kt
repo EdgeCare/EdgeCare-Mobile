@@ -29,7 +29,7 @@ class ReportListActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = HealthReportAdapter { report ->
             // Handle item click
-            val intent = Intent(this, ReportDetailActivity::class.java)
+            val intent = Intent(this, ViewFullReportActivity::class.java)
             intent.putExtra("report_id", report.id)
             startActivity(intent)
         }
