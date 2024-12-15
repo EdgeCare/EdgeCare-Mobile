@@ -1,14 +1,17 @@
 <resources>
     <string name="app_name">EdgeCare</string>
-    <string name="message">Message</string>
     <string name="appLogo">App Logo</string>
     <string name="login">Log In</string>
     <string name="createNewAccount">Create New Account</string>
     <string name="welcomeMessage">Welcome!</string>
-    <string name="send_icon">Send Icon</string>
     <string name="input_text_hint">Type a message</string>
-    <string name="add_persona">Add Persona</string>
-    <string name="upload_text_file">Upload Text File</string>
-    <string name="view_saved_reports">View Saved Reports</string>
+    <string name="persona">Persona</string>
     <string name="output_will_be_displayed_here">Output will be displayed here</string>
+    <string name="history">History</string>
+
+    <!-- Icons -->
+    <string name="send_icon">Send Icon</string>
+    <string name="menu_icon">Menu Icon</string>
+    <string name="icon">icon</string>
+
 </resources>
