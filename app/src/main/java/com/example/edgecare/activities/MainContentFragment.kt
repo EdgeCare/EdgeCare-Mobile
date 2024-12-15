@@ -4,45 +4,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.edgecare.BertModelHandler
 import com.example.edgecare.EdgeCareApp
-import com.example.edgecare.R
+import com.example.edgecare.databinding.ActivityMainContentBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainContentFragment : Fragment() {
 
+    private var _binding: ActivityMainContentBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var modelHandler: BertModelHandler
-    private lateinit var outputTextView: TextView
-    private lateinit var sendButton: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.activity_main_content, container, false)
-
-        // Initialize UI components
-        val inputEditText = view.findViewById<EditText>(R.id.mainVIewInputText)
-        outputTextView = view.findViewById(R.id.mainVIewOutputText)
-        sendButton = view.findViewById(R.id.sendButton)
-
+    ): View {
+        // Initialize View Binding
+        _binding = ActivityMainContentBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         // Initialize BERT model handler
         modelHandler = (requireActivity().application as EdgeCareApp).modelHandler
 
         // Set up click listener for the send button
-        sendButton.setOnClickListener {
-            val inputText = inputEditText.text.toString()
+        binding.sendButton.setOnClickListener {
+            val inputText = binding.mainVIewInputText.text.toString()
             if (inputText.isNotEmpty()) {
                 processInputText(inputText)
-                inputEditText.text.clear() // Clear input after processing
+                binding.mainVIewInputText.text.clear() // Clear input after processing
             } else {
                 Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
             }
@@ -64,6 +58,11 @@ class MainContentFragment : Fragment() {
         labeledTokens.forEach { (token, label) ->
             resultBuilder.append("$token -> $label\n")
         }
-        outputTextView.text = resultBuilder.toString()
+        binding.mainVIewOutputText.text = resultBuilder.toString()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Avoid memory leaks
     }
 }
