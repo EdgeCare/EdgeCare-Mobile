@@ -40,6 +40,7 @@ class MainContentFragment : Fragment() {
         binding.sendButton.setOnClickListener {
             val inputText = binding.mainVIewInputText.text.toString()
             if (inputText.isNotEmpty()) {
+                binding.tipSection.visibility = View.GONE   // Hide the tip section
                 processInputText(inputText)
                 binding.mainVIewInputText.text.clear()
             } else {
@@ -52,6 +53,11 @@ class MainContentFragment : Fragment() {
         binding.chatRecyclerView.apply {
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(requireContext())
+        }
+
+        // Set up close button for the tip section
+        binding.closeTipButton.setOnClickListener {
+            binding.tipSection.visibility = View.GONE   // Hide the tip section
         }
 
         return view

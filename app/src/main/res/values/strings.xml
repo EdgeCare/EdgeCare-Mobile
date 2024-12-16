@@ -9,6 +9,7 @@
     <string name="history">History</string>
     <string name="question_end_message">We are all set up! Your profile has been created successfully</string>
     <string name="finish">Finish</string>
+    <string name="main_component_tip">If you\'re experiencing <font color="#3E9EFF">serious symptoms</font>, do not use EdgeCare. Instead, please contact emergency services quickly.</string>
 
     <!-- Icons / Images -->
     <string name="appLogo">App Logo</string>
