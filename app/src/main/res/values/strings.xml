@@ -7,6 +7,8 @@
     <string name="new_edge_care">New EdgeCare</string>
     <string name="persona">Persona</string>
     <string name="history">History</string>
+    <string name="question_end_message">We are all set up! Your profile has been created successfully</string>
+    <string name="finish">Finish</string>
 
     <!-- Icons / Images -->
     <string name="appLogo">App Logo</string>

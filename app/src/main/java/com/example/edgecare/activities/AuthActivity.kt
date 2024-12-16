@@ -10,19 +10,20 @@ class AuthActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainIntent = Intent(this, MainActivity::class.java)
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.buttonLogin.setOnClickListener {
 //            startActivity(Intent(this, LoginActivity::class.java))
+            val mainIntent = Intent(this, MainActivity::class.java)
             startActivity(mainIntent)
         }
 
         binding.buttonCreateAccount.setOnClickListener {
 //            startActivity(Intent(this, CreateAccountActivity::class.java))
-            startActivity(mainIntent)
+            val questionsIntent = Intent(this, HostActivity::class.java)
+            startActivity(questionsIntent)
         }
     }
 }
