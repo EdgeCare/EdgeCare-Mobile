@@ -4,15 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
+import com.example.edgecare.databinding.ActivityTopBarBinding
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.utils.EmbeddingUtils
 import com.example.edgecare.utils.FileUtils
@@ -20,65 +18,75 @@ import io.objectbox.Box
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var binding: ActivityTopBarBinding
     private lateinit var healthReportBox: Box<HealthReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_top_bar)
 
-        // Initialize the DrawerLayout
-        drawerLayout = findViewById(R.id.drawerLayout)
+        // Initialize View Binding
+        binding = ActivityTopBarBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         // Set up ObjectBox
         healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
 
         // Set up the sidebar toggle button
-        val sidebarToggle = findViewById<ImageButton>(R.id.sidebarToggleButton)
-        sidebarToggle.setOnClickListener {
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START)
+        binding.sidebarToggleButton.setOnClickListener {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
             } else {
-                drawerLayout.openDrawer(GravityCompat.START)
+                binding.drawerLayout.openDrawer(GravityCompat.START)
             }
         }
 
         // Set up button clicks in the sidebar
-        findViewById<LinearLayout>(R.id.btn_persona_activity).setOnClickListener {
+        binding.btnNewEdgeCare.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, MainContentFragment())
+                .addToBackStack(null) // Add to back stack for navigation (Mr.t -> optional - not necessarily need)
+                .commit()
+            selectButton(binding.btnNewEdgeCare.id)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        binding.btnPersonaActivity.setOnClickListener {
             startActivity(Intent(this, CollectPersonaDataActivity::class.java))
-            drawerLayout.closeDrawer(GravityCompat.START)
+            selectButton(R.id.btnPersonaActivity)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        findViewById<LinearLayout>(R.id.selectFileButton).setOnClickListener {
+        binding.selectFileButton.setOnClickListener {
             checkPermissionsAndSelectFile()
-            drawerLayout.closeDrawer(GravityCompat.START)
+            selectButton(R.id.selectFileButton)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        findViewById<LinearLayout>(R.id.viewReportsButton).setOnClickListener {
+        binding.viewReportsButton.setOnClickListener {
             startActivity(Intent(this, ReportListActivity::class.java))
-            drawerLayout.closeDrawer(GravityCompat.START)
+            selectButton(R.id.viewReportsButton)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        // Load MainContentActivity into the FrameLayout
+        // Load MainContentFragment into the FrameLayout
         supportFragmentManager.beginTransaction()
             .replace(R.id.chatContentFrame, MainContentFragment())
             .commit()
 
         // Default side navbar button selection
-        selectButton(R.id.btn_new_edgeCare)
+        selectButton(binding.btnNewEdgeCare.id)
     }
 
     private fun selectButton(selectedId: Int) {
         val buttons = listOf(
-            R.id.btn_new_edgeCare,
-            R.id.btn_persona_activity,
-            R.id.selectFileButton,
-            R.id.viewReportsButton
+            binding.btnNewEdgeCare,
+            binding.btnPersonaActivity,
+            binding.selectFileButton,
+            binding.viewReportsButton
         )
 
-        buttons.forEach { id ->
-            val button = findViewById<LinearLayout>(id)
-            if (id == selectedId) {
+        buttons.forEach { button ->
+            if (button.id == selectedId) {
                 button.setBackgroundResource(R.drawable.side_nav_bar_selected_button_background)
             } else {
                 button.setBackgroundResource(R.drawable.side_nav_bar_button_background)
