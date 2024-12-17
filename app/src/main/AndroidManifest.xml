@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.ReportDetailActivity"
+            android:name=".activities.ViewFullReportActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ReportListActivity"
