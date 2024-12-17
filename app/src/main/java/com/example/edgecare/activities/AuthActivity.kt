@@ -22,7 +22,7 @@ class AuthActivity: AppCompatActivity() {
 
         binding.buttonCreateAccount.setOnClickListener {
 //            startActivity(Intent(this, CreateAccountActivity::class.java))
-            val questionsIntent = Intent(this, HostActivity::class.java)
+            val questionsIntent = Intent(this, QuestionnaireActivity::class.java)
             startActivity(questionsIntent)
         }
     }

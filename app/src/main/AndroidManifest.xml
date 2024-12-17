@@ -40,7 +40,7 @@
             android:name=".activities.AuthActivity"
             android:exported="false"/>
         <activity
-            android:name=".activities.HostActivity"
+            android:name=".activities.QuestionnaireActivity"
             android:exported="false"/>
     </application>
 
