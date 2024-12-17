@@ -14,30 +14,28 @@
             android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:background="@color/primary"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:elevation="4dp">
+            android:elevation="4dp"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <!-- Sidebar Toggle Button [ToDo] - Change icon-->
             <ImageButton
-                android:id="@+id/sidebarToggle"
+                android:id="@+id/sidebarToggleButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/send_24"
-                android:contentDescription="@string/send_icon"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                app:tint="@color/black"
-                android:layout_marginEnd="8dp" />
+                android:contentDescription="@string/menu_icon"
+                android:src="@drawable/menu_24" />
 
             <!-- Logo -->
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="160dp"
                 android:layout_height="60dp"
-                android:src="@drawable/logo_with_name_no_background"
-                android:contentDescription="@string/appLogo" />
+                android:contentDescription="@string/appLogo"
+                android:src="@drawable/logo_with_name_no_background" />
         </LinearLayout>
 
         <!-- Chat Content Frame -->
@@ -54,36 +52,123 @@
         android:layout_width="280dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:orientation="vertical"
         android:background="@color/white"
+        android:orientation="vertical"
         android:padding="16dp">
 
         <!-- Buttons -->
-        <Button
-            android:id="@+id/btn_persona_activity"
+        <LinearLayout
+            android:id="@+id/btn_new_edgeCare"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:elevation="4dp"
-            android:text="Add Persona" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/side_nav_bar_button_background"
+            android:gravity="center_vertical"
+            android:padding="8dp">
 
-        <Button
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/icon"
+                android:src="@drawable/logo"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/new_edge_care"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btnPersonaActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/side_nav_bar_button_background"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/icon"
+                android:src="@drawable/person_24"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/persona"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/selectFileButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:elevation="4dp"
-            android:text="Upload Text File" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/side_nav_bar_button_background"
+            android:gravity="center_vertical"
+            android:padding="8dp">
 
-        <Button
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/icon"
+                android:src="@drawable/file_24"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Text File"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/viewReportsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:elevation="4dp"
-            android:text="View Saved Reports" />
+            android:layout_marginTop="8dp"
+            android:background="@drawable/side_nav_bar_button_background"
+            android:gravity="center_vertical"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@string/icon"
+                android:src="@drawable/file_24"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View Saved Reports"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <!-- Separator -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/lightGray"
+            android:layout_marginVertical="16dp" />
 
         <!-- History -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/history"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+
 
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

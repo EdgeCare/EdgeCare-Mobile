@@ -38,8 +38,10 @@
             android:exported="true" />
         <activity
             android:name=".activities.AuthActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false"/>
+        <activity
+            android:name=".activities.QuestionnaireActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

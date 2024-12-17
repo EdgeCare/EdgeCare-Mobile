@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.example.edgecare.ObjectBox
+import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityTopBarBinding
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.utils.EmbeddingUtils
@@ -17,11 +18,13 @@ import io.objectbox.Box
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityTopBarBinding
     private lateinit var healthReportBox: Box<HealthReport>
-    private lateinit var binding:ActivityTopBarBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize View Binding
         binding = ActivityTopBarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -29,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
 
         // Set up the sidebar toggle button
-        binding.sidebarToggle.setOnClickListener {
+        binding.sidebarToggleButton.setOnClickListener {
             if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
             } else {
@@ -38,25 +41,57 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set up button clicks in the sidebar
+        binding.btnNewEdgeCare.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, MainContentFragment())
+                .addToBackStack(null) // Add to back stack for navigation (Mr.t -> optional - not necessarily need)
+                .commit()
+            selectButton(binding.btnNewEdgeCare.id)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
         binding.btnPersonaActivity.setOnClickListener {
             startActivity(Intent(this, CollectPersonaDataActivity::class.java))
+            selectButton(R.id.btnPersonaActivity)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         binding.selectFileButton.setOnClickListener {
             checkPermissionsAndSelectFile()
+            selectButton(R.id.selectFileButton)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         binding.viewReportsButton.setOnClickListener {
             startActivity(Intent(this, ReportListActivity::class.java))
+            selectButton(R.id.viewReportsButton)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        // Load MainContentActivity into the FrameLayout
+        // Load MainContentFragment into the FrameLayout
         supportFragmentManager.beginTransaction()
-            .replace(binding.chatContentFrame.id, MainContentFragment())
+            .replace(R.id.chatContentFrame, MainContentFragment())
             .commit()
+
+        // Default side navbar button selection
+        selectButton(binding.btnNewEdgeCare.id)
+    }
+
+    private fun selectButton(selectedId: Int) {
+        val buttons = listOf(
+            binding.btnNewEdgeCare,
+            binding.btnPersonaActivity,
+            binding.selectFileButton,
+            binding.viewReportsButton
+        )
+
+        buttons.forEach { button ->
+            if (button.id == selectedId) {
+                button.setBackgroundResource(R.drawable.side_nav_bar_selected_button_background)
+            } else {
+                button.setBackgroundResource(R.drawable.side_nav_bar_button_background)
+            }
+        }
     }
 
     private fun checkPermissionsAndSelectFile() {
