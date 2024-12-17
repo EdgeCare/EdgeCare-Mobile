@@ -77,25 +77,6 @@
         }
       ],
       "relations": []
-    },
-    {
-      "id": "3:8017637254302418077",
-      "lastPropertyId": "2:314132186413034112",
-      "name": "ModelDetails",
-      "properties": [
-        {
-          "id": "1:3673610098866765321",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:314132186413034112",
-          "name": "bertModelFilePath",
-          "type": 9
-        }
-      ],
-      "relations": []
     }
   ],
   "lastEntityId": "3:8017637254302418077",
@@ -104,9 +85,14 @@
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    8017637254302418077
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    3673610098866765321,
+    314132186413034112
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

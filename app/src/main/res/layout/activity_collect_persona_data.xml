@@ -57,16 +57,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gender"
-            android:textColor="#000080" />
-        <EditText
-            android:id="@+id/genderEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:background="@drawable/edit_text_style"
-            android:layout_marginBottom="10dp" />
+            android:textColor="@color/textColor4" />
 
         <!-- Weight Field -->
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <RadioButton
+                android:id="@+id/radioButtonMale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Male"
+                android:textColor="@color/textColor4" />
+
+            <RadioButton
+                android:id="@+id/radioButtonFemale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Female"
+                android:textColor="@color/textColor4" />
+        </RadioGroup>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
