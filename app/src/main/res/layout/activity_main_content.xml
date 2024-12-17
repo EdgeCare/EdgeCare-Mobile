@@ -1,28 +1,55 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main_content"
+    android:orientation="vertical"
     android:background="@color/background">
 
-    <!-- Chat Area -->
-    <ScrollView
-        android:id="@+id/chatScrollView"
+    <!-- Tip -->
+    <LinearLayout
+        android:id="@+id/tipSection"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_above="@id/bottomInputArea"
-        android:layout_alignParentTop="true"
-        android:padding="8dp"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/tip_background"
+        android:elevation="4dp"
+        android:visibility="visible"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="25dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/tip_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/icon" />
 
         <TextView
-            android:id="@+id/mainVIewOutputText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/output_will_be_displayed_here"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-    </ScrollView>
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp"
+            android:text="@string/main_component_tip"
+            android:textColor="@color/textColor1"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/closeTipButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/close_24"
+            android:contentDescription="@string/icon" />
+    </LinearLayout>
+
+    <!-- Chat Area -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false" />
 
     <!-- Bottom Input Area -->
     <LinearLayout
@@ -31,8 +58,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
-        android:paddingVertical="10dp"
-        android:layout_alignParentBottom="true">
+        android:paddingVertical="10dp">
 
         <EditText
             android:id="@+id/mainVIewInputText"
@@ -49,7 +75,7 @@
             android:scrollbars="vertical"
             android:gravity="top|start"
             android:maxHeight="250dp"
-            android:overScrollMode="always"/>
+            android:overScrollMode="always" />
 
         <ImageButton
             android:id="@+id/sendButton"
@@ -62,6 +88,5 @@
             android:padding="6dp"
             android:layout_marginStart="6dp"
             android:scaleType="fitCenter" />
-
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

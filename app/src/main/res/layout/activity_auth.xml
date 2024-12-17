@@ -19,7 +19,7 @@
         android:src="@drawable/logo_with_name_no_background"
         android:layout_marginBottom="32dp" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/textWelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
