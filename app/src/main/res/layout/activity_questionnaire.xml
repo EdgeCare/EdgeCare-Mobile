@@ -32,7 +32,7 @@
         <ImageView
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:src="@drawable/back_24"
+            android:src="@drawable/icon_back_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/icon"
             app:tint="@color/buttonPrimary"/>

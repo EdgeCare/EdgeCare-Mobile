@@ -19,7 +19,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/tip_24"
+            android:src="@drawable/icon_tip_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/icon" />
 
@@ -38,7 +38,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/close_24"
+            android:src="@drawable/icon_close_24"
             android:contentDescription="@string/icon" />
     </LinearLayout>
 
@@ -81,7 +81,7 @@
             android:id="@+id/sendButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/send_24"
+            android:src="@drawable/icon_send_24"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/send_icon"
             android:layout_gravity="center_vertical"
