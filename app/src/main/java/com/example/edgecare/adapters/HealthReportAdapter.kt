@@ -7,7 +7,8 @@ import com.example.edgecare.models.HealthReport
 import com.example.edgecare.databinding.ItemHealthReportBinding
 
 class HealthReportAdapter(
-    private val onItemClick: (HealthReport) -> Unit
+    private val onViewClick: (HealthReport) -> Unit,
+    private val onDeleteClick: (HealthReport) -> Unit
 ) : RecyclerView.Adapter<HealthReportAdapter.HealthReportViewHolder>() {
 
     private var reports: List<HealthReport> = emptyList()
@@ -40,8 +41,11 @@ class HealthReportAdapter(
             binding.textViewTitle.text = "Report ID: ${report.id}"
             binding.textViewSnippet.text = report.text.take(100) // Show first 100 chars as snippet
 
-            binding.root.setOnClickListener {
-                onItemClick(report)
+            binding.buttonViewReport.setOnClickListener {
+                onViewClick(report)
+            }
+            binding.buttonDeleteReport.setOnClickListener {
+                onDeleteClick(report)
             }
         }
     }
