@@ -1,16 +1,15 @@
 package com.example.edgecare.activities
 
-import android.R.layout
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
 import com.example.edgecare.models.Question
 
@@ -113,20 +112,32 @@ class QuestionnaireActivity : AppCompatActivity() {
 
         when (question.inputType) {
             "text" -> {
-                val editText = EditText(this).apply {
-                    hint = "Enter your answer"
-                }
-                binding.inputContainer.addView(editText)
+                val textInputView = layoutInflater.inflate(R.layout.questionnaire_input_text, binding.inputContainer, false)
+                binding.inputContainer.addView(textInputView)
             }
             "select" -> {
-                val spinner = Spinner(this)
-                val adapter = ArrayAdapter(
-                    this,
-                    layout.simple_spinner_dropdown_item,
-                    question.options ?: listOf("Yes", "No")
+                // Inflate the input_text layout into the inputContainer
+                val textInputView = layoutInflater.inflate(R.layout.questionnaire_input_select, binding.inputContainer, false)
+                binding.inputContainer.addView(textInputView)
+
+                val buttons = listOf(
+                    findViewById<Button>(R.id.optionButton1),
+                    findViewById<Button>(R.id.optionButton2),
+                    findViewById<Button>(R.id.optionButton3)
                 )
-                spinner.adapter = adapter
-                binding.inputContainer.addView(spinner)
+
+                buttons.forEachIndexed { index, button ->
+                    if (index < (question.options?.size ?: 0)) {
+                        button.visibility = View.VISIBLE
+                        button.text = question.options?.get(index) ?: ""
+                        button.setOnClickListener {
+                            // Handle button click
+                            Toast.makeText(this, "Selected: ${button.text}", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        button.visibility = View.GONE
+                    }
+                }
             }
             "number" -> {
                 val numberInput = EditText(this).apply {
