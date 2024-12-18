@@ -26,19 +26,21 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/questionnaire_topic"
         app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_vertical"
         android:layout_marginTop="16dp">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:src="@drawable/back_24"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/icon"/>
+            android:contentDescription="@string/icon"
+            app:tint="@color/buttonPrimary"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="8dp"
+            android:paddingStart="2dp"
             android:paddingEnd="4dp"
             android:text="@string/previous"
             android:textColor="@color/textColor3"
@@ -54,29 +56,37 @@
         android:src="@drawable/logo"
         android:contentDescription="@string/icon"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginTop="60dp"
         app:layout_constraintTop_toBottomOf="@id/previousButton"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="60dp" />
+         />
 
     <TextView
         android:id="@+id/questionText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="26sp"
-        android:textColor="@color/textColor1"
+        android:singleLine="false"
         android:text="Question will appear here"
-        app:layout_constraintTop_toTopOf="@id/logoImage"
+        android:textColor="@color/textColor1"
+        android:textSize="26sp"
         app:layout_constraintBottom_toBottomOf="@id/logoImage"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/logoImage"
-        android:paddingStart="0dp"
-        android:paddingEnd="10dp" />
+        app:layout_constraintTop_toTopOf="@id/logoImage" />
 
     <!-- Explanation Button -->
-    <Button
+    <TextView
         android:id="@+id/explanationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Explain"
+        android:textColor="@color/textColor3"
+        android:textSize="14sp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:layout_marginStart="10dp"
+        android:background="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/logoImage"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp" />

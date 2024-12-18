@@ -88,6 +88,9 @@ class QuestionnaireActivity : AppCompatActivity() {
     private fun loadQuestion(index: Int) {
         val question = questions[index]
 
+        // Update previousButton visibility
+        binding.previousButton.visibility = if (index == 0) View.INVISIBLE else View.VISIBLE
+
         // Update the question text
         binding.questionText.text = question.questionText
 
