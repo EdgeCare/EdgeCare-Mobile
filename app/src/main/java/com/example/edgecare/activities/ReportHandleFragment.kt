@@ -1,6 +1,7 @@
 package com.example.edgecare.activities
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -84,12 +85,17 @@ class ReportHandleFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        adapter = HealthReportAdapter { report ->
-            // Handle item click
-            val intent = Intent(requireContext(), ViewFullReportActivity::class.java)
-            intent.putExtra("report_id", report.id)
-            startActivity(intent)
-        }
+        adapter = HealthReportAdapter (
+            onViewClick = { report ->
+                // Handle item click
+                val intent = Intent(requireContext(), ViewFullReportActivity::class.java)
+                intent.putExtra("report_id", report.id)
+                startActivity(intent)
+            },
+            onDeleteClick = { report ->
+                deleteHealthReport(report.id)
+            }
+        )
         binding.recyclerView.adapter = adapter
     }
 
@@ -98,13 +104,37 @@ class ReportHandleFragment : Fragment() {
         if(reports.size>0){
             setupRecyclerView()
             adapter.submitList(reports)
-            binding.noHealthReportsText.text = ""
             binding.linearLayout2.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
         }
         else {
             binding.recyclerView.visibility = View.GONE
             binding.linearLayout2.visibility = View.VISIBLE
+        }
+    }
+
+    private fun deleteHealthReport(reportID:Long){
+
+        AlertDialog.Builder(requireContext()).apply {
+            setTitle("Delete Report")
+            setMessage("Are you sure you want to delete report ID: $reportID?")
+
+            setPositiveButton("Delete") { dialog, _ ->
+                // Delete the report if user confirms
+                healthReportBox.remove(reportID)
+                loadHealthReports()
+                Toast.makeText(requireContext(), "Report $reportID deleted", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+            setNegativeButton("Cancel") { dialog, _ ->
+                // Cancel action
+                Toast.makeText(requireContext(), "Delete canceled", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+            create()
+            show()
         }
     }
 

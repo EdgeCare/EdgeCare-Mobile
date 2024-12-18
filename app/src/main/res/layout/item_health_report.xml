@@ -27,6 +27,36 @@
             android:textSize="14sp"
             android:layout_marginTop="4dp" />
 
+        <!-- Horizontal Layout for Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/buttonViewReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View"
+                android:backgroundTint="@color/buttonPrimary"
+                android:textColor="@color/white"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp" />
+
+            <Button
+                android:id="@+id/buttonDeleteReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/black"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="Delete"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
