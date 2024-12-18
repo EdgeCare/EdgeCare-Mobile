@@ -68,6 +68,13 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
+        binding.btnAppSettings.setOnClickListener {
+            Toast.makeText(this, "Will be available soon", Toast.LENGTH_SHORT).show()
+//            startActivity(Intent(this, ___Activity::class.java))
+            selectButton(R.id.btn_app_settings)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
         // Load MainContentFragment into the FrameLayout
         supportFragmentManager.beginTransaction()
             .replace(R.id.chatContentFrame, MainContentFragment())
@@ -82,7 +89,8 @@ class MainActivity : AppCompatActivity() {
             binding.btnNewEdgeCare,
             binding.btnPersonaActivity,
             binding.selectFileButton,
-            binding.viewReportsButton
+            binding.viewReportsButton,
+            binding.btnAppSettings
         )
 
         buttons.forEach { button ->
