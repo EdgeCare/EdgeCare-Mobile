@@ -124,31 +124,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Text File"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/viewReportsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/side_nav_bar_button_background"
-            android:gravity="center_vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:contentDescription="@string/icon"
-                android:src="@drawable/icon_file_24"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View Saved Reports"
+                android:text="Health Reports"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
         </LinearLayout>
