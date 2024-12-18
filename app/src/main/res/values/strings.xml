@@ -7,10 +7,11 @@
     <string name="new_edge_care">New EdgeCare</string>
     <string name="persona">Persona</string>
     <string name="history">History</string>
+    <string name="settings">Settings</string>
     <string name="question_end_message">We are all set up! Your profile has been created successfully</string>
     <string name="finish">Finish</string>
     <string name="main_component_tip">If you\'re experiencing <font color="#3E9EFF">serious symptoms</font>, do not use EdgeCare. Instead, please contact emergency services quickly.</string>
-    <string name="questionnaire_topic">Add Profile</string>
+    <string name="questionnaire_topic">Add Profile Details</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
 

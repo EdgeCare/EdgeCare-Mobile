@@ -29,7 +29,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/buttonCreateAccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         app:backgroundTint="@color/buttonPrimary"
         app:cornerRadius="50dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
