@@ -4,16 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityTopBarBinding
-import com.example.edgecare.models.HealthReport
-import io.objectbox.Box
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTopBarBinding
-    private lateinit var healthReportBox: Box<HealthReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,9 +17,6 @@ class MainActivity : AppCompatActivity() {
         // Initialize View Binding
         binding = ActivityTopBarBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // Set up ObjectBox
-        healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
 
         // Set up the sidebar toggle button
         binding.sidebarToggleButton.setOnClickListener {
