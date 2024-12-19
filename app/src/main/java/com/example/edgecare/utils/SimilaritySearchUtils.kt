@@ -1,8 +1,8 @@
 package com.example.edgecare.utils
 
 import com.example.edgecare.ObjectBox
-import com.example.edgecare.models.HealthReport
-import com.example.edgecare.models.HealthReport_
+import com.example.edgecare.models.HealthReportChunk
+import com.example.edgecare.models.HealthReportChunk_
 import io.objectbox.Box
 import io.objectbox.kotlin.query
 
@@ -31,8 +31,8 @@ object SimilaritySearchUtils {
      * @param healthReportBox The ObjectBox box for HealthReport entities.
      * @return A list of pairs of health report IDs and their embeddings.
      */
-    private fun loadStoredEmbeddings(healthReportBox: Box<HealthReport>): List<Pair<Long, FloatArray>> {
-        return healthReportBox.query { }.find()
+    private fun loadStoredEmbeddings(healthReportChunksBox: Box<HealthReportChunk>): List<Pair<Long, FloatArray>> {
+        return healthReportChunksBox.query { }.find()
             .filter { it.embedding != null } // Only include reports with non-null embeddings
             .map { it.id to it.embedding!! }
     }
@@ -46,11 +46,11 @@ object SimilaritySearchUtils {
      */
     fun findMostSimilarReports(
         queryEmbedding: FloatArray,
-        healthReportBox: Box<HealthReport>,
+        healthReportChunkBox: Box<HealthReportChunk>,
         topK: Int = 5
     ): List<Pair<Long, Float>> {
         // Calculate similarity for each stored embedding
-        val storedEmbeddings = loadStoredEmbeddings(healthReportBox)
+        val storedEmbeddings = loadStoredEmbeddings(healthReportChunkBox)
         val similarityScores = storedEmbeddings.map { (id, storedEmbedding) ->
             val similarity = cosineSimilarity(queryEmbedding, storedEmbedding)
             id to similarity
@@ -62,22 +62,23 @@ object SimilaritySearchUtils {
 
         // Print the results
         topSimilarReports.forEach { (id, similarity) ->
-            println("HealthReport ID: $id, Similarity: $similarity")
+            println("Chunk ID: $id, Similarity: $similarity")
         }
 
         return topSimilarReports
     }
 
     // returns the top health reports and similarity to display as a message in main content fragment.
-    fun getMessageWithTopSimilarHealthReportIds(text: String):String{
+    fun getMessageWithTopSimilarHealthReportChunkIds(text: String):String{
         //Similarity Search for health reports
         val embeddings = EmbeddingUtils.computeEmbedding(text)
         val nonNullableEmbeddings: FloatArray = embeddings ?: FloatArray(0) // Default to empty array
-        val healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
-        val similarReports = findMostSimilarReports(nonNullableEmbeddings, healthReportBox,2 )
+        val healthReportChunk = ObjectBox.store.boxFor(HealthReportChunk::class.java)
+        val similarReports = findMostSimilarReports(nonNullableEmbeddings, healthReportChunk,2 )
         val output = StringBuilder()
         similarReports.forEach { (id, similarity) ->
-            output.append("Report ID: $id, Similarity: $similarity\n")
+            val chunk = healthReportChunk.get(id)
+            output.append("Report chunk : ${chunk.text}, Similarity: $similarity\n")
         }
 
         if(output.isEmpty()){
@@ -88,12 +89,12 @@ object SimilaritySearchUtils {
 
     // Used Object box nearestNeighbors search. Does not work when the health reports are dynamically updates.
     fun findSimilarReports(text:String ){
-        val healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
+        val healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)
 
         val embeddings = EmbeddingUtils.computeEmbedding(text)
         val nonNullableEmbeddings: FloatArray = embeddings ?: FloatArray(0)
-        val query = healthReportBox
-            .query(HealthReport_.embedding.nearestNeighbors(nonNullableEmbeddings, 2))
+        val query = healthReportChunkBox
+            .query(HealthReportChunk_.embedding.nearestNeighbors(nonNullableEmbeddings, 2))
             .build()
         val results = query.findIdsWithScores()
         query.close()

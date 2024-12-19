@@ -79,7 +79,7 @@ class MainContentFragment : Fragment() {
             val result = modelHandler.runInference(features)
 
             // Similarity search for given text
-            val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportIds(text)
+            val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text)
             // Add the result as a reply
             val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
             chatMessages.add(ChatMessage(responseText, false))

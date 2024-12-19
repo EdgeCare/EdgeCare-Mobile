@@ -16,6 +16,7 @@ import com.example.edgecare.ObjectBox
 import com.example.edgecare.adapters.HealthReportAdapter
 import com.example.edgecare.databinding.ActivityReportHandleBinding
 import com.example.edgecare.models.HealthReport
+import com.example.edgecare.models.HealthReportChunk
 import com.example.edgecare.utils.EmbeddingUtils
 import com.example.edgecare.utils.FileUtils
 import io.objectbox.Box
@@ -68,10 +69,10 @@ class ReportHandleFragment : Fragment() {
     private fun saveHealthReport(fileUri: Uri) {
         try {
             val text = FileUtils.readTextFile(requireContext().contentResolver, fileUri)
-            val embedding = EmbeddingUtils.computeEmbedding(text)
-            if (embedding != null) {
-                val report = HealthReport(text = text, embedding = embedding)
+            if (text.isNotEmpty()) {
+                val report = HealthReport(text = text)
                 healthReportBox.put(report)
+                saveHealthReportChunks(text, report.id)
                 loadHealthReports()
                 Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
             } else {
@@ -137,6 +138,64 @@ class ReportHandleFragment : Fragment() {
             show()
         }
     }
+
+    fun saveHealthReportChunks(text: String, reportId:Long){
+        val chunkSize = 50
+        val overlap = 10
+        val chunkEmbeddings = generateChunkEmbeddingsWithOverlap(text, chunkSize, overlap)
+        val healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)
+        saveChunkEmbeddingsWithOverlap(reportId, chunkEmbeddings, healthReportChunkBox)
+
+
+    }
+
+    fun chunkTextWithOverlap(text: String, chunkSize: Int = 50, overlap: Int = 10): List<String> {
+        // Split the text into words
+        val words = text.split("\\s+".toRegex()).filter { it.isNotEmpty() }
+
+        val chunks = mutableListOf<String>()
+        var startIndex = 0
+
+        while (startIndex < words.size) {
+            // Get the chunk
+            val endIndex = (startIndex + chunkSize).coerceAtMost(words.size)
+            val chunk = words.subList(startIndex, endIndex).joinToString(" ")
+
+            chunks.add(chunk)
+
+            // Move to the next chunk start position with overlap
+            startIndex += (chunkSize - overlap).coerceAtLeast(1)
+        }
+
+        return chunks
+    }
+
+    fun generateChunkEmbeddingsWithOverlap(report: String, chunkSize: Int = 50, overlap: Int = 10): Map<String, FloatArray> {
+        val chunks = chunkTextWithOverlap(report, chunkSize, overlap)
+        val embeddings = mutableMapOf<String, FloatArray>()
+
+        chunks.forEach { chunk ->
+            val embedding = EmbeddingUtils.computeEmbedding(chunk)
+            if (embedding != null) {
+                embeddings[chunk] = embedding
+            }
+        }
+
+        return embeddings
+    }
+
+    fun saveChunkEmbeddingsWithOverlap(
+        reportId: Long,
+        chunkEmbeddings: Map<String, FloatArray>,
+        healthReportChunkBox: Box<HealthReportChunk>
+    ) {
+        chunkEmbeddings.forEach { (chunk, embedding) ->
+            val healthReportChunk = HealthReportChunk(reportId = reportId, text = chunk, embedding = embedding)
+            healthReportChunkBox.put(healthReportChunk)
+        }
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
