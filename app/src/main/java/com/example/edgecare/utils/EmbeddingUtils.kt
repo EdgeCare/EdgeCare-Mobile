@@ -86,11 +86,12 @@ object EmbeddingUtils {
     private fun runModel(session: OrtSession, inputs: HashMap<String, OnnxTensor>): FloatArray {
         return try {
             val result = session.run(inputs)
-            val outputTensor = result[0].value as Array<Array<FloatArray>> // Correcting to 3D array
-            outputTensor[0][3] // first element  // output is a 2D array where the first dimension corresponds to batches
+            val outputTensor = result[0].value as Array<Array<FloatArray>> // Correcting to 3D array //results array of size [1][number of words][384]
+            val outputTensor2 = result[1].value as Array<FloatArray> // Correcting to 2D array // results array of size [1][384]
+            outputTensor2[0] // Pooled embedding
         } catch (e: Exception) {
             e.printStackTrace()
-            floatArrayOf(1.0f, 2.0f, 3.0f, 4.5f, 5.5f)
+            floatArrayOf()
         }
     }
 }
