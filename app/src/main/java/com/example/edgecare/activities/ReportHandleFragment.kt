@@ -17,6 +17,7 @@ import com.example.edgecare.adapters.HealthReportAdapter
 import com.example.edgecare.databinding.ActivityReportHandleBinding
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.models.HealthReportChunk
+import com.example.edgecare.models.HealthReportChunk_
 import com.example.edgecare.utils.EmbeddingUtils
 import com.example.edgecare.utils.FileUtils
 import io.objectbox.Box
@@ -25,6 +26,7 @@ class ReportHandleFragment : Fragment() {
     private var _binding: ActivityReportHandleBinding? = null
     private val binding get() = _binding!!
     private lateinit var healthReportBox: Box<HealthReport>
+    private lateinit var healthReportChunkBox: Box<HealthReportChunk>
     private lateinit var adapter: HealthReportAdapter
 
     override fun onCreateView(
@@ -35,6 +37,7 @@ class ReportHandleFragment : Fragment() {
         val view = binding.root
 
         healthReportBox = ObjectBox.store.boxFor(HealthReport::class.java)
+        healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)
 
         binding.selectFileButton.setOnClickListener {
             checkPermissionsAndSelectFile()
@@ -123,6 +126,8 @@ class ReportHandleFragment : Fragment() {
             setPositiveButton("Delete") { dialog, _ ->
                 // Delete the report if user confirms
                 healthReportBox.remove(reportID)
+                val query = healthReportChunkBox.query(HealthReportChunk_.reportId.equal(reportID)).build()
+                query.remove()
                 loadHealthReports()
                 Toast.makeText(requireContext(), "Report $reportID deleted", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
