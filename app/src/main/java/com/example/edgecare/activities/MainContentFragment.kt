@@ -12,6 +12,9 @@ import com.example.edgecare.EdgeCareApp
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.ChatMessage
+import com.example.edgecare.models.HealthReport
+import com.example.edgecare.utils.SimilaritySearchUtils
+import io.objectbox.Box
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +27,7 @@ class MainContentFragment : Fragment() {
     private lateinit var modelHandler: BertModelHandler
     private lateinit var chatAdapter: ChatAdapter
     private val chatMessages = mutableListOf<ChatMessage>()
+    private lateinit  var healthReportBox: Box<HealthReport>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,9 +78,12 @@ class MainContentFragment : Fragment() {
             val features = modelHandler.prepareInputs(text)
             val result = modelHandler.runInference(features)
 
+            // Similarity search for given text
+            val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text)
             // Add the result as a reply
             val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
             chatMessages.add(ChatMessage(responseText, false))
+            chatMessages.add(ChatMessage(similarReports, false))
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
             binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         }
