@@ -42,7 +42,7 @@ object EmbeddingUtils {
         try {
             println("Embedding Model | Computing embeddings")
 
-            val tokenFromBertTokenizer = BertTokenizerUtils.generateTokens(context, text)
+            val tokenFromBertTokenizer = BertTokenizerUtils.generateTokenIdList(context, text)
             println("Generated Tokens: $tokenFromBertTokenizer")
 
             if (tokenFromBertTokenizer.isEmpty()) {

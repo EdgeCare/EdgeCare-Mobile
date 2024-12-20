@@ -169,7 +169,7 @@ object BertTokenizerUtils {
         }
     }
 
-    fun generateTokens(context: Context, sentence: String): List<Int> {
+    fun generateTokenIdList(context: Context, sentence: String): List<Int> {
         // Load vocabulary from the assets folder
         val vocab = loadVocab(context, "vocab.txt")
 
@@ -181,5 +181,21 @@ object BertTokenizerUtils {
         val tokenList =  tokenizer.tokenize(sentence)
 
         return convertTokensToIds(tokenList,vocab)
+    }
+
+    fun generateTokenListForDeIdentifier(context: Context, sentence: String): Pair<List<String>,LongArray> {
+        // Load vocabulary from the assets folder
+        val vocab = loadVocab(context, "vocab_de_identifier.txt")
+
+        // Initialize the tokenizer
+        val tokenizer = BertFullTokenizer(vocab)
+        val tokenList = mutableListOf<String>()
+        tokenList.add("[CLS]")
+        // Tokenize the given sentence
+        tokenList.addAll(tokenizer.tokenize(sentence))
+        tokenList.add("SEP")
+
+        val tokenIdList= convertTokensToIds(tokenList,vocab).map { it.toLong() }.toLongArray()
+        return Pair(tokenList,tokenIdList)
     }
 }

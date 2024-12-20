@@ -4,8 +4,8 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
-import com.example.edgecare.utils.Vocabulary
-import com.example.edgecare.utils.WordPieceTokenizer
+import com.example.edgecare.utils.BertTokenizerUtils
+import com.example.edgecare.utils.BertTokenizerUtils.convertTokensToIds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -23,8 +23,6 @@ class BertModelHandler(private val context: Context) {
 
     private var ortEnvironment: OrtEnvironment = OrtEnvironment.getEnvironment()
     private var ortSession: OrtSession? = null
-    private var vocab: Vocabulary = Vocabulary(context)     // Load the vocabulary
-    private var tokenizer:  WordPieceTokenizer = WordPieceTokenizer(vocab!!.tokenToId) // Initialize the tokenizer
     private var modelFile : String?  = null
     private val labelMap: Map<Int, String>
 
@@ -62,26 +60,14 @@ class BertModelHandler(private val context: Context) {
 
 
     fun prepareInputs(text: String): InputFeatures {
-        val tokens = mutableListOf<String>()
 
-        // Add special token [CLS]
-        tokens.add("[CLS]")
 
-        // Tokenize the text and add to tokens list
-        tokens.addAll(tokenizer.tokenize(text))
-
-        // Add special token [SEP]
-        tokens.add("[SEP]")
-
-        // Convert tokens to input IDs
-        val inputIds = tokens.map { token ->
-            vocab.tokenToId[token] ?: vocab.tokenToId[tokenizer.unkToken]!!
-        }.map { it.toLong() }.toLongArray()
+        val (tokenList, tokenIdList) = BertTokenizerUtils.generateTokenListForDeIdentifier(context,text)
 
         // Create attention mask (1 for all tokens)
-        val attentionMask = LongArray(inputIds.size) { 1 }
+        val attentionMask = LongArray(tokenIdList.size) { 1 }
 
-        return InputFeatures(inputIds, attentionMask, tokens)
+        return InputFeatures(tokenIdList, attentionMask, tokenList)
     }
 
     suspend fun runInference(features: InputFeatures): List<Pair<String, String>> = withContext(
