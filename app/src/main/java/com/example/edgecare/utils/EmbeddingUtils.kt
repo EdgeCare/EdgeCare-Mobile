@@ -4,12 +4,10 @@ import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
-import com.example.edgecare.models.Tokenizer
 import java.nio.LongBuffer
 
 object EmbeddingUtils {
     private lateinit var ortEnvironment: OrtEnvironment
-    private lateinit var tokenizer: Tokenizer
     private var ortSession: OrtSession? = null
 
     // Initialize the model
@@ -18,7 +16,6 @@ object EmbeddingUtils {
             println("Embedding Model | Initialize the model")
             ortEnvironment = OrtEnvironment.getEnvironment()
             ortSession = loadModel(context, ortEnvironment)
-            tokenizer = TokenizerUtils.loadTokenizer(context)
             ortSession != null
         } catch (e: Exception) {
             e.printStackTrace()
@@ -44,16 +41,14 @@ object EmbeddingUtils {
     fun computeEmbedding(text: String, context: Context): FloatArray? {
         try {
             println("Embedding Model | Computing embeddings")
-            val tokens = TokenizerUtils.tokenize(text, tokenizer)
-            if (tokens.isEmpty()) {
+
+            val tokenFromBertTokenizer = BertTokenizerUtils.generateTokens(context, text)
+            println("Generated Tokens: $tokenFromBertTokenizer")
+
+            if (tokenFromBertTokenizer.isEmpty()) {
                 return null
             }
-//            println(tokens)
-//
-//            val tokenFromBertTokenizer = BertTokenizer.generateTokens(context, "Hello world! Greetings to the universe.")
-//            println("Generated Tokens: $tokenFromBertTokenizer")
-
-            val inputs = prepareInput(tokens, ortEnvironment) ?: return null
+            val inputs = prepareInput(tokenFromBertTokenizer, ortEnvironment) ?: return null
 
             return runModel(ortSession!!, inputs)
         } catch (e: Exception) {

@@ -7,7 +7,7 @@ import java.io.InputStreamReader
 /**
  * Kotlin implementation of the BertTokenizer with WordPiece tokenization.
  */
-object BertTokenizer {
+object BertTokenizerUtils {
 
     data class TokenizerConfig(
         val vocab: Map<String, Int>,
@@ -35,6 +35,12 @@ object BertTokenizer {
     fun whitespaceTokenize(text: String): List<String> {
         return text.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
     }
+
+    fun convertTokensToIds(tokens: List<String>,vocab: Map<String, Int>): List<Int> {
+        return tokens.map { token -> vocab[token] ?: vocab.getValue("[UNK]") }
+    }
+
+
 
     /**
      * Basic Tokenizer: Handles basic text preprocessing like lowercasing and splitting on punctuation.
@@ -163,14 +169,17 @@ object BertTokenizer {
         }
     }
 
-    fun generateTokens(context: Context, sentence: String): List<String> {
+    fun generateTokens(context: Context, sentence: String): List<Int> {
         // Load vocabulary from the assets folder
         val vocab = loadVocab(context, "vocab.txt")
 
         // Initialize the tokenizer
         val tokenizer = BertFullTokenizer(vocab)
 
+
         // Tokenize the given sentence
-        return tokenizer.tokenize(sentence)
+        val tokenList =  tokenizer.tokenize(sentence)
+
+        return convertTokensToIds(tokenList,vocab)
     }
 }
