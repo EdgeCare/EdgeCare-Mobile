@@ -53,6 +53,7 @@ class MainContentFragment : Fragment() {
         for(chatMessage in chatList){
             chatMessages.add(ChatMessage(chatMessage.message, chatMessage.isSentByUser))
         }
+        binding.chatTopic.setText(chat.chatName)
 
         // Initialize BERT model handler
         modelHandler = (requireActivity().application as EdgeCareApp).modelHandler
@@ -69,14 +70,17 @@ class MainContentFragment : Fragment() {
             }
         }
 
-        val layoutManage = LinearLayoutManager(requireContext())
-        layoutManage.stackFromEnd = true
+        binding.newChatButton.setOnClickListener(){
+            chat = newChat()
+        }
+
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
         binding.chatRecyclerView.apply {
             adapter = chatAdapter
-            layoutManager = layoutManage
+            layoutManager = LinearLayoutManager(requireContext())
         }
+        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
         // Set up close button for the tip section
         binding.closeTipButton.setOnClickListener {
@@ -89,7 +93,7 @@ class MainContentFragment : Fragment() {
     private fun processInputText(text: String) {
         // Add user's message to the chat
         chatMessages.add(ChatMessage(text, true))
-        saveMessage(1, text,true)
+        saveMessage(chat.id, text,true)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
@@ -114,12 +118,13 @@ class MainContentFragment : Fragment() {
     }
 
     fun getOrCreateChat(chatName: String): Chat {
-        val chat = chatBox.query(
-            Chat_.chatName equal chatName)
-            .build()
-            .findFirst()
-
-        return chat ?: Chat(chatName = chatName).also { chatBox.put(it) }
+        val chatList = chatBox.all
+        if(chatList.isEmpty()) {
+            return Chat(chatName = chatName).also { chatBox.put(it)}
+        }
+        else{
+            return chatList.last()
+        }
     }
 
     fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
@@ -139,7 +144,20 @@ class MainContentFragment : Fragment() {
             .find()
     }
 
+    fun newChat():Chat{
+        val newChat = Chat()
+        chatMessages.removeAll(chatMessages)
+        chatAdapter.notifyDataSetChanged()
+        binding.chatTopic.setText(newChat.chatName)
+        chatBox.put(newChat)
+        return newChat
+    }
+
     override fun onDestroyView() {
+        if(binding.chatTopic.text.toString().isNotEmpty() &&  binding.chatTopic.text.toString() != chat.chatName){
+            chat.chatName = binding.chatTopic.text.toString()
+            chatBox.put(chat)
+        }
         super.onDestroyView()
         _binding = null // Avoid memory leaks
     }
