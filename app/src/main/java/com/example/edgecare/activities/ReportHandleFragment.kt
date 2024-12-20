@@ -180,7 +180,7 @@ class ReportHandleFragment : Fragment() {
         val embeddings = mutableMapOf<String, FloatArray>()
 
         chunks.forEach { chunk ->
-            val embedding = EmbeddingUtils.computeEmbedding(chunk)
+            val embedding = EmbeddingUtils.computeEmbedding(chunk, requireContext())
             if (embedding != null) {
                 embeddings[chunk] = embedding
             }

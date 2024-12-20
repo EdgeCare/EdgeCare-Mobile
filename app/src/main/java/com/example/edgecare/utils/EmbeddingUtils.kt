@@ -41,13 +41,17 @@ object EmbeddingUtils {
     }
 
     // Compute the embedding for the given text
-    fun computeEmbedding(text: String): FloatArray? {
+    fun computeEmbedding(text: String, context: Context): FloatArray? {
         try {
             println("Embedding Model | Computing embeddings")
             val tokens = TokenizerUtils.tokenize(text, tokenizer)
             if (tokens.isEmpty()) {
                 return null
             }
+//            println(tokens)
+//
+//            val tokenFromBertTokenizer = BertTokenizer.generateTokens(context, "Hello world! Greetings to the universe.")
+//            println("Generated Tokens: $tokenFromBertTokenizer")
 
             val inputs = prepareInput(tokens, ortEnvironment) ?: return null
 

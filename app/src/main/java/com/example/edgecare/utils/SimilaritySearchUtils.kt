@@ -1,5 +1,6 @@
 package com.example.edgecare.utils
 
+import android.content.Context
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.models.HealthReportChunk
 import com.example.edgecare.models.HealthReportChunk_
@@ -69,9 +70,9 @@ object SimilaritySearchUtils {
     }
 
     // returns the top health reports and similarity to display as a message in main content fragment.
-    fun getMessageWithTopSimilarHealthReportChunkIds(text: String):String{
+    fun getMessageWithTopSimilarHealthReportChunkIds(text: String, context: Context):String{
         //Similarity Search for health reports
-        val embeddings = EmbeddingUtils.computeEmbedding(text)
+        val embeddings = EmbeddingUtils.computeEmbedding(text,context)
         val nonNullableEmbeddings: FloatArray = embeddings ?: FloatArray(0) // Default to empty array
         val healthReportChunk = ObjectBox.store.boxFor(HealthReportChunk::class.java)
         val similarReports = findMostSimilarReports(nonNullableEmbeddings, healthReportChunk,2 )
@@ -88,10 +89,10 @@ object SimilaritySearchUtils {
     }
 
     // Used Object box nearestNeighbors search. Does not work when the health reports are dynamically updates.
-    fun findSimilarReports(text:String ){
+    fun findSimilarReports(text:String, context: Context ){
         val healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)
 
-        val embeddings = EmbeddingUtils.computeEmbedding(text)
+        val embeddings = EmbeddingUtils.computeEmbedding(text, context)
         val nonNullableEmbeddings: FloatArray = embeddings ?: FloatArray(0)
         val query = healthReportChunkBox
             .query(HealthReportChunk_.embedding.nearestNeighbors(nonNullableEmbeddings, 2))
