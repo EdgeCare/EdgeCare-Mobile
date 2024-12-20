@@ -79,7 +79,7 @@ object SimilaritySearchUtils {
         val output = StringBuilder()
         similarReports.forEach { (id, similarity) ->
             val chunk = healthReportChunk.get(id)
-            output.append("Report chunk : ${chunk.text}, Similarity: $similarity\n")
+            output.append("Report chunk : ${chunk.text} \n , Similarity: $similarity\n \n")
         }
 
         if(output.isEmpty()){
