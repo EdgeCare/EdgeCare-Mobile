@@ -1,6 +1,8 @@
 package com.example.edgecare.activities
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,15 +11,22 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.BertModelHandler
 import com.example.edgecare.EdgeCareApp
+import com.example.edgecare.ObjectBox
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.ActivityMainContentBinding
+import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
-import com.example.edgecare.models.HealthReport
+import com.example.edgecare.models.ChatMessage2
+import com.example.edgecare.models.ChatMessage2_
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
+import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class MainContentFragment : Fragment() {
 
@@ -27,7 +36,9 @@ class MainContentFragment : Fragment() {
     private lateinit var modelHandler: BertModelHandler
     private lateinit var chatAdapter: ChatAdapter
     private val chatMessages = mutableListOf<ChatMessage>()
-    private lateinit  var healthReportBox: Box<HealthReport>
+    private lateinit  var chatBox: Box<Chat>
+    private lateinit  var chatMessage2Box: Box<ChatMessage2>
+    private lateinit var chat : Chat
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +47,19 @@ class MainContentFragment : Fragment() {
         // Initialize View Binding
         _binding = ActivityMainContentBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        chatBox = ObjectBox.store.boxFor(Chat::class.java)
+        chatMessage2Box = ObjectBox.store.boxFor(ChatMessage2::class.java)
+
+        //Set to View.GONE to hide the top bar
+        binding.topAppBar.visibility = View.VISIBLE
+
+        chat = getOrCreateChat("New Chat")
+        val chatList : List<ChatMessage2> = getMessagesForChat(chat.id)
+        for(chatMessage in chatList){
+            chatMessages.add(ChatMessage(chatMessage.message, chatMessage.isSentByUser))
+        }
+        binding.chatTopic.setText(chat.chatName)
 
         // Initialize BERT model handler
         modelHandler = (requireActivity().application as EdgeCareApp).modelHandler
@@ -52,12 +76,46 @@ class MainContentFragment : Fragment() {
             }
         }
 
+        binding.newChatButton.setOnClickListener(){
+            chat = newChat()
+        }
+
+        var typingTimer: Timer? = null
+        val DELAY = 1000L // Delay in milliseconds (e.g., 1 second)
+
+        binding.chatTopic.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Cancel any existing timer to reset the delay
+                typingTimer?.cancel()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                typingTimer = Timer()
+                typingTimer?.schedule(object : TimerTask() {
+                    override fun run() {
+                        val newText = s.toString()
+                        if (newText.isNotBlank()) {
+                            if(newText!= chat.chatName){
+                                chat.chatName = newText
+                                println("New Chat Name : $newText")
+                                chatBox.put(chat)
+                            }
+                        }
+                    }
+                }, DELAY) // Start the timer with a 1-second delay
+            }
+        })
+
+
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
         binding.chatRecyclerView.apply {
             adapter = chatAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
+        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
         // Set up close button for the tip section
         binding.closeTipButton.setOnClickListener {
@@ -70,6 +128,7 @@ class MainContentFragment : Fragment() {
     private fun processInputText(text: String) {
         // Add user's message to the chat
         chatMessages.add(ChatMessage(text, true))
+        saveMessage(chat.id, text,true)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
@@ -83,10 +142,50 @@ class MainContentFragment : Fragment() {
             // Add the result as a reply
             val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
             chatMessages.add(ChatMessage(responseText, false))
+            saveMessage(chat.id, responseText,false)
+
             chatMessages.add(ChatMessage(similarReports, false))
+            saveMessage(chat.id, similarReports,false)
+
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
             binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         }
+    }
+
+    fun getOrCreateChat(chatName: String): Chat {
+        val chatList = chatBox.all
+        if(chatList.isEmpty()) {
+            return Chat(chatName = chatName).also { chatBox.put(it)}
+        }
+        else{
+            return chatList.last()
+        }
+    }
+
+    fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
+        val chatMessage = ChatMessage2(
+            chatId = chatId,
+            message = message,
+            timestamp = Date(),
+            isSentByUser = isSentByUser
+        )
+        chatMessage2Box.put(chatMessage)
+    }
+
+    fun getMessagesForChat(chatId: Long): List<ChatMessage2> {
+        return chatMessage2Box.query(
+            ChatMessage2_.chatId equal chatId)
+            .build()
+            .find()
+    }
+
+    fun newChat():Chat{
+        val newChat = Chat()
+        chatMessages.removeAll(chatMessages)
+        chatAdapter.notifyDataSetChanged()
+        binding.chatTopic.setText(newChat.chatName)
+        chatBox.put(newChat)
+        return newChat
     }
 
     override fun onDestroyView() {
