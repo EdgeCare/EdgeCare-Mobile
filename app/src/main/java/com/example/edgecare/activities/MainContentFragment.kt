@@ -1,6 +1,8 @@
 package com.example.edgecare.activities
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +18,6 @@ import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage2
 import com.example.edgecare.models.ChatMessage2_
-import com.example.edgecare.models.Chat_
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -24,6 +25,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class MainContentFragment : Fragment() {
 
@@ -47,6 +50,9 @@ class MainContentFragment : Fragment() {
 
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
         chatMessage2Box = ObjectBox.store.boxFor(ChatMessage2::class.java)
+
+        //Set to View.GONE to hide the top bar
+        binding.topAppBar.visibility = View.VISIBLE
 
         chat = getOrCreateChat("New Chat")
         val chatList : List<ChatMessage2> = getMessagesForChat(chat.id)
@@ -73,6 +79,35 @@ class MainContentFragment : Fragment() {
         binding.newChatButton.setOnClickListener(){
             chat = newChat()
         }
+
+        var typingTimer: Timer? = null
+        val DELAY = 1000L // Delay in milliseconds (e.g., 1 second)
+
+        binding.chatTopic.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Cancel any existing timer to reset the delay
+                typingTimer?.cancel()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                typingTimer = Timer()
+                typingTimer?.schedule(object : TimerTask() {
+                    override fun run() {
+                        val newText = s.toString()
+                        if (newText.isNotBlank()) {
+                            if(newText!= chat.chatName){
+                                chat.chatName = newText
+                                println("New Chat Name : $newText")
+                                chatBox.put(chat)
+                            }
+                        }
+                    }
+                }, DELAY) // Start the timer with a 1-second delay
+            }
+        })
+
 
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
@@ -154,10 +189,6 @@ class MainContentFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        if(binding.chatTopic.text.toString().isNotEmpty() &&  binding.chatTopic.text.toString() != chat.chatName){
-            chat.chatName = binding.chatTopic.text.toString()
-            chatBox.put(chat)
-        }
         super.onDestroyView()
         _binding = null // Avoid memory leaks
     }
