@@ -20,7 +20,7 @@ object BertTokenizerUtils {
         val maxInputCharsPerWord: Int = 100
     )
 
-    fun loadVocab(context: Context, assetFileName: String): Map<String, Int> {
+    private fun loadVocab(context: Context, assetFileName: String): Map<String, Int> {
         val vocab = mutableMapOf<String, Int>()
         context.assets.open(assetFileName).use { inputStream ->
             BufferedReader(InputStreamReader(inputStream)).useLines { lines ->
@@ -36,11 +36,9 @@ object BertTokenizerUtils {
         return text.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
     }
 
-    fun convertTokensToIds(tokens: List<String>,vocab: Map<String, Int>): List<Int> {
+    private fun convertTokensToIds(tokens: List<String>, vocab: Map<String, Int>): List<Int> {
         return tokens.map { token -> vocab[token] ?: vocab.getValue("[UNK]") }
     }
-
-
 
     /**
      * Basic Tokenizer: Handles basic text preprocessing like lowercasing and splitting on punctuation.
@@ -107,7 +105,7 @@ object BertTokenizerUtils {
     }
 
     /**
-     * WordPiece Tokenizer: Splits words into subwords using a greedy longest-match-first algorithm.
+     * WordPiece Tokenizer: Splits words into sub words using a greedy longest-match-first algorithm.
      */
     class WordPieceTokenizer(
         private val vocab: Map<String, Int>,

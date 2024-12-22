@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityTopBarBinding
+import com.example.edgecare.fragments.MainContentFragment
 
 class MainActivity : AppCompatActivity() {
 
