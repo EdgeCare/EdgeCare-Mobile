@@ -40,7 +40,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.btnPersonaActivity.setOnClickListener {
-            startActivity(Intent(this, CollectPersonaDataActivity::class.java))
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, ReportHandleFragment())
+                .addToBackStack(null) // Add to back stack for navigation (optional)
+                .commit()
             selectButton(R.id.btnPersonaActivity)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }

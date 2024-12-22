@@ -19,12 +19,30 @@
         <!-- Logo -->
         <ImageView
             android:id="@+id/logo"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
             android:layout_height="60dp"
+            android:layout_weight="2"
             android:layout_marginStart="72dp"
+            android:layout_gravity="start"
             android:contentDescription="@string/appLogo"
             android:src="@drawable/logo_with_name_no_background" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/newChatButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/icon"
+            android:src="@drawable/icon_add_24" />
     </LinearLayout>
+
 
     <!-- Tip -->
     <LinearLayout
@@ -86,20 +104,6 @@
             android:gravity="center"
             android:text="EdgeCare Chat"
             android:textColor="@color/textColor2" />
-
-        <Button
-            android:id="@+id/newChatButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:backgroundTint="@color/buttonPrimary"
-            android:elevation="2dp"
-            android:padding="8dp"
-            android:text="+"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            tools:layout_editor_absoluteX="291dp"
-            tools:layout_editor_absoluteY="8dp" />
 
     </androidx.appcompat.widget.Toolbar>
 
