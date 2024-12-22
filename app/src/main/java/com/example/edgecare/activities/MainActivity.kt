@@ -1,22 +1,23 @@
 package com.example.edgecare.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.example.edgecare.R
-import com.example.edgecare.databinding.ActivityTopBarBinding
+import com.example.edgecare.databinding.ActivitySideBarBinding
+import com.example.edgecare.fragments.MainContentFragment
+import com.example.edgecare.fragments.PersonaFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityTopBarBinding
+    private lateinit var binding: ActivitySideBarBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize View Binding
-        binding = ActivityTopBarBinding.inflate(layoutInflater)
+        binding = ActivitySideBarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Set up the sidebar toggle button
@@ -32,14 +33,17 @@ class MainActivity : AppCompatActivity() {
         binding.btnNewEdgeCare.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, MainContentFragment())
-                .addToBackStack(null) // Add to back stack for navigation (Mr.t -> optional - not necessarily need)
+                .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(binding.btnNewEdgeCare.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         binding.btnPersonaActivity.setOnClickListener {
-            startActivity(Intent(this, CollectPersonaDataActivity::class.java))
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, PersonaFragment())
+                .addToBackStack(null) // Add to back stack for navigation (optional)
+                .commit()
             selectButton(R.id.btnPersonaActivity)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
@@ -47,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         binding.selectFileButton.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, ReportHandleFragment())
-                .addToBackStack(null) // Add to back stack for navigation (Mr.t -> optional - not necessarily need)
+                .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(binding.selectFileButton.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)

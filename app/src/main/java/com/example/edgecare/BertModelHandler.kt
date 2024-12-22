@@ -5,7 +5,6 @@ import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
 import com.example.edgecare.utils.BertTokenizerUtils
-import com.example.edgecare.utils.BertTokenizerUtils.convertTokensToIds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -27,7 +26,6 @@ class BertModelHandler(private val context: Context) {
     private val labelMap: Map<Int, String>
 
     init {
-
         // Load the label map
         val labelsInputStream = context.assets.open("labels.json")
         val labelsContent = labelsInputStream.bufferedReader().use { it.readText() }
@@ -42,7 +40,6 @@ class BertModelHandler(private val context: Context) {
 
         // Create the session using the model file path
         ortSession = ortEnvironment.createSession(modelFile)
-
     }
 
     //[ToDo] - Works for now, but need to find a better way to load model
@@ -58,11 +55,9 @@ class BertModelHandler(private val context: Context) {
         return file
     }
 
-
     fun prepareInputs(text: String): InputFeatures {
 
-
-        val (tokenList, tokenIdList) = BertTokenizerUtils.generateTokenListForDeIdentifier(context,text)
+        val (tokenList, tokenIdList) = BertTokenizerUtils.generateTokenListForDeIdentifier(context, text)
 
         // Create attention mask (1 for all tokens)
         val attentionMask = LongArray(tokenIdList.size) { 1 }
@@ -72,7 +67,6 @@ class BertModelHandler(private val context: Context) {
 
     suspend fun runInference(features: InputFeatures): List<Pair<String, String>> = withContext(
         Dispatchers.IO) {
-
 
         // Prepare input tensors
         val inputIdsTensor = OnnxTensor.createTensor(
@@ -107,9 +101,6 @@ class BertModelHandler(private val context: Context) {
             val label = labelMap[labelIdx] ?: "O"
             token to label
         }
-
-        println("labeledTokens")
-        println(labeledTokens)
 
         // Clean up resources
         inputIdsTensor.close()
