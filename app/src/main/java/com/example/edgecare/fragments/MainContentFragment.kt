@@ -1,4 +1,4 @@
-package com.example.edgecare.activities
+package com.example.edgecare.fragments
 
 import android.os.Bundle
 import android.text.Editable
@@ -80,7 +80,7 @@ class MainContentFragment : Fragment() {
         }
 
         var typingTimer: Timer? = null
-        val DELAY = 1000L // Delay in milliseconds (e.g., 1 second)
+        val DELAY = 1000L // Delay 1000 milliseconds
 
         binding.chatTopic.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -106,7 +106,6 @@ class MainContentFragment : Fragment() {
                 }, DELAY) // Start the timer with a 1-second delay
             }
         })
-
 
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
@@ -151,13 +150,12 @@ class MainContentFragment : Fragment() {
         }
     }
 
-    fun getOrCreateChat(chatName: String): Chat {
+    private fun getOrCreateChat(chatName: String): Chat {
         val chatList = chatBox.all
-        if(chatList.isEmpty()) {
-            return Chat(chatName = chatName).also { chatBox.put(it)}
-        }
-        else{
-            return chatList.last()
+        return if(chatList.isEmpty()) {
+            Chat(chatName = chatName).also { chatBox.put(it)}
+        } else{
+            chatList.last()
         }
     }
 

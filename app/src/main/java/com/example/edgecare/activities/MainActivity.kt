@@ -1,6 +1,5 @@
 package com.example.edgecare.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +7,7 @@ import androidx.core.view.GravityCompat
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivitySideBarBinding
 import com.example.edgecare.fragments.MainContentFragment
+import com.example.edgecare.fragments.PersonaFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnPersonaActivity.setOnClickListener {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.chatContentFrame, ReportHandleFragment())
+                .replace(R.id.chatContentFrame, PersonaFragment())
                 .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(R.id.btnPersonaActivity)
