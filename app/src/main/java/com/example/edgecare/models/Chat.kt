@@ -9,5 +9,5 @@ data class Chat(
     @Id var id: Long = 0,
     var chatName: String = "New Chat",
 ){
-    lateinit var chatMessageList: ToMany<ChatMessage2>
+    lateinit var chatMessageList: ToMany<ChatMessage>
 }

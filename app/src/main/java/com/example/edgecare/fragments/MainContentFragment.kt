@@ -1,4 +1,4 @@
-package com.example.edgecare.fragments
+package com.example.edgecare.activities
 
 import android.os.Bundle
 import android.text.Editable
@@ -16,8 +16,7 @@ import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
-import com.example.edgecare.models.ChatMessage2
-import com.example.edgecare.models.ChatMessage2_
+import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -37,7 +36,7 @@ class MainContentFragment : Fragment() {
     private lateinit var chatAdapter: ChatAdapter
     private val chatMessages = mutableListOf<ChatMessage>()
     private lateinit  var chatBox: Box<Chat>
-    private lateinit  var chatMessage2Box: Box<ChatMessage2>
+    private lateinit  var chatMessageBox: Box<ChatMessage>
     private lateinit var chat : Chat
 
     override fun onCreateView(
@@ -49,15 +48,15 @@ class MainContentFragment : Fragment() {
         val view = binding.root
 
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
-        chatMessage2Box = ObjectBox.store.boxFor(ChatMessage2::class.java)
+        chatMessageBox = ObjectBox.store.boxFor(ChatMessage::class.java)
 
         //Set to View.GONE to hide the top bar
         binding.topAppBar.visibility = View.VISIBLE
 
         chat = getOrCreateChat("New Chat")
-        val chatList : List<ChatMessage2> = getMessagesForChat(chat.id)
+        val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
-            chatMessages.add(ChatMessage(chatMessage.message, chatMessage.isSentByUser))
+            chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
         }
         binding.chatTopic.setText(chat.chatName)
 
@@ -81,7 +80,7 @@ class MainContentFragment : Fragment() {
         }
 
         var typingTimer: Timer? = null
-        val DELAY = 1000L // Delay 1000 milliseconds
+        val DELAY = 1000L // Delay in milliseconds (e.g., 1 second)
 
         binding.chatTopic.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -108,6 +107,7 @@ class MainContentFragment : Fragment() {
             }
         })
 
+
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
         binding.chatRecyclerView.apply {
@@ -126,7 +126,7 @@ class MainContentFragment : Fragment() {
 
     private fun processInputText(text: String) {
         // Add user's message to the chat
-        chatMessages.add(ChatMessage(text, true))
+        chatMessages.add(ChatMessage(message = text, isSentByUser = true))
         saveMessage(chat.id, text,true)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
@@ -140,10 +140,10 @@ class MainContentFragment : Fragment() {
             val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
             // Add the result as a reply
             val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
-            chatMessages.add(ChatMessage(responseText, false))
+            chatMessages.add(ChatMessage(message = responseText, isSentByUser =  false))
             saveMessage(chat.id, responseText,false)
-            
-            chatMessages.add(ChatMessage(similarReports, false))
+
+            chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
             saveMessage(chat.id, similarReports,false)
 
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
@@ -151,28 +151,29 @@ class MainContentFragment : Fragment() {
         }
     }
 
-    private fun getOrCreateChat(chatName: String): Chat {
+    fun getOrCreateChat(chatName: String): Chat {
         val chatList = chatBox.all
-        return if(chatList.isEmpty()) {
-            Chat(chatName = chatName).also { chatBox.put(it)}
-        } else{
-            chatList.last()
+        if(chatList.isEmpty()) {
+            return Chat(chatName = chatName).also { chatBox.put(it)}
+        }
+        else{
+            return chatList.last()
         }
     }
 
-    private fun saveMessage(chatId: Long, message: String, isSentByUser: Boolean) {
-        val chatMessage = ChatMessage2(
+    private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
+        val chatMessage = ChatMessage(
             chatId = chatId,
             message = message,
             timestamp = Date(),
             isSentByUser = isSentByUser
         )
-        chatMessage2Box.put(chatMessage)
+        chatMessageBox.put(chatMessage)
     }
 
-    private fun getMessagesForChat(chatId: Long): List<ChatMessage2> {
-        return chatMessage2Box.query(
-            ChatMessage2_.chatId equal chatId)
+    private fun getMessagesForChat(chatId: Long): List<ChatMessage> {
+        return chatMessageBox.query(
+            ChatMessage_.chatId equal chatId)
             .build()
             .find()
     }
