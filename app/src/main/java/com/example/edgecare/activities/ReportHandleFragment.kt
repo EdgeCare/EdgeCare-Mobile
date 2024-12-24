@@ -21,6 +21,10 @@ import com.example.edgecare.models.HealthReportChunk_
 import com.example.edgecare.utils.EmbeddingUtils
 import com.example.edgecare.utils.FileUtils
 import io.objectbox.Box
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfReader
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor
+import java.io.InputStream
 
 class ReportHandleFragment : Fragment() {
     private var _binding: ActivityReportHandleBinding? = null
@@ -56,7 +60,8 @@ class ReportHandleFragment : Fragment() {
     private fun selectTextFile() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = "text/plain"
+            type = "*/*"
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/plain", "application/pdf"))
         }
         filePickerLauncher.launch(intent)
     }
@@ -71,8 +76,14 @@ class ReportHandleFragment : Fragment() {
 
     private fun saveHealthReport(fileUri: Uri) {
         try {
-            val text = FileUtils.readTextFile(requireContext().contentResolver, fileUri)
-            if (text.isNotEmpty()) {
+            val mimeType = requireContext().contentResolver.getType(fileUri)
+            val text = when (mimeType) {
+                "text/plain" -> FileUtils.readTextFile(requireContext().contentResolver, fileUri)
+                "application/pdf" -> extractTextFromPdf(fileUri)
+                else -> null
+            }
+
+            if (!text.isNullOrEmpty()) {
                 val report = HealthReport(text = text)
                 healthReportBox.put(report)
                 saveHealthReportChunks(text, report.id)
@@ -102,6 +113,27 @@ class ReportHandleFragment : Fragment() {
         )
         binding.recyclerView.adapter = adapter
     }
+
+    private fun extractTextFromPdf(fileUri: Uri): String {
+        val text = StringBuilder()
+        try {
+            val inputStream: InputStream? = requireContext().contentResolver.openInputStream(fileUri)
+            inputStream?.use { stream ->
+                PdfReader(stream).use { reader ->
+                    PdfDocument(reader).use { pdfDoc ->
+                        for (i in 1..pdfDoc.numberOfPages) {
+                            val pageText = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i))
+                            text.append(pageText).append("\n")
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return text.toString()
+    }
+
 
     private fun loadHealthReports() {
         val reports = healthReportBox.all
