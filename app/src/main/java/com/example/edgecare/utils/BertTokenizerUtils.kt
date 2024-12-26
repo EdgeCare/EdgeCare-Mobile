@@ -183,7 +183,7 @@ object BertTokenizerUtils {
 
     fun generateTokenListForDeIdentifier(context: Context, sentence: String): Pair<List<String>,LongArray> {
         // Load vocabulary from the assets folder
-        val vocab = loadVocab(context, "vocab-de-id.txt")
+        val vocab = loadVocab(context, "vocab.txt")
 
         // Initialize the tokenizer
         val tokenizer = BertFullTokenizer(vocab)

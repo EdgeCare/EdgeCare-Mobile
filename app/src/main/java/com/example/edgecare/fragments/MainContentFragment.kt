@@ -51,7 +51,7 @@ class MainContentFragment : Fragment() {
         chatMessageBox = ObjectBox.store.boxFor(ChatMessage::class.java)
 
         //Set to View.GONE to hide the top bar
-        binding.topAppBar.visibility = View.VISIBLE
+        binding.topAppBar.visibility = View.GONE
 
         chat = getOrCreateChat("New Chat")
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
