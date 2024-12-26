@@ -9,8 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.edgecare.BertModelHandler
-import com.example.edgecare.EdgeCareApp
+import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.ActivityMainContentBinding
@@ -32,7 +31,6 @@ class MainContentFragment : Fragment() {
     private var _binding: ActivityMainContentBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var modelHandler: BertModelHandler
     private lateinit var chatAdapter: ChatAdapter
     private val chatMessages = mutableListOf<ChatMessage>()
     private lateinit  var chatBox: Box<Chat>
@@ -59,9 +57,6 @@ class MainContentFragment : Fragment() {
             chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
         }
         binding.chatTopic.setText(chat.chatName)
-
-        // Initialize BERT model handler
-        modelHandler = (requireActivity().application as EdgeCareApp).modelHandler
 
         // Set up click listener for the send button
         binding.sendButton.setOnClickListener {
@@ -132,8 +127,8 @@ class MainContentFragment : Fragment() {
 
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
-            val features = modelHandler.prepareInputs(text)
-            val result = modelHandler.runInference(features)
+            val features = DeIDModelUtils.prepareInputs(requireContext(), text)
+            val result = DeIDModelUtils.runInference(features)
 
             // Similarity search for given text
             val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())

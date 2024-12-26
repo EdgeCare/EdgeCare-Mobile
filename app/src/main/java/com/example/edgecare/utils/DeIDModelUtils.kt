@@ -1,63 +1,64 @@
-package com.example.edgecare
+package com.example.edgecare.utils
 
 import ai.onnxruntime.OnnxTensor
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 import android.content.Context
-import com.example.edgecare.utils.BertTokenizerUtils
+import com.example.edgecare.models.DeIdModelInputFeatures
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.io.File
-import java.io.FileOutputStream
 import java.nio.LongBuffer
 
-data class InputFeatures(
-    val inputIds: LongArray,
-    val attentionMask: LongArray,
-    val tokenTypeIds: LongArray,
-    val tokens: List<String>
-)
+object DeIDModelUtils {
+    private lateinit var ortEnvironmentDeId: OrtEnvironment
+    private var ortSessionDeId: OrtSession? = null
+    private lateinit var labelMap: Map<Int, String>
 
-class BertModelHandler(private val context: Context) {
+    // Initialize the model
+    fun initializeModel(context: Context): Boolean {
+        return try {
 
-    private var ortEnvironment: OrtEnvironment = OrtEnvironment.getEnvironment()
-    private var ortSession: OrtSession? = null
-    private var modelFile: String?  = null
-    private val labelMap: Map<Int, String>
+            // Load the label map
+            labelMap = loadLabelMap(context)
 
-    init {
-        // Load the label map
+            // load De-Id model
+            println("DE-ID Model | Initialize the model")
+            ortEnvironmentDeId = OrtEnvironment.getEnvironment()
+            ortSessionDeId = loadDeIdModel(context, ortEnvironmentDeId)
+            ortSessionDeId != null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    private fun loadLabelMap(context: Context): Map<Int, String>{
         val labelsInputStream = context.assets.open("edgeCare-de-id-labels.json")
         val labelsContent = labelsInputStream.bufferedReader().use { it.readText() }
         val jsonObject = JSONObject(labelsContent)
-            labelMap = jsonObject.keys().asSequence().map { key ->
-                key.toInt() to jsonObject.getString(key)
-            }.toMap()
 
-        //Load the ONNX model
-        // [ToDo] - Need to find a better way to load the model. Currently, it is copied from assets to files directory.
-//        modelFile = copyAssetToFile(context, "edgeCare-de-identifier.onnx", "edgeCare-de-identifier.onnx").absolutePath.toString()
-        modelFile = copyAssetToFile(context, "edgeCare-de-identifier.onnx", "edgeCare-de-identifier.onnx").absolutePath
-
-        // Create the session using the model file path
-        ortSession = ortEnvironment.createSession(modelFile)
+        return jsonObject.keys().asSequence().map { key ->
+            key.toInt() to jsonObject.getString(key)
+        }.toMap()
     }
 
-    // [ToDo] - Works for now, but need to find a better way to load the model
-    private fun copyAssetToFile(context: Context, assetFileName: String, outputFileName: String): File {
-        val file = File(context.filesDir, outputFileName)
-        if (!file.exists()) {
-            context.assets.open(assetFileName).use { inputStream ->
-                FileOutputStream(file).use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-            }
+    // Load the ONNX model from assets
+    private fun loadDeIdModel(context: Context, env: OrtEnvironment): OrtSession? {
+        return try {
+            println("De-ID Model | Loading model...")
+            val modelInputStream = context.assets.open("edgeCare-de-identifier.onnx")
+            val byteArray = modelInputStream.readBytes()
+            val opts = OrtSession.SessionOptions()
+            env.createSession(byteArray, opts)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        return file
     }
 
-    fun prepareInputs(text: String): InputFeatures {
+    // Prepare the input tensors for the model
+    fun prepareInputs(context: Context, text: String): DeIdModelInputFeatures {
         // Generate tokens and input IDs
         val (tokenList, tokenIdList) = BertTokenizerUtils.generateTokenListForDeIdentifier(context, text)
 
@@ -67,7 +68,7 @@ class BertModelHandler(private val context: Context) {
         // For single-sequence tasks, token_type_ids are typically all zeros - [ToDo]- check this
         val tokenTypeIds = LongArray(tokenIdList.size) { 0 }
 
-        return InputFeatures(
+        return DeIdModelInputFeatures(
             inputIds = tokenIdList,
             attentionMask = attentionMask,
             tokenTypeIds = tokenTypeIds,
@@ -75,23 +76,22 @@ class BertModelHandler(private val context: Context) {
         )
     }
 
-    suspend fun runInference(features: InputFeatures): List<Pair<String, String>> = withContext(Dispatchers.IO) {
+    suspend fun runInference(features: DeIdModelInputFeatures): List<Pair<String, String>> = withContext(Dispatchers.IO) {
 
         // Prepare input tensors
         val inputIdsTensor = OnnxTensor.createTensor(
-            ortEnvironment,
+            ortEnvironmentDeId,
             LongBuffer.wrap(features.inputIds),
             longArrayOf(1, features.inputIds.size.toLong())
         )
         val attentionMaskTensor = OnnxTensor.createTensor(
-            ortEnvironment,
+            ortEnvironmentDeId,
             LongBuffer.wrap(features.attentionMask),
             longArrayOf(1, features.attentionMask.size.toLong())
         )
 
-        // [Note] - we don't need token_type_ids for stanferd model
         val tokenTypeIdsTensor = OnnxTensor.createTensor(
-            ortEnvironment,
+            ortEnvironmentDeId,
             LongBuffer.wrap(features.tokenTypeIds),
             longArrayOf(1, features.tokenTypeIds.size.toLong())
         )
@@ -103,7 +103,7 @@ class BertModelHandler(private val context: Context) {
         )
 
         // Run the model
-        val results = ortSession!!.run(inputs)
+        val results = ortSessionDeId!!.run(inputs)
 
         // Get the logits output
         val logitsTensor = results[0].value as Array<Array<FloatArray>> // Shape: [batch_size, sequence_length, num_labels]
