@@ -15,6 +15,7 @@ import java.nio.LongBuffer
 data class InputFeatures(
     val inputIds: LongArray,
     val attentionMask: LongArray,
+    val tokenTypeIds: LongArray,
     val tokens: List<String>
 )
 
@@ -22,12 +23,12 @@ class BertModelHandler(private val context: Context) {
 
     private var ortEnvironment: OrtEnvironment = OrtEnvironment.getEnvironment()
     private var ortSession: OrtSession? = null
-    private var modelFile : String?  = null
+    private var modelFile: String?  = null
     private val labelMap: Map<Int, String>
 
     init {
         // Load the label map
-        val labelsInputStream = context.assets.open("labels.json")
+        val labelsInputStream = context.assets.open("edgeCare-de-id-labels.json")
         val labelsContent = labelsInputStream.bufferedReader().use { it.readText() }
         val jsonObject = JSONObject(labelsContent)
             labelMap = jsonObject.keys().asSequence().map { key ->
@@ -36,13 +37,14 @@ class BertModelHandler(private val context: Context) {
 
         //Load the ONNX model
         // [ToDo] - Need to find a better way to load the model. Currently, it is copied from assets to files directory.
-        modelFile = copyAssetToFile(context, "de-identifier.onnx", "de-identifier.onnx").absolutePath.toString()
+//        modelFile = copyAssetToFile(context, "edgeCare-de-identifier.onnx", "edgeCare-de-identifier.onnx").absolutePath.toString()
+        modelFile = copyAssetToFile(context, "edgeCare-de-identifier.onnx", "edgeCare-de-identifier.onnx").absolutePath
 
         // Create the session using the model file path
         ortSession = ortEnvironment.createSession(modelFile)
     }
 
-    //[ToDo] - Works for now, but need to find a better way to load model
+    // [ToDo] - Works for now, but need to find a better way to load the model
     private fun copyAssetToFile(context: Context, assetFileName: String, outputFileName: String): File {
         val file = File(context.filesDir, outputFileName)
         if (!file.exists()) {
@@ -56,17 +58,24 @@ class BertModelHandler(private val context: Context) {
     }
 
     fun prepareInputs(text: String): InputFeatures {
-
+        // Generate tokens and input IDs
         val (tokenList, tokenIdList) = BertTokenizerUtils.generateTokenListForDeIdentifier(context, text)
 
-        // Create attention mask (1 for all tokens)
+        // Create attention mask (1 for each valid token)
         val attentionMask = LongArray(tokenIdList.size) { 1 }
 
-        return InputFeatures(tokenIdList, attentionMask, tokenList)
+        // For single-sequence tasks, token_type_ids are typically all zeros - [ToDo]- check this
+        val tokenTypeIds = LongArray(tokenIdList.size) { 0 }
+
+        return InputFeatures(
+            inputIds = tokenIdList,
+            attentionMask = attentionMask,
+            tokenTypeIds = tokenTypeIds,
+            tokens = tokenList
+        )
     }
 
-    suspend fun runInference(features: InputFeatures): List<Pair<String, String>> = withContext(
-        Dispatchers.IO) {
+    suspend fun runInference(features: InputFeatures): List<Pair<String, String>> = withContext(Dispatchers.IO) {
 
         // Prepare input tensors
         val inputIdsTensor = OnnxTensor.createTensor(
@@ -80,9 +89,17 @@ class BertModelHandler(private val context: Context) {
             longArrayOf(1, features.attentionMask.size.toLong())
         )
 
+        // [Note] - we don't need token_type_ids for stanferd model
+        val tokenTypeIdsTensor = OnnxTensor.createTensor(
+            ortEnvironment,
+            LongBuffer.wrap(features.tokenTypeIds),
+            longArrayOf(1, features.tokenTypeIds.size.toLong())
+        )
+
         val inputs = mapOf(
             "input_ids" to inputIdsTensor,
-            "attention_mask" to attentionMaskTensor
+            "attention_mask" to attentionMaskTensor,
+            "token_type_ids" to tokenTypeIdsTensor
         )
 
         // Run the model
@@ -105,6 +122,7 @@ class BertModelHandler(private val context: Context) {
         // Clean up resources
         inputIdsTensor.close()
         attentionMaskTensor.close()
+        tokenTypeIdsTensor.close()
         results.close()
 
         labeledTokens
