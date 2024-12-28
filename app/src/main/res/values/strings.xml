@@ -15,6 +15,33 @@
     <string name="questionnaire_topic">Add Profile Details</string>
     <string name="previous">Previous</string>
     <string name="next">Next</string>
+    <string name="birthday">Birthday</string>
+
+
+    <!-- persona questions -->
+    <string name="gender">Gender</string>
+    <string name="health_profile">Health Profile</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="medical_information">Medical Information</string>
+    <string name="enter_your_full_name">Enter your full name</string>
+    <string name="name">Name</string>
+    <string name="enter_your_birth_date">Enter your birth date</string>
+    <string name="specify_your_gender">Specify your gender</string>
+    <string name="allergies">Allergies</string>
+    <string name="list_any_allergies_you_have">List any allergies you have</string>
+    <string name="health_background">Health Background</string>
+    <string name="provide_details_about_your_health_history">Provide details about your health history</string>
+    <string name="are_you_a_current_or_past_smoker">Are you a current or past smoker?</string>
+    <string name="smoking">Smoking</string>
+    <string name="enter_your_height_in_cm">Enter your height in cm</string>
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+    <string name="enter_your_weight_in_kg">Enter your weight in kg</string>
+    <string name="lifestyle_information">Lifestyle Information</string>
+    <string name="alcohol_consumption">Alcohol Consumption</string>
+    <string name="do_you_consume_alcohol">Do you consume alcohol?</string>
+    <string name="have_you_ever_been_diagnosed_with_high_blood_pressure">Have you ever been diagnosed with high blood pressure?</string>
+    <string name="high_blood_pressure">High Blood Pressure</string>
 
     <!-- Icons / Images -->
     <string name="appLogo">App Logo</string>
