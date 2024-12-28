@@ -1,4 +1,4 @@
-package com.example.edgecare.activities
+package com.example.edgecare.fragments
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.ObjectBox
+import com.example.edgecare.activities.ViewFullReportActivity
 import com.example.edgecare.adapters.HealthReportAdapter
 import com.example.edgecare.databinding.ActivityReportHandleBinding
 import com.example.edgecare.models.HealthReport
@@ -176,17 +177,15 @@ class ReportHandleFragment : Fragment() {
         }
     }
 
-    fun saveHealthReportChunks(text: String, reportId:Long){
+    private fun saveHealthReportChunks(text: String, reportId:Long){
         val chunkSize = 50
         val overlap = 10
         val chunkEmbeddings = generateChunkEmbeddingsWithOverlap(text, chunkSize, overlap)
         val healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)
         saveChunkEmbeddingsWithOverlap(reportId, chunkEmbeddings, healthReportChunkBox)
-
-
     }
 
-    fun chunkTextWithOverlap(text: String, chunkSize: Int = 50, overlap: Int = 10): List<String> {
+    private fun chunkTextWithOverlap(text: String, chunkSize: Int = 50, overlap: Int = 10): List<String> {
         // Split the text into words
         val words = text.split("\\s+".toRegex()).filter { it.isNotEmpty() }
 
@@ -207,7 +206,7 @@ class ReportHandleFragment : Fragment() {
         return chunks
     }
 
-    fun generateChunkEmbeddingsWithOverlap(report: String, chunkSize: Int = 50, overlap: Int = 10): Map<String, FloatArray> {
+    private fun generateChunkEmbeddingsWithOverlap(report: String, chunkSize: Int = 50, overlap: Int = 10): Map<String, FloatArray> {
         val chunks = chunkTextWithOverlap(report, chunkSize, overlap)
         val embeddings = mutableMapOf<String, FloatArray>()
 
@@ -221,7 +220,7 @@ class ReportHandleFragment : Fragment() {
         return embeddings
     }
 
-    fun saveChunkEmbeddingsWithOverlap(
+    private fun saveChunkEmbeddingsWithOverlap(
         reportId: Long,
         chunkEmbeddings: Map<String, FloatArray>,
         healthReportChunkBox: Box<HealthReportChunk>
