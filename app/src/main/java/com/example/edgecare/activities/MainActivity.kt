@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnNewEdgeCare.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, MainContentFragment())
-                .addToBackStack(null) // Add to back stack for navigation (optional)
+//                .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(binding.btnNewEdgeCare.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, PersonaFragment())
 //                .replace(R.id.chatContentFrame, PersonaNewFragment())
-                .addToBackStack(null) // Add to back stack for navigation (optional)
+//                .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(R.id.personaButton)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         binding.healthReportsButton.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, ReportHandleFragment())
-                .addToBackStack(null) // Add to back stack for navigation (optional)
+//                .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(binding.healthReportsButton.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
