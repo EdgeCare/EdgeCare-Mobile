@@ -8,6 +8,8 @@ import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivitySideBarBinding
 import com.example.edgecare.fragments.MainContentFragment
 import com.example.edgecare.fragments.PersonaFragment
+import com.example.edgecare.fragments.PersonaNewFragment
+import com.example.edgecare.fragments.ReportHandleFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,21 +41,22 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        binding.btnPersonaActivity.setOnClickListener {
+        binding.personaButton.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, PersonaFragment())
+//                .replace(R.id.chatContentFrame, PersonaNewFragment())
                 .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
-            selectButton(R.id.btnPersonaActivity)
+            selectButton(R.id.personaButton)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
-        binding.selectFileButton.setOnClickListener {
+        binding.healthReportsButton.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, ReportHandleFragment())
                 .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
-            selectButton(binding.selectFileButton.id)
+            selectButton(binding.healthReportsButton.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
@@ -76,8 +79,8 @@ class MainActivity : AppCompatActivity() {
     private fun selectButton(selectedId: Int) {
         val buttons = listOf(
             binding.btnNewEdgeCare,
-            binding.btnPersonaActivity,
-            binding.selectFileButton,
+            binding.personaButton,
+            binding.healthReportsButton,
             binding.btnAppSettings
         )
 
