@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.adapters.ChatAdapter
+import com.example.edgecare.api.sendUserMessage
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
@@ -127,18 +128,27 @@ class MainContentFragment : Fragment() {
 
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
+
+            // Mask text
             val features = DeIDModelUtils.prepareInputs(requireContext(), text)
             val result = DeIDModelUtils.runInference(features)
+            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
+            chatMessages.add(ChatMessage(message = maskedText, isSentByUser =  false))
+            saveMessage(chat.id, maskedText,false)
 
             // Similarity search for given text
             val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
-            // Add the result as a reply
-            val responseText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
-            chatMessages.add(ChatMessage(message = responseText, isSentByUser =  false))
-            saveMessage(chat.id, responseText,false)
-
             chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
             saveMessage(chat.id, similarReports,false)
+
+            // send to server
+            // [TODO] - send maskedText with similarReports
+            sendUserMessage(text) { userMessageResponse ->
+                println("Result from server: $userMessageResponse")
+                if (userMessageResponse != null) {
+                    chatMessages.add(ChatMessage(message = userMessageResponse.body, isSentByUser =  false))
+                }
+            }
 
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
             binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
