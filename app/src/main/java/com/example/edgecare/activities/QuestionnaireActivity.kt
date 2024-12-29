@@ -12,43 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
 import com.example.edgecare.models.QuestionnaireQuestion
+import com.example.edgecare.questionsList
 
 class QuestionnaireActivity : AppCompatActivity() {
 
-    private val questions = listOf(
-        QuestionnaireQuestion("What is your name?", "text"),
-        QuestionnaireQuestion(
-            "Hi ###, are you male or female?",
-            "select",
-            "Why only male and female?",
-            "Here we consider only Male and Female",
-            listOf("Male", "Female")
-        ),
-        QuestionnaireQuestion("What is your date of birth?", "text"),
-        QuestionnaireQuestion(
-            "Are you a current smoker or have you been a smoker in the past?",
-            "select",
-            "This question is required.",
-            options = listOf("Yes", "No")
-        ),
-        QuestionnaireQuestion(
-            "Have you ever been diagnosed with high blood pressure?",
-            "select",
-            "This question is required.",
-            options = listOf("Yes", "No")
-        ),
-        QuestionnaireQuestion(
-            "Do you have diabetes?",
-            "select",
-            "This question is required.",
-            "",
-            listOf("Yes", "No")),
-        QuestionnaireQuestion(
-            "How many hours do you sleep?",
-            "number",
-            "Provide an approximate number.")
-    )
-
+    private val questions = questionsList
     private var currentQuestionIndex = 0
     private lateinit var binding: ActivityQuestionnaireBinding
 
@@ -65,21 +33,20 @@ class QuestionnaireActivity : AppCompatActivity() {
         // Set button listeners
         binding.previousButton.setOnClickListener {
             if (currentQuestionIndex > 0) {
+                saveAnswer(currentQuestionIndex)
                 currentQuestionIndex--
                 loadQuestion(currentQuestionIndex)
             }
         }
 
         binding.nextButton.setOnClickListener {
+            saveAnswer(currentQuestionIndex)
+
             if (currentQuestionIndex < questions.size - 1) {
                 currentQuestionIndex++
                 loadQuestion(currentQuestionIndex)
             } else {
-                // Navigate to EndFragment [Todo]
-//                val intent = Intent(this, QuestionEndFragment::class.java)
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                saveAllAnswers()
             }
         }
     }
@@ -87,13 +54,13 @@ class QuestionnaireActivity : AppCompatActivity() {
     private fun loadQuestion(index: Int) {
         val question = questions[index]
 
-        // Update previousButton visibility
+        // Update visibility of the "Previous" button
         binding.previousButton.visibility = if (index == 0) View.INVISIBLE else View.VISIBLE
 
         // Update the question text
         binding.questionText.text = question.questionText
 
-        // Show or hide explanation button
+        // Show or hide the "Explanation" button
         if (!question.explanationQuestion.isNullOrEmpty() && !question.explanationText.isNullOrEmpty()) {
             binding.explanationButton.visibility = View.VISIBLE
             binding.explanationButton.setOnClickListener {
@@ -112,18 +79,26 @@ class QuestionnaireActivity : AppCompatActivity() {
 
         when (question.inputType) {
             "text" -> {
+                // Show "Next" button
+                binding.nextButton.visibility = View.VISIBLE
+
                 val textInputView = layoutInflater.inflate(R.layout.questionnaire_input_text, binding.inputContainer, false)
                 binding.inputContainer.addView(textInputView)
+
+                val editText = textInputView.findViewById<EditText>(R.id.questionnaireTextInput)
+                editText.setText(question.answer as? String ?: "")
             }
             "select" -> {
-                // Inflate the input_text layout into the inputContainer
-                val textInputView = layoutInflater.inflate(R.layout.questionnaire_input_select, binding.inputContainer, false)
-                binding.inputContainer.addView(textInputView)
+                // Hide "Next" button
+                binding.nextButton.visibility = View.GONE
+
+                val selectInputView = layoutInflater.inflate(R.layout.questionnaire_input_select, binding.inputContainer, false)
+                binding.inputContainer.addView(selectInputView)
 
                 val buttons = listOf(
-                    findViewById<Button>(R.id.optionButton1),
-                    findViewById<Button>(R.id.optionButton2),
-                    findViewById<Button>(R.id.optionButton3)
+                    selectInputView.findViewById<Button>(R.id.optionButton1),
+                    selectInputView.findViewById<Button>(R.id.optionButton2),
+                    selectInputView.findViewById<Button>(R.id.optionButton3)
                 )
 
                 buttons.forEachIndexed { index, button ->
@@ -131,8 +106,14 @@ class QuestionnaireActivity : AppCompatActivity() {
                         button.visibility = View.VISIBLE
                         button.text = question.options?.get(index) ?: ""
                         button.setOnClickListener {
-                            // Handle button click
-                            Toast.makeText(this, "Selected: ${button.text}", Toast.LENGTH_SHORT).show()
+                            // Save answer and navigate to the next question
+                            question.answer = button.text.toString()
+                            if (currentQuestionIndex < questions.size - 1) {
+                                currentQuestionIndex++
+                                loadQuestion(currentQuestionIndex)
+                            } else {
+                                saveAllAnswers()
+                            }
                         }
                     } else {
                         button.visibility = View.GONE
@@ -140,11 +121,14 @@ class QuestionnaireActivity : AppCompatActivity() {
                 }
             }
             "number" -> {
-                val numberInput = EditText(this).apply {
-                    hint = "Enter a number"
-                    inputType = android.text.InputType.TYPE_CLASS_NUMBER
-                }
-                binding.inputContainer.addView(numberInput)
+                // Show "Next" button
+                binding.nextButton.visibility = View.VISIBLE
+
+                val numberInputView = layoutInflater.inflate(R.layout.questionnaire_input_number, binding.inputContainer, false)
+                binding.inputContainer.addView(numberInputView)
+
+                val editText = numberInputView.findViewById<EditText>(R.id.questionnaireNumberInput)
+                editText.setText((question.answer as? Int)?.toString() ?: "")
             }
             else -> {
                 val unknownText = TextView(this).apply {
@@ -153,5 +137,35 @@ class QuestionnaireActivity : AppCompatActivity() {
                 binding.inputContainer.addView(unknownText)
             }
         }
+    }
+
+    private fun saveAnswer(index: Int) {
+        val question = questions[index]
+        val inputContainer = binding.inputContainer
+
+        when (question.inputType) {
+            "text" -> {
+                val editText = inputContainer.findViewById<EditText>(R.id.questionnaireTextInput)
+                question.answer = editText?.text?.toString()
+            }
+            "number" -> {
+                val editText = inputContainer.findViewById<EditText>(R.id.questionnaireNumberInput)
+                question.answer = editText?.text?.toString()?.toIntOrNull()
+            }
+            "select" -> {
+                // Do nothing here; answers are saved on button click
+            }
+        }
+    }
+
+    private fun saveAllAnswers() {
+        questions.forEach {
+            // [TODO] Save answers to the database
+            println("Question: ${it.questionText}, Answer: ${it.answer}")
+        }
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
