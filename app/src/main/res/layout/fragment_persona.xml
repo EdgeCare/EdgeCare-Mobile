@@ -1,156 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
-    android:background="#F0F8FF"
-    tools:context=".activities.MainActivity">
+    android:orientation="vertical"
+    android:background="@color/background">
 
+    <!-- Top Bar -->
     <LinearLayout
+        android:id="@+id/personaTopBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@color/primary"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Health Profile Form"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginStart="72dp"
+            android:text="@string/health_profile"
             android:textSize="24sp"
             android:textColor="#000080"
-            android:gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
-            android:layout_marginTop="10dp"/>
-
-        <!-- Name Field -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:textColor="#000080"
-            android:layout_marginTop="10dp" />
-        <EditText
-            android:id="@+id/nameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:background="@drawable/edit_text_style"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Age Field -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Age"
-            android:textColor="#000080" />
-        <EditText
-            android:id="@+id/ageEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:background="@drawable/edit_text_style"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Gender Field -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Gender"
-            android:textColor="@color/textColor4" />
-
-        <!-- Weight Field -->
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <RadioButton
-                android:id="@+id/radioButtonMale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Male"
-                android:textColor="@color/textColor4" />
-
-            <RadioButton
-                android:id="@+id/radioButtonFemale"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Female"
-                android:textColor="@color/textColor4" />
-        </RadioGroup>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Weight (kg)"
-            android:textColor="#000080" />
-        <EditText
-            android:id="@+id/weightEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_style"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Height Field -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Height (cm)"
-            android:textColor="#000080" />
-        <EditText
-            android:id="@+id/heightEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:background="@drawable/edit_text_style"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Smoking Field -->
-        <CheckBox
-            android:id="@+id/smokingCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Do you smoke?"
-            android:textColor="#000080"
-            android:buttonTint="#0000FF"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Alcohol Consumption Field -->
-        <CheckBox
-            android:id="@+id/alcoholCheckBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Do you consume alcohol?"
-            android:textColor="#000080"
-            android:buttonTint="#0000FF"
-            android:layout_marginBottom="10dp" />
-
-
-        <!-- Submit Button -->
-        <Button
-            android:id="@+id/submitBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Submit"
-            android:background="@drawable/button_style"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/editBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edit"
-            android:background="@drawable/button_style"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
-            android:visibility="gone"/>
-
+            android:gravity="center_vertical"/>
     </LinearLayout>
-</ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="24dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Name Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textColor="#000080"
+                android:layout_marginTop="10dp" />
+            <EditText
+                android:id="@+id/nameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Birth Day Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/birthday"
+                android:textColor="#000080" />
+
+            <EditText
+                android:id="@+id/ageEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Gender Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/gender"
+                android:textColor="@color/textColor4" />
+
+            <!-- Weight Field -->
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <RadioButton
+                    android:id="@+id/radioButtonMale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Male"
+                    android:textColor="@color/textColor4" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonFemale"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Female"
+                    android:textColor="@color/textColor4" />
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Weight (kg)"
+                android:textColor="#000080" />
+            <EditText
+                android:id="@+id/weightEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Height Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Height (cm)"
+                android:textColor="#000080" />
+            <EditText
+                android:id="@+id/heightEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Smoking Field -->
+            <CheckBox
+                android:id="@+id/smokingCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Do you smoke?"
+                android:textColor="#000080"
+                android:buttonTint="#0000FF"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Alcohol Consumption Field -->
+            <CheckBox
+                android:id="@+id/alcoholCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Do you consume alcohol?"
+                android:textColor="#000080"
+                android:buttonTint="#0000FF"
+                android:layout_marginBottom="10dp" />
+
+
+            <!-- Submit Button -->
+            <Button
+                android:id="@+id/submitBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:background="@drawable/button_style"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/editBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:background="@drawable/button_style"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

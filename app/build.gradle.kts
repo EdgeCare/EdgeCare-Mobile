@@ -57,5 +57,6 @@ dependencies {
     implementation (libs.androidx.viewpager2)
     testImplementation(libs.junit)
     implementation (libs.itextpdf)
-
+    implementation (libs.retrofit)
+    implementation (libs.retrofitGson)
 }
