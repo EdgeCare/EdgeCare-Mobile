@@ -11,39 +11,39 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
-import com.example.edgecare.models.Question
+import com.example.edgecare.models.QuestionnaireQuestion
 
 class QuestionnaireActivity : AppCompatActivity() {
 
     private val questions = listOf(
-        Question("What is your name?", "text"),
-        Question(
+        QuestionnaireQuestion("What is your name?", "text"),
+        QuestionnaireQuestion(
             "Hi ###, are you male or female?",
             "select",
             "Why only male and female?",
             "Here we consider only Male and Female",
             listOf("Male", "Female")
         ),
-        Question("What is your date of birth?", "text"),
-        Question(
+        QuestionnaireQuestion("What is your date of birth?", "text"),
+        QuestionnaireQuestion(
             "Are you a current smoker or have you been a smoker in the past?",
             "select",
             "This question is required.",
             options = listOf("Yes", "No")
         ),
-        Question(
+        QuestionnaireQuestion(
             "Have you ever been diagnosed with high blood pressure?",
             "select",
             "This question is required.",
             options = listOf("Yes", "No")
         ),
-        Question(
+        QuestionnaireQuestion(
             "Do you have diabetes?",
             "select",
             "This question is required.",
             "",
             listOf("Yes", "No")),
-        Question(
+        QuestionnaireQuestion(
             "How many hours do you sleep?",
             "number",
             "Provide an approximate number.")
@@ -107,7 +107,7 @@ class QuestionnaireActivity : AppCompatActivity() {
         loadInputType(question)
     }
 
-    private fun loadInputType(question: Question) {
+    private fun loadInputType(question: QuestionnaireQuestion) {
         binding.inputContainer.removeAllViews()
 
         when (question.inputType) {
