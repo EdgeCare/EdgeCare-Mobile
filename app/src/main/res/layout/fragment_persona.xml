@@ -60,7 +60,7 @@
                 android:textColor="#000080" />
 
             <EditText
-                android:id="@+id/ageEditText"
+                android:id="@+id/birthdayEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="date"
