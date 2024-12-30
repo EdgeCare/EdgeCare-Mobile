@@ -55,6 +55,7 @@ class MainContentFragment : Fragment() {
         chat = getOrCreateChat("New Chat")
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
+            binding.tipSection.visibility = View.GONE   // Hide the tip section
             chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
         }
         binding.chatTopic.setText(chat.chatName)
@@ -183,6 +184,7 @@ class MainContentFragment : Fragment() {
 
     private fun newChat():Chat{
         val newChat = Chat()
+        binding.tipSection.visibility = View.VISIBLE   // Show the tip section
         chatMessages.removeAll(chatMessages)
         chatAdapter.notifyDataSetChanged()
         binding.chatTopic.setText(newChat.chatName)
