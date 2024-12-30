@@ -9,16 +9,21 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
+import com.example.edgecare.models.Gender
+import com.example.edgecare.models.Persona
 import com.example.edgecare.models.QuestionnaireQuestion
 import com.example.edgecare.questionsList
+import io.objectbox.Box
 
 class QuestionnaireActivity : AppCompatActivity() {
 
     private val questions = questionsList
     private var currentQuestionIndex = 0
     private lateinit var binding: ActivityQuestionnaireBinding
+    private var userDetailsBox: Box<Persona> = ObjectBox.store.boxFor(Persona::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,13 +164,37 @@ class QuestionnaireActivity : AppCompatActivity() {
     }
 
     private fun saveAllAnswers() {
-        questions.forEach {
-            // [TODO] Save answers to the database
-            println("Question: ${it.questionText}, Answer: ${it.answer}")
+        val userDetail = Persona()
+
+        questions.forEach { question ->
+            println("Question: ${question.questionText}, Answer: ${question.answer}") // [TODO] Remove this line later
+
+            // Determine the value to set in the Persona object
+            val valueToSet = when {
+                question.inputType == "select" && question.options != null -> {
+                    // Convert "Yes"/"No" to 1/0
+                    when (question.answer.toString().lowercase()) {
+                        "yes" -> true
+                        "no" -> false
+                        else -> question.answer // Keep the original answer if it's not "Yes"/"No"
+                    }
+                }
+                else -> question.answer // Use the original answer for other types
+            }
+
+            val property = Persona::class.java.declaredFields.find { it.name == question.databaseColumn }
+            property?.apply {
+                isAccessible = true // Make private fields accessible
+                set(userDetail, valueToSet) // Assign the value to the property
+            }
         }
+
+        // Save the Persona object to the database
+        userDetailsBox.put(userDetail)
 
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }
+
 }

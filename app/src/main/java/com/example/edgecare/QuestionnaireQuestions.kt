@@ -27,7 +27,7 @@ val questionsList = listOf(
     QuestionnaireQuestion(
         4,
         "Are you a current smoker or have you been a smoker in the past?",
-        "smoke",
+        "smoking",
         "select",
         "This question is required.",
         options = listOf("Yes", "No")

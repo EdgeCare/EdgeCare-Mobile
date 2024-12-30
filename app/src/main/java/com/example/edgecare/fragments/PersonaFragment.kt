@@ -73,19 +73,19 @@ class PersonaFragment : Fragment() {
         firstUserDetail?.let {
             with(binding) {
                 nameEditText.setText(it.name)
-                ageEditText.setText(it.age.toString())
-                if (Gender.fromDisplayName(it.gender) == Gender.MALE)
+                birthdayEditText.setText(it.birthday.toString())
+                if (it.gender?.let { it1 -> Gender.fromDisplayName(it1) } == Gender.MALE)
                     radioButtonMale.isChecked = true
-                else if (Gender.fromDisplayName(it.gender) == Gender.FEMALE)
+                else if (it.gender?.let { it1 -> Gender.fromDisplayName(it1) } == Gender.FEMALE)
                     radioButtonFemale.isChecked = true
                 weightEditText.setText(it.weight.toString())
                 heightEditText.setText(it.height.toString())
-                smokingCheckBox.isChecked = it.smoking
-                alcoholCheckBox.isChecked = it.alcoholConsumption
+                smokingCheckBox.isChecked = it.smoking == true
+                alcoholCheckBox.isChecked = it.alcoholConsumption == true
 
                 // Disabling fields to prevent editing
                 nameEditText.isEnabled = false
-                ageEditText.isEnabled = false
+                birthdayEditText.isEnabled = false
                 radioButtonMale.isEnabled = false
                 radioButtonFemale.isEnabled = false
                 weightEditText.isEnabled = false
@@ -101,7 +101,7 @@ class PersonaFragment : Fragment() {
     private fun enableEditing() {
         with(binding) {
             nameEditText.isEnabled = true
-            ageEditText.isEnabled = true
+            birthdayEditText.isEnabled = true
             radioButtonMale.isEnabled = true
             radioButtonFemale.isEnabled = true
             weightEditText.isEnabled = true
@@ -118,11 +118,11 @@ class PersonaFragment : Fragment() {
                 return false
             }
 
-            val age = ageEditText.text.toString().toIntOrNull()
-            if (age == null || age <= 0 || age > 120) {
-                ageEditText.error = "Please enter a valid age (1-120)"
-                return false
-            }
+//            val age = ageEditText.text.toString().toIntOrNull()
+//            if (age == null || age <= 0 || age > 120) {
+//                ageEditText.error = "Please enter a valid age (1-120)"
+//                return false
+//            }
 
             if (!radioButtonMale.isChecked && !radioButtonFemale.isChecked) {
                 Toast.makeText(requireContext(), "Please select a gender", Toast.LENGTH_SHORT).show()
@@ -149,7 +149,7 @@ class PersonaFragment : Fragment() {
             firstUserDetail?.let {
                 with(binding) {
                     it.name = nameEditText.text.toString()
-                    it.age = ageEditText.text.toString().toInt()
+                    it.birthday = birthdayEditText.text.toString()
                     it.gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName
                     it.weight = weightEditText.text.toString().toDouble()
                     it.height = heightEditText.text.toString().toDouble()
@@ -161,7 +161,7 @@ class PersonaFragment : Fragment() {
         } else {
             val userDetail = Persona(
                 name = binding.nameEditText.text.toString(),
-                age = binding.ageEditText.text.toString().toInt(),
+                birthday = binding.birthdayEditText.text.toString(),
                 gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName,
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
