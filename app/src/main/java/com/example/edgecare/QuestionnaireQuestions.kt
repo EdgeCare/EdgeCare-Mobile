@@ -2,6 +2,7 @@ package com.example.edgecare
 
 import com.example.edgecare.models.QuestionnaireQuestion
 
+// Note - used "###" for replacing it with user's first name
 val questionsList = listOf(
     QuestionnaireQuestion(
         1,
