@@ -8,7 +8,6 @@ import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivitySideBarBinding
 import com.example.edgecare.fragments.MainContentFragment
 import com.example.edgecare.fragments.PersonaFragment
-import com.example.edgecare.fragments.PersonaNewFragment
 import com.example.edgecare.fragments.ReportHandleFragment
 
 class MainActivity : AppCompatActivity() {

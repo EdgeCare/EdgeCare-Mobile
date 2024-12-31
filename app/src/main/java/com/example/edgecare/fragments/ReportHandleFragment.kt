@@ -78,15 +78,32 @@ class ReportHandleFragment : Fragment() {
     private fun saveHealthReport(fileUri: Uri) {
         try {
             val mimeType = requireContext().contentResolver.getType(fileUri)
-            val text = when (mimeType) {
+            var text = when (mimeType) {
                 "text/plain" -> FileUtils.readTextFile(requireContext().contentResolver, fileUri)
                 "application/pdf" -> extractTextFromPdf(fileUri)
                 else -> null
             }
 
+            var report = HealthReport()
+            if(mimeType=="application/pdf" ) {
+                if(text.isNullOrEmpty()){
+                    text = "Can't extract content from pdf"
+                }
+                val inputStream = requireContext().contentResolver.openInputStream(fileUri)
+                val pdfData = inputStream?.use { it.readBytes() }
+
+                if (pdfData != null) {
+                    // Save the PDF in ObjectBox
+                    report = HealthReport(isPDF = true, text = text, pdfData = pdfData)
+                    healthReportBox.put(report)
+                }
+            }
+
             if (!text.isNullOrEmpty()) {
-                val report = HealthReport(text = text)
-                healthReportBox.put(report)
+                if(mimeType!="application/pdf" ) {
+                    report = HealthReport(text = text)
+                    healthReportBox.put(report)
+                }
                 saveHealthReportChunks(text, report.id)
                 loadHealthReports()
                 Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
