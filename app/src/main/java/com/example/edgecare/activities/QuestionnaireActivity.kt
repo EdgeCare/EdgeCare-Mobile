@@ -63,11 +63,17 @@ class QuestionnaireActivity : AppCompatActivity() {
         binding.previousButton.visibility = if (index == 0) View.INVISIBLE else View.VISIBLE
 
         // Update the question text
-        binding.questionText.text = question.questionText
+        if (question.questionText.contains("###")){
+            val firstWord = (questions[0].answer as? String)?.split (" ")?.firstOrNull() ?: ""
+            binding.questionText.text = question.questionText.replace("###", firstWord)
+        } else {
+            binding.questionText.text = question.questionText
+        }
 
         // Show or hide the "Explanation" button
         if (!question.explanationQuestion.isNullOrEmpty() && !question.explanationText.isNullOrEmpty()) {
             binding.explanationButton.visibility = View.VISIBLE
+            binding.explanationButton.text = question.explanationQuestion
             binding.explanationButton.setOnClickListener {
                 Toast.makeText(this, question.explanationText, Toast.LENGTH_LONG).show()
             }
