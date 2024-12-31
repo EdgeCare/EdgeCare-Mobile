@@ -1,7 +1,6 @@
 package com.example.edgecare.models
 
 import io.objectbox.annotation.Entity
-import io.objectbox.annotation.HnswIndex
 import io.objectbox.annotation.Id
 
 @Entity
@@ -10,5 +9,4 @@ data class HealthReport(
     var isPDF:Boolean=false,
     var text: String = "",
     var pdfData: ByteArray? = null
-
 )

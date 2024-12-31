@@ -37,11 +37,17 @@ class MainContentFragment : Fragment() {
     private lateinit  var chatBox: Box<Chat>
     private lateinit  var chatMessageBox: Box<ChatMessage>
     private lateinit var chat : Chat
+    private var chatId: Long = 9999L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Retrieve the chatId from arguments
+        arguments?.let {
+            chatId = it.getLong(ARG_CHAT_ID, 0)
+        }
+
         // Initialize View Binding
         _binding = ActivityMainContentBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -52,7 +58,7 @@ class MainContentFragment : Fragment() {
         //Set to View.GONE to hide the top bar
         binding.topAppBar.visibility = View.GONE
 
-        chat = getOrCreateChat("New Chat")
+        chat = getOrCreateChat(chatId)
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
             binding.tipSection.visibility = View.GONE   // Hide the tip section
@@ -120,6 +126,18 @@ class MainContentFragment : Fragment() {
         return view
     }
 
+    companion object {
+        private const val ARG_CHAT_ID = "ARG_CHAT_ID"
+
+        fun newInstance(chatId: Long): MainContentFragment {
+            val fragment = MainContentFragment()
+            val bundle = Bundle()
+            bundle.putLong(ARG_CHAT_ID, chatId)
+            fragment.arguments = bundle
+            return fragment
+        }
+    }
+
     private fun processInputText(text: String) {
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true))
@@ -156,13 +174,25 @@ class MainContentFragment : Fragment() {
         }
     }
 
-    private fun getOrCreateChat(chatName: String): Chat {
-        val chatList = chatBox.all
-        return if(chatList.isEmpty()) {
-            Chat(chatName = chatName).also { chatBox.put(it)}
-        } else{
-            chatList.last()
+    private fun getOrCreateChat(chatId: Long): Chat {
+        // If chatId == 9999L, we know there can't be an existing Chat with that ID
+        if (chatId != 9999L) {
+            val existingChat = chatBox.get(chatId)
+            if (existingChat != null) {
+                return existingChat
+            }
+            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
         }
+        // return last Chat
+        val chatList = chatBox.all
+        if (!chatList.isNullOrEmpty()){
+            return chatList.last()
+        }
+        val newChat = Chat()
+        chatMessages.removeAll(chatMessages)
+        chatBox.put(newChat)
+        return newChat
+
     }
 
     private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {

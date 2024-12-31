@@ -124,6 +124,13 @@
             android:textStyle="bold"
             android:textColor="@color/black" />
 
+        <!-- RecyclerView to list past chats -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp" />
+
         <!-- App settings -->
         <LinearLayout
             android:id="@+id/btn_app_settings"
