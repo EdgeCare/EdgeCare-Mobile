@@ -39,6 +39,7 @@
         <activity
             android:name=".activities.QuestionnaireActivity"
             android:exported="false"/>
+
     </application>
 
 </manifest>
