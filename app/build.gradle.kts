@@ -60,4 +60,6 @@ dependencies {
     implementation (libs.itextpdf)
     implementation (libs.retrofit)
     implementation (libs.retrofitGson)
+    implementation (libs.okhttp3)
+    implementation (libs.okhttp3Logger)
 }

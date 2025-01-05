@@ -17,12 +17,19 @@ import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
+import com.example.edgecare.models.QueryRequest
+import com.example.edgecare.models.QueryResponse
 import com.example.edgecare.utils.SimilaritySearchUtils
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -160,14 +167,20 @@ class MainContentFragment : Fragment() {
             chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
             saveMessage(chat.id, similarReports,false)
 
+            val flowId = "bddaf627-67a6-4e85-8a22-0d73ba257201" // Replace with your flow ID or name
+            val langflowId = "e8a827f7-ebab-49a2-8e99-4f3e9b81b6cd" // Replace with your LangFlow ID
+            val inputValue = maskedText
+
+            runFlow(flowId, langflowId, inputValue)
+
             // send to server
             // [TODO] - send maskedText with similarReports
-            sendUserMessage(text) { userMessageResponse ->
-                println("Result from server: $userMessageResponse")
-                if (userMessageResponse != null) {
-                    chatMessages.add(ChatMessage(message = userMessageResponse.body, isSentByUser =  false))
-                }
-            }
+//            sendUserMessage(text) { userMessageResponse ->
+//                println("Result from server: $userMessageResponse")
+//                if (userMessageResponse != null) {
+//                    chatMessages.add(ChatMessage(message = userMessageResponse.body, isSentByUser =  false))
+//                }
+//            }
 
             chatAdapter.notifyItemInserted(chatMessages.size - 1)
             binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
@@ -220,6 +233,64 @@ class MainContentFragment : Fragment() {
         binding.chatTopic.setText(newChat.chatName)
         chatBox.put(newChat)
         return newChat
+    }
+
+    fun runFlow(
+        flowId: String,
+        langflowId: String,
+        inputValue: String,
+        inputType: String = "chat",
+        outputType: String = "chat",
+        tweaks: Map<String, Any> = emptyMap(),
+        stream: Boolean = false
+    ) {
+        val queryRequest = QueryRequest(
+            input_value = inputValue,
+            input_type = inputType,
+            output_type = outputType,
+            tweaks = tweaks
+        )
+
+        val call = RetrofitClient.api.initiateSession(langflowId, flowId, stream, queryRequest)
+        call.enqueue(object : Callback<QueryResponse> {
+            override fun onResponse(call: Call<QueryResponse>, response: Response<QueryResponse>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        // Convert the response body to JSON
+                        val jsonString = Gson().toJson(responseBody)
+
+                        // Parse the JSON to extract the message
+                        val jsonObject = JsonParser.parseString(jsonString).asJsonObject
+                        val outputs = jsonObject.getAsJsonArray("outputs")
+                        val finalMessage = outputs
+                            ?.firstOrNull()?.asJsonObject
+                            ?.getAsJsonArray("outputs")
+                            ?.firstOrNull()?.asJsonObject
+                            ?.getAsJsonObject("outputs")
+                            ?.getAsJsonObject("message")
+                            ?.get("text")?.asString
+
+                        if (finalMessage != null) {
+                            println("Final Output: $finalMessage")
+                            chatMessages.add(ChatMessage(message = finalMessage, isSentByUser =  false))
+                            saveMessage(chat.id, finalMessage,false)
+                        } else {
+                            println("No final message found.")
+                        }
+                    } else {
+                        println("Response body is null.")
+                    }
+                } else {
+                    println("Error: ${response.code()} - ${response.message()}")
+                    println("Error Body: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<QueryResponse>, t: Throwable) {
+                println("Network Error: ${t.message}")
+            }
+        })
     }
 
     override fun onDestroyView() {
