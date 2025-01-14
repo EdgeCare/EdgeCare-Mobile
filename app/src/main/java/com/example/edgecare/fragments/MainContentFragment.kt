@@ -165,7 +165,8 @@ class MainContentFragment : Fragment() {
             sendUserMessage(text) { userMessageResponse ->
                 println("Result from server: $userMessageResponse")
                 if (userMessageResponse != null) {
-                    chatMessages.add(ChatMessage(message = userMessageResponse.body, isSentByUser =  false))
+                    chatMessages.add(ChatMessage(message = userMessageResponse.content, isSentByUser =  false))
+                    println("this line is working")
                 }
             }
 
