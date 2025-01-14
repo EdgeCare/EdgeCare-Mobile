@@ -37,6 +37,12 @@
             android:name=".activities.AuthActivity"
             android:exported="false"/>
         <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignupActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.QuestionnaireActivity"
             android:exported="false"/>
 

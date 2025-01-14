@@ -83,7 +83,7 @@ class ViewFullReportActivity : AppCompatActivity() {
                 val page = pdfRenderer.openPage(i)
 
                 // Render the page into a bitmap
-                val bitmap = Bitmap.createBitmap(page.width*4, page.height*4, Bitmap.Config.ARGB_8888)
+                val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
 
                 // Create an ImageView to display the bitmap

@@ -15,15 +15,11 @@ class AuthActivity: AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonLogin.setOnClickListener {
-//            startActivity(Intent(this, LoginActivity::class.java))
-            val mainIntent = Intent(this, MainActivity::class.java)
-            startActivity(mainIntent)
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.buttonCreateAccount.setOnClickListener {
-//            startActivity(Intent(this, CreateAccountActivity::class.java))
-            val questionsIntent = Intent(this, QuestionnaireActivity::class.java)
-            startActivity(questionsIntent)
+            startActivity(Intent(this, SignupActivity::class.java))
         }
     }
 }

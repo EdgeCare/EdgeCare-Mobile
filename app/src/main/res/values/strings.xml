@@ -16,9 +16,6 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="birthday">Birthday</string>
-
-
-    <!-- persona questions -->
     <string name="gender">Gender</string>
     <string name="health_profile">Health Profile</string>
     <string name="basic_information">Basic Information</string>
@@ -42,11 +39,14 @@
     <string name="do_you_consume_alcohol">Do you consume alcohol?</string>
     <string name="have_you_ever_been_diagnosed_with_high_blood_pressure">Have you ever been diagnosed with high blood pressure?</string>
     <string name="high_blood_pressure">High Blood Pressure</string>
-
-    <!-- Icons / Images -->
+    <string name="toSignUp">Not Registered Yet? <font color="#3E9EFF"> Sign Up !</font> </string>
+    <string name="type_here">Type here…</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="toLogIn">Already hava an account? <font color="#3E9EFF">Log in</font></string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up">Sign Up</string>
     <string name="appLogo">App Logo</string>
-    <string name="send_icon">Send Icon</string>
-    <string name="menu_icon">Menu Icon</string>
     <string name="icon">icon</string>
 
 </resources>

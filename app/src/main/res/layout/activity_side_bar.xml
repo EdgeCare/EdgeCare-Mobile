@@ -21,7 +21,7 @@
             android:layout_margin="16dp"
             android:layout_gravity="top|start"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/menu_icon"
+            android:contentDescription="@string/icon"
             android:src="@drawable/icon_menu_24" />
     </LinearLayout>
 
