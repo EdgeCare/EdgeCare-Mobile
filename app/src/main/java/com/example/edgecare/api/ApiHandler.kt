@@ -1,8 +1,8 @@
 package com.example.edgecare.api
 
 import com.example.edgecare.apiService
-import com.example.edgecare.models.LoginRequest
-import com.example.edgecare.models.LoginResponse
+import com.example.edgecare.models.UserCreateRequest
+import com.example.edgecare.models.TokenResponse
 import com.example.edgecare.models.UserQuestionRequest
 import com.example.edgecare.models.UserQuestionResponse
 
@@ -30,13 +30,13 @@ fun sendUserMessage(message: String, onResult: (response: UserQuestionResponse?)
 }
 
 fun userLogin(email: String, password: String, onResult: (success: Boolean, message: String?) -> Unit) {
-    val loginRequest = LoginRequest(email, password)
+    val loginRequest = UserCreateRequest(email, password)
     val loginCall = apiService.userLogIn(loginRequest)
 
-    loginCall.enqueue(object : retrofit2.Callback<LoginResponse> {
+    loginCall.enqueue(object : retrofit2.Callback<TokenResponse> {
         override fun onResponse(
-            call: retrofit2.Call<LoginResponse>,
-            response: retrofit2.Response<LoginResponse>
+            call: retrofit2.Call<TokenResponse>,
+            response: retrofit2.Response<TokenResponse>
         ) {
             if (response.isSuccessful) {
                 onResult(true, response.body()?.message)
@@ -45,7 +45,7 @@ fun userLogin(email: String, password: String, onResult: (success: Boolean, mess
             }
         }
 
-        override fun onFailure(call: retrofit2.Call<LoginResponse>, t: Throwable) {
+        override fun onFailure(call: retrofit2.Call<TokenResponse>, t: Throwable) {
             onResult(false, t.message)
         }
     })
