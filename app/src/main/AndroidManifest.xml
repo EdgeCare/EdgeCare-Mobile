@@ -6,6 +6,7 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".EdgeCareApp"
@@ -36,6 +37,12 @@
         <activity
             android:name=".activities.AuthActivity"
             android:exported="false"/>
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignupActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.QuestionnaireActivity"
             android:exported="false"/>

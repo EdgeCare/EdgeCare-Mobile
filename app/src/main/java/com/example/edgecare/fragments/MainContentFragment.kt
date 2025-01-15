@@ -22,6 +22,7 @@ import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Timer
@@ -162,15 +163,15 @@ class MainContentFragment : Fragment() {
 
             // send to server
             // [TODO] - send maskedText with similarReports
-            sendUserMessage(text) { userMessageResponse ->
-                println("Result from server: $userMessageResponse")
-                if (userMessageResponse != null) {
-                    chatMessages.add(ChatMessage(message = userMessageResponse.body, isSentByUser =  false))
+            sendUserMessage(text) { response ->
+                if (response != null) {
+                    chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
+                    saveMessage(chat.id, response.content,false)
                 }
-            }
 
-            chatAdapter.notifyItemInserted(chatMessages.size - 1)
-            binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+            }
         }
     }
 
