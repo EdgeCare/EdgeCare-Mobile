@@ -15,8 +15,8 @@ interface ApiService {
     @POST("auth/login")
     fun userLogIn(@Body loginRequest: UserCreateRequest): Call<TokenResponse>
 
-//    @POST("auth/signIn")
-//    fun userSignIn(@Body ) : Call<>
+    @POST("auth/signup")
+    fun userSignUp(@Body signupRequest: UserCreateRequest) : Call<TokenResponse>
 
     ///// EXAMPLE USAGE /////
     // GET Request to fetch all posts
