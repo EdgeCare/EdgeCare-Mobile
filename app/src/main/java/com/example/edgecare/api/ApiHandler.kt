@@ -6,7 +6,7 @@ import com.example.edgecare.models.LoginResponse
 import com.example.edgecare.models.UserQuestionRequest
 import com.example.edgecare.models.UserQuestionResponse
 
-fun sendUserMessage(message: String, onResult: (UserQuestionResponse?) -> Unit) {
+fun sendUserMessage(message: String, onResult: (response: UserQuestionResponse?) -> Unit) {
     val messageRequest = UserQuestionRequest(content = message)
 
     apiService.sendUserMessage(messageRequest).enqueue(object : retrofit2.Callback<UserQuestionResponse> {
@@ -14,14 +14,12 @@ fun sendUserMessage(message: String, onResult: (UserQuestionResponse?) -> Unit) 
             call: retrofit2.Call<UserQuestionResponse>,
             response: retrofit2.Response<UserQuestionResponse>
         ) {
-            println("----------------------------response")
-            println(response)
+            println("response = $response")
             if (response.isSuccessful) {
-                println("response.isSuccessful")
+                onResult(response.body())
             } else {
-                println("response.isNotSuccessful")
+                onResult(null)
             }
-            response.body()?.let { onResult(it) }
         }
 
         override fun onFailure(call: retrofit2.Call<UserQuestionResponse>, t: Throwable) {
