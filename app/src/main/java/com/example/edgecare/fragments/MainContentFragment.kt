@@ -22,7 +22,6 @@ import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.Timer
