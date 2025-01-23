@@ -82,6 +82,8 @@ class PersonaFragment : Fragment() {
                 heightEditText.setText(it.height.toString())
                 smokingCheckBox.isChecked = it.smoking == true
                 alcoholCheckBox.isChecked = it.alcoholConsumption == true
+                diabetesCheckBox.isChecked = it.diabetes == true
+                highBloodPressureCheckBox.isChecked = it.highBloodPressure == true
 
                 // Disabling fields to prevent editing
                 nameEditText.isEnabled = false
@@ -92,6 +94,8 @@ class PersonaFragment : Fragment() {
                 heightEditText.isEnabled = false
                 smokingCheckBox.isEnabled = false
                 alcoholCheckBox.isEnabled = false
+                diabetesCheckBox.isEnabled= false
+                highBloodPressureCheckBox.isEnabled= false
             }
             return true
         }
@@ -108,6 +112,8 @@ class PersonaFragment : Fragment() {
             heightEditText.isEnabled = true
             smokingCheckBox.isEnabled = true
             alcoholCheckBox.isEnabled = true
+            diabetesCheckBox.isEnabled= true
+            highBloodPressureCheckBox.isEnabled= true
         }
     }
 
@@ -155,6 +161,8 @@ class PersonaFragment : Fragment() {
                     it.height = heightEditText.text.toString().toDouble()
                     it.smoking = smokingCheckBox.isChecked
                     it.alcoholConsumption = alcoholCheckBox.isChecked
+                    it.diabetes = diabetesCheckBox.isChecked
+                    it.highBloodPressure = highBloodPressureCheckBox.isChecked
                 }
                 userDetailsBox.put(it)
             }
@@ -166,7 +174,9 @@ class PersonaFragment : Fragment() {
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
                 smoking = binding.smokingCheckBox.isChecked,
-                alcoholConsumption = binding.alcoholCheckBox.isChecked
+                alcoholConsumption = binding.alcoholCheckBox.isChecked,
+                diabetes = binding.diabetesCheckBox.isChecked,
+                highBloodPressure = binding.highBloodPressureCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
         }
