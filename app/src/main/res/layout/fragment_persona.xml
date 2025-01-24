@@ -63,7 +63,7 @@
                 android:id="@+id/birthdayEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="date"
+                android:inputType="text"
                 android:background="@drawable/edit_text_style"
                 android:layout_marginBottom="10dp" />
 
@@ -141,6 +141,23 @@
                 android:buttonTint="#0000FF"
                 android:layout_marginBottom="10dp" />
 
+            <CheckBox
+                android:id="@+id/diabetesCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Do you have diabetes?"
+                android:textColor="#000080"
+                android:buttonTint="#0000FF"
+                android:layout_marginBottom="10dp" />
+
+            <CheckBox
+                android:id="@+id/highBloodPressureCheckBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Do you have high blood pressure?"
+                android:textColor="#000080"
+                android:buttonTint="#0000FF"
+                android:layout_marginBottom="10dp" />
 
             <!-- Submit Button -->
             <Button
