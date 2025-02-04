@@ -1,5 +1,6 @@
 package com.example.edgecare.fragments
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,9 @@ import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
 import io.objectbox.Box
 import io.objectbox.BoxStore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class PersonaFragment : Fragment() {
 
@@ -27,6 +31,8 @@ class PersonaFragment : Fragment() {
     private var userDataExists: Boolean = false
     private var firstUserDetail: Persona? = null
 
+    private val calendar = Calendar.getInstance()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,6 +40,22 @@ class PersonaFragment : Fragment() {
     ): View {
         // Initialize View Binding
         _binding = FragmentPersonaBinding.inflate(inflater, container, false)
+
+        // DatePickerDialog OnClickListener
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            calendar.set(year, month, day)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            binding.birthdayEditText.setText(dateFormat.format(calendar.time))
+        }
+        binding.birthdayEditText.setOnClickListener {
+            DatePickerDialog(
+                requireContext(), dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+
         return binding.root
     }
 
