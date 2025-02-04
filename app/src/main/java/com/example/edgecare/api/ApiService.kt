@@ -2,6 +2,7 @@ package com.example.edgecare.api
 
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
+import com.example.edgecare.models.UserPersona
 import com.example.edgecare.models.UserQuestionRequest
 import com.example.edgecare.models.UserQuestionResponse
 import retrofit2.Call
@@ -11,6 +12,9 @@ interface ApiService {
 
     @POST("users/userQuestion")
     fun sendUserMessage(@Body messageRequest: UserQuestionRequest): Call<UserQuestionResponse>
+
+    @POST("users/userPersona")
+    fun sendUserPersona(@Body userPersona: UserPersona): Call<Boolean>
 
     @POST("auth/login")
     fun userLogIn(@Body loginRequest: UserCreateRequest): Call<TokenResponse>

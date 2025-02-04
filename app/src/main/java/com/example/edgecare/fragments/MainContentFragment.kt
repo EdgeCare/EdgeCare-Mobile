@@ -156,13 +156,13 @@ class MainContentFragment : Fragment() {
             saveMessage(chat.id, maskedText,false)
 
             // Similarity search for given text
-            val similarReports = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
+            val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
             chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
             saveMessage(chat.id, similarReports,false)
 
             // send to server
             // [TODO] - send maskedText with similarReports
-            sendUserMessage(text) { response ->
+            sendUserMessage(chat.id,text,similarReports) { response ->
                 if (response != null) {
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)

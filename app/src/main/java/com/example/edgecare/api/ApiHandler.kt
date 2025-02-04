@@ -3,11 +3,12 @@ package com.example.edgecare.api
 import com.example.edgecare.apiService
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
+import com.example.edgecare.models.UserPersona
 import com.example.edgecare.models.UserQuestionRequest
 import com.example.edgecare.models.UserQuestionResponse
 
-fun sendUserMessage(message: String, onResult: (response: UserQuestionResponse?) -> Unit) {
-    val messageRequest = UserQuestionRequest(content = message)
+fun sendUserMessage(chatId: Long, message: String, healthReports:String, onResult: (response: UserQuestionResponse?) -> Unit) {
+    val messageRequest = UserQuestionRequest(chatId = chatId, content = message, healthReports = healthReports)
 
     apiService.sendUserMessage(messageRequest).enqueue(object : retrofit2.Callback<UserQuestionResponse> {
         override fun onResponse(
@@ -24,6 +25,28 @@ fun sendUserMessage(message: String, onResult: (response: UserQuestionResponse?)
 
         override fun onFailure(call: retrofit2.Call<UserQuestionResponse>, t: Throwable) {
             println("messageRequest Failed")
+            onResult(null)
+        }
+    })
+}
+
+fun sendUserPersona(userId: Long, persona: String, onResult: (response: Boolean?) -> Unit) {
+    val personaDetails = UserPersona(userId,persona)
+    apiService.sendUserPersona(personaDetails).enqueue(object : retrofit2.Callback<Boolean> {
+        override fun onResponse(
+            call: retrofit2.Call<Boolean>,
+            response: retrofit2.Response<Boolean>
+        ) {
+            println("response = $response")
+            if (response.isSuccessful) {
+                onResult(response.body())
+            } else {
+                onResult(null)
+            }
+        }
+
+        override fun onFailure(call: retrofit2.Call<Boolean>, t: Throwable) {
+            println("persona save request Failed")
             onResult(null)
         }
     })

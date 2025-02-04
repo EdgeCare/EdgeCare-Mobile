@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.activities.MainActivity
+import com.example.edgecare.api.sendUserPersona
 import com.example.edgecare.databinding.FragmentPersonaBinding
 import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
@@ -165,6 +166,11 @@ class PersonaFragment : Fragment() {
                     it.highBloodPressure = highBloodPressureCheckBox.isChecked
                 }
                 userDetailsBox.put(it)
+                sendUserPersona(it.id,personaToString(it)) { response ->
+                    if (response == null) {
+                        println("error while saving user details")
+                    }
+                }
             }
         } else {
             val userDetail = Persona(
@@ -179,7 +185,16 @@ class PersonaFragment : Fragment() {
                 highBloodPressure = binding.highBloodPressureCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
+            sendUserPersona(userDetail.id,personaToString(userDetail)) { response ->
+                if (response == null) {
+                    println("error while saving user details")
+                }
+            }
         }
+    }
+
+    private fun personaToString(persona: Persona): String {
+            return """ Age: ${persona.age ?: "N/A"} , Birthday: ${persona.birthday ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
     override fun onDestroyView() {
