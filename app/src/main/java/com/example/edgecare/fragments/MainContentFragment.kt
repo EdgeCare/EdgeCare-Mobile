@@ -166,7 +166,7 @@ class MainContentFragment : Fragment() {
 
             // send to server
             // [TODO] - send maskedText with similarReports
-            sendUserMessage(chat.id,tokenizedString,similarReports) { response ->
+            sendUserMessage(chat.id,tokenizedString,similarReports,requireContext()) { response ->
                 if (response != null) {
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)
