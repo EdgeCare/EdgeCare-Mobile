@@ -16,4 +16,5 @@ data class UserQuestionResponse(
 data class UserPersona(
     val userId:Long,
     val details: String,
+    val token: String = "TOKEN",
 )

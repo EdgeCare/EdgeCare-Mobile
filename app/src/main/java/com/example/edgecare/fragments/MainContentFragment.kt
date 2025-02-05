@@ -17,6 +17,8 @@ import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
+import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
+import com.example.edgecare.utils.AnonymizationUtils.calculateAgeFromYear
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -155,6 +157,8 @@ class MainContentFragment : Fragment() {
             chatMessages.add(ChatMessage(message = maskedText, isSentByUser =  false))
             saveMessage(chat.id, maskedText,false)
 
+            val tokenizedString = createTokenizedString(result)
+
             // Similarity search for given text
             val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
             chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
@@ -162,7 +166,7 @@ class MainContentFragment : Fragment() {
 
             // send to server
             // [TODO] - send maskedText with similarReports
-            sendUserMessage(chat.id,text,similarReports) { response ->
+            sendUserMessage(chat.id,tokenizedString,similarReports) { response ->
                 if (response != null) {
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)
@@ -173,6 +177,44 @@ class MainContentFragment : Fragment() {
             }
         }
     }
+
+    private fun createTokenizedString(input: List<Pair<String, String>>): String {
+        val result = StringBuilder()
+        var currentLabel: String? = null
+
+        for ((token, label) in input) {
+            if (label == "O" && token !="[CLS]" && token != "[SEP]") {
+                // If label is "O", handle token concatenation based on "##"
+                if (token.startsWith("##")) {
+                    result.setLength(result.length - 1) // Remove trailing space
+                    result.append(token.removePrefix("##"))
+                } else {
+                    result.append(token).append(" ")
+                }
+                currentLabel = null // Reset current label
+            } else if(token !="[CLS]" && token != "[SEP]")  {
+                // If the label is not "O", add the label and process token
+                if (currentLabel != label ) {
+                    var newLabel  = ""
+                    if(label == "AGE"){
+                        val ageRange = token.toIntOrNull()?.let { anonymizeAge(it) }
+                        if(ageRange !=null){newLabel = " RANGE : $ageRange YEARS"}
+                    }
+//                    else if(label == "BIRTHDAY"){
+//                        val age = calculateAgeFromYear(token)
+//                        val ageRange = age?.let { anonymizeAge(it) }
+//                        if(ageRange !=null){newLabel = " AGE RANGE : $ageRange YEARS"}
+//                    }
+                    result.append("[").append(label).append(newLabel).append("] ")
+                    currentLabel = label
+                }
+
+            }
+        }
+
+        return result.toString().trim()
+    }
+
 
     private fun getOrCreateChat(chatId: Long): Chat {
         // If chatId == 9999L, we know there can't be an existing Chat with that ID

@@ -7,8 +7,10 @@ import com.example.edgecare.models.UserPersona
 import com.example.edgecare.models.UserQuestionRequest
 import com.example.edgecare.models.UserQuestionResponse
 
-fun sendUserMessage(chatId: Long, message: String, healthReports:String, onResult: (response: UserQuestionResponse?) -> Unit) {
-    val messageRequest = UserQuestionRequest(chatId = chatId, content = message, healthReports = healthReports)
+fun sendUserMessage( chatId: Long, message: String, healthReports:String, onResult: (response: UserQuestionResponse?) -> Unit) {
+    //TODO- Set userID and token
+
+    val messageRequest = UserQuestionRequest(userId = 1, chatId = chatId, token = "Token", content = message, healthReports = healthReports)
 
     apiService.sendUserMessage(messageRequest).enqueue(object : retrofit2.Callback<UserQuestionResponse> {
         override fun onResponse(
@@ -31,7 +33,8 @@ fun sendUserMessage(chatId: Long, message: String, healthReports:String, onResul
 }
 
 fun sendUserPersona(userId: Long, persona: String, onResult: (response: Boolean?) -> Unit) {
-    val personaDetails = UserPersona(userId,persona)
+    //TODO- Set userID and token
+    val personaDetails = UserPersona(userId,persona,"Token")
     apiService.sendUserPersona(personaDetails).enqueue(object : retrofit2.Callback<Boolean> {
         override fun onResponse(
             call: retrofit2.Call<Boolean>,

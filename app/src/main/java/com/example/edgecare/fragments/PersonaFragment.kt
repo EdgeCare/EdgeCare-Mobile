@@ -14,6 +14,8 @@ import com.example.edgecare.api.sendUserPersona
 import com.example.edgecare.databinding.FragmentPersonaBinding
 import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
+import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
+import com.example.edgecare.utils.AnonymizationUtils.calculateAge
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import java.text.SimpleDateFormat
@@ -216,7 +218,9 @@ class PersonaFragment : Fragment() {
     }
 
     private fun personaToString(persona: Persona): String {
-            return """ Age: ${persona.age ?: "N/A"} , Birthday: ${persona.birthday ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
+        val age = persona.birthday?.let { calculateAge(it) }
+        val ageString = age?.let { anonymizeAge(it) }
+        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
     override fun onDestroyView() {
