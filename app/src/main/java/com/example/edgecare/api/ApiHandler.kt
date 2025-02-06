@@ -93,7 +93,7 @@ fun userLogin(email: String, password: String, onResult: (success: Boolean, mess
     })
 }
 
-fun userSignUp(email: String, password: String, onResult: (success: Boolean, message: String?) -> Unit) {
+fun userSignUp(email: String, password: String, onResult: (success: Boolean, message: String?,userId:String?,token:String?) -> Unit) {
     val signupRequest = UserCreateRequest(email, password)
     val signupCall = apiService.userSignUp(signupRequest)
 
@@ -103,14 +103,14 @@ fun userSignUp(email: String, password: String, onResult: (success: Boolean, mes
             response: retrofit2.Response<TokenResponse>
         ) {
             if (response.isSuccessful) {
-                onResult(true, response.body()?.message)
+                onResult(true, response.body()?.message,response.body()?.userId,response.body()?.token)
             } else {
-                onResult(false, response.errorBody()?.string())
+                onResult(false, response.errorBody()?.string(),"","")
             }
         }
 
         override fun onFailure(call: retrofit2.Call<TokenResponse>, t: Throwable) {
-            onResult(false, t.message)
+            onResult(false, t.message,"","")
         }
     })
 }
