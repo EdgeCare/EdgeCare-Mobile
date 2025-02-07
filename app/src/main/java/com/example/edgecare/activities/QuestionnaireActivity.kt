@@ -1,5 +1,6 @@
 package com.example.edgecare.activities
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,11 +13,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
-import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
 import com.example.edgecare.models.QuestionnaireQuestion
 import com.example.edgecare.questionsList
 import io.objectbox.Box
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class QuestionnaireActivity : AppCompatActivity() {
 
@@ -24,7 +27,8 @@ class QuestionnaireActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private lateinit var binding: ActivityQuestionnaireBinding
     private var userDetailsBox: Box<Persona> = ObjectBox.store.boxFor(Persona::class.java)
-
+    private val calendar = Calendar.getInstance()
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -141,6 +145,32 @@ class QuestionnaireActivity : AppCompatActivity() {
                 val editText = numberInputView.findViewById<EditText>(R.id.questionnaireNumberInput)
                 editText.setText((question.answer as? Int)?.toString() ?: "")
             }
+            "date" -> {
+                // Show "Next" button
+                binding.nextButton.visibility = View.VISIBLE
+
+                val dateInputView = layoutInflater.inflate(R.layout.questionnaire_input_date, binding.inputContainer, false)
+                binding.inputContainer.addView(dateInputView)
+
+                val editText = dateInputView.findViewById<EditText>(R.id.questionnaireDateInput)
+
+                // DatePickerDialog OnClickListener
+                val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+                    calendar.set(year, month, day)
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    editText.setText(dateFormat.format(calendar.time))
+                }
+                editText.setOnClickListener {
+                    DatePickerDialog(
+                        this, dateSetListener,
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    ).show()
+                }
+
+                editText.setText(question.answer as? String ?: "")
+            }
             else -> {
                 val unknownText = TextView(this).apply {
                     text = "Unsupported input type"
@@ -157,6 +187,10 @@ class QuestionnaireActivity : AppCompatActivity() {
         when (question.inputType) {
             "text" -> {
                 val editText = inputContainer.findViewById<EditText>(R.id.questionnaireTextInput)
+                question.answer = editText?.text?.toString()
+            }
+            "date" -> {
+                val editText = inputContainer.findViewById<EditText>(R.id.questionnaireDateInput)
                 question.answer = editText?.text?.toString()
             }
             "number" -> {

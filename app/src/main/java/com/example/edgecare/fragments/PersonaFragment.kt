@@ -1,5 +1,6 @@
 package com.example.edgecare.fragments
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,11 +10,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.activities.MainActivity
+import com.example.edgecare.api.sendUserPersona
 import com.example.edgecare.databinding.FragmentPersonaBinding
 import com.example.edgecare.models.Gender
 import com.example.edgecare.models.Persona
+import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
+import com.example.edgecare.utils.AnonymizationUtils.calculateAge
 import io.objectbox.Box
 import io.objectbox.BoxStore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class PersonaFragment : Fragment() {
 
@@ -26,6 +33,8 @@ class PersonaFragment : Fragment() {
     private var userDataExists: Boolean = false
     private var firstUserDetail: Persona? = null
 
+    private val calendar = Calendar.getInstance()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,6 +42,22 @@ class PersonaFragment : Fragment() {
     ): View {
         // Initialize View Binding
         _binding = FragmentPersonaBinding.inflate(inflater, container, false)
+
+        // DatePickerDialog OnClickListener
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            calendar.set(year, month, day)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            binding.birthdayEditText.setText(dateFormat.format(calendar.time))
+        }
+        binding.birthdayEditText.setOnClickListener {
+            DatePickerDialog(
+                requireContext(), dateSetListener,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+
         return binding.root
     }
 
@@ -82,6 +107,8 @@ class PersonaFragment : Fragment() {
                 heightEditText.setText(it.height.toString())
                 smokingCheckBox.isChecked = it.smoking == true
                 alcoholCheckBox.isChecked = it.alcoholConsumption == true
+                diabetesCheckBox.isChecked = it.diabetes == true
+                highBloodPressureCheckBox.isChecked = it.highBloodPressure == true
 
                 // Disabling fields to prevent editing
                 nameEditText.isEnabled = false
@@ -92,6 +119,8 @@ class PersonaFragment : Fragment() {
                 heightEditText.isEnabled = false
                 smokingCheckBox.isEnabled = false
                 alcoholCheckBox.isEnabled = false
+                diabetesCheckBox.isEnabled= false
+                highBloodPressureCheckBox.isEnabled= false
             }
             return true
         }
@@ -108,6 +137,8 @@ class PersonaFragment : Fragment() {
             heightEditText.isEnabled = true
             smokingCheckBox.isEnabled = true
             alcoholCheckBox.isEnabled = true
+            diabetesCheckBox.isEnabled= true
+            highBloodPressureCheckBox.isEnabled= true
         }
     }
 
@@ -155,8 +186,15 @@ class PersonaFragment : Fragment() {
                     it.height = heightEditText.text.toString().toDouble()
                     it.smoking = smokingCheckBox.isChecked
                     it.alcoholConsumption = alcoholCheckBox.isChecked
+                    it.diabetes = diabetesCheckBox.isChecked
+                    it.highBloodPressure = highBloodPressureCheckBox.isChecked
                 }
                 userDetailsBox.put(it)
+                sendUserPersona(it.id,personaToString(it)) { response ->
+                    if (response == null) {
+                        println("error while saving user details")
+                    }
+                }
             }
         } else {
             val userDetail = Persona(
@@ -166,10 +204,23 @@ class PersonaFragment : Fragment() {
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
                 smoking = binding.smokingCheckBox.isChecked,
-                alcoholConsumption = binding.alcoholCheckBox.isChecked
+                alcoholConsumption = binding.alcoholCheckBox.isChecked,
+                diabetes = binding.diabetesCheckBox.isChecked,
+                highBloodPressure = binding.highBloodPressureCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
+            sendUserPersona(userDetail.id,personaToString(userDetail)) { response ->
+                if (response == null) {
+                    println("error while saving user details")
+                }
+            }
         }
+    }
+
+    private fun personaToString(persona: Persona): String {
+        val age = persona.birthday?.let { calculateAge(it) }
+        val ageString = age?.let { anonymizeAge(it) }
+        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
     override fun onDestroyView() {

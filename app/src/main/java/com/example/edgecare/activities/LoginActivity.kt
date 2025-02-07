@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.api.userLogin
 import com.example.edgecare.databinding.ActivitySignInBinding
+import com.example.edgecare.utils.AuthUtils
 
 class LoginActivity: AppCompatActivity()  {
     private lateinit var binding: ActivitySignInBinding
@@ -15,6 +16,7 @@ class LoginActivity: AppCompatActivity()  {
 
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val authTokenRepo = AuthUtils()
 
         binding.login.setOnClickListener {
             val email = binding.loginEmail.text.toString()
@@ -23,8 +25,11 @@ class LoginActivity: AppCompatActivity()  {
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
             } else {
-                userLogin(email, password) { success, message ->
+                userLogin(email, password) { success, message, token, userId ->
                     if (success) {
+                        if (token != null) {
+                            authTokenRepo.saveToken(userId.toLong(),token, 3600000)
+                        }
                         Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT)
                             .show()
                         startActivity(Intent(this, MainActivity::class.java))

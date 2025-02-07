@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.R
+import com.example.edgecare.utils.AuthUtils
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity: AppCompatActivity() {
@@ -32,7 +33,7 @@ class SplashActivity: AppCompatActivity() {
     }
 
     private fun checkIfUserLoggedIn(): Boolean {
-        // [ToDO] - login logic
-        return false
+        val authUtils = AuthUtils()
+        return authUtils.isTokenValid()
     }
 }
