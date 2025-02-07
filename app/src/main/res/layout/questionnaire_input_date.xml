@@ -1,0 +1,20 @@
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/questionnaireDateInput"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:importantForAutofill="no"
+    android:inputType="text"
+    android:textSize="16sp"
+    android:textColor="@color/textColor1"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/questionnaire_input_text_background"
+
+    android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+    android:hint="@string/select_your_birthday"
+    android:focusable="false"
+    android:clickable="true"
+    />
+
+
+

@@ -23,7 +23,7 @@ val questionsList = listOf(
         3,
         "What is your date of birth?",
         "birthday",
-        "text"
+        "date"
     ),
     QuestionnaireQuestion(
         4,

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.api.userSignUp
 import com.example.edgecare.databinding.ActivitySignUpBinding
+import com.example.edgecare.utils.AuthUtils
 
 class SignupActivity: AppCompatActivity()  {
     private lateinit var binding: ActivitySignUpBinding
@@ -15,6 +16,8 @@ class SignupActivity: AppCompatActivity()  {
 
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val authUtils = AuthUtils()
 
         binding.signup.setOnClickListener {
             val email = binding.signupEmail.text.toString()
@@ -28,8 +31,13 @@ class SignupActivity: AppCompatActivity()  {
             } else if ( password != confirmPassword ) {
                 Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             } else {
-                userSignUp(email, password) { success, message ->
+                userSignUp(email, password) { success, message,userId,token ->
                     if (success) {
+                        if (userId != null) {
+                            if (token != null) {
+                                authUtils.saveToken(userId.toLong(),token,3600000)
+                            }
+                        }
                         Toast.makeText(this, "Sign Up successful", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this, QuestionnaireActivity::class.java))
                     } else {
