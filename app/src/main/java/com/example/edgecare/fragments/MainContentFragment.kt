@@ -19,6 +19,7 @@ import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
 import com.example.edgecare.utils.AnonymizationUtils.calculateAgeFromYear
+import com.example.edgecare.utils.LatencyLogger
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -149,25 +150,39 @@ class MainContentFragment : Fragment() {
 
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
+            LatencyLogger.start("Total End-to-End Latency")
+            // Similarity search for given text
+            LatencyLogger.start("Health Reports Retrieving")
+            val similarReportsList = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
+            LatencyLogger.end("Health Reports Retrieving")
 
             // Mask text
+            LatencyLogger.start("Masking user Input and health reports")
             val features = DeIDModelUtils.prepareInputs(requireContext(), text)
             val result = DeIDModelUtils.runInference(features)
-            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
-            chatMessages.add(ChatMessage(message = maskedText, isSentByUser =  false))
-            saveMessage(chat.id, maskedText,false)
+            val maskedString = createMaskedString(result)
+            chatMessages.add(ChatMessage(message = maskedString, isSentByUser =  false))
+            saveMessage(chat.id, maskedString,false)
 
-            val tokenizedString = createTokenizedString(result)
+            val maskedHealthReportsBuilder = StringBuilder()
+            similarReportsList.forEach{report->
+                val features2 = DeIDModelUtils.prepareInputs(requireContext(), report)
+                val result2 = DeIDModelUtils.runInference(features2)
+                val maskedHealthReport = createMaskedString(result2)
+                maskedHealthReportsBuilder.append("Report chunk : $maskedHealthReport ,\n \n  ")
+            }
+            val maskedHealthReports = maskedHealthReportsBuilder.toString()
+            chatMessages.add(ChatMessage(message = maskedHealthReports, isSentByUser =  false))
+            saveMessage(chat.id, maskedHealthReports,false)
 
-            // Similarity search for given text
-            val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
-            chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
-            saveMessage(chat.id, similarReports,false)
+            LatencyLogger.end("Masking user Input and health reports")
+
 
             // send to server
-            // [TODO] - send maskedText with similarReports
-            sendUserMessage(chat.id,tokenizedString,similarReports,requireContext()) { response ->
+            LatencyLogger.start("API Request Delay")
+            sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
                 if (response != null) {
+                    LatencyLogger.end("API Request Delay")
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)
                 }
@@ -175,10 +190,11 @@ class MainContentFragment : Fragment() {
                 chatAdapter.notifyItemInserted(chatMessages.size - 1)
                 binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
             }
+            LatencyLogger.end("Total End-to-End Latency")
         }
     }
 
-    private fun createTokenizedString(input: List<Pair<String, String>>): String {
+    private fun createMaskedString(input: List<Pair<String, String>>): String {
         val result = StringBuilder()
         var currentLabel: String? = null
 

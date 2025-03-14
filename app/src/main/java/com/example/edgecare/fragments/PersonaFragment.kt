@@ -103,8 +103,8 @@ class PersonaFragment : Fragment() {
                     radioButtonMale.isChecked = true
                 else if (it.gender?.let { it1 -> Gender.fromDisplayName(it1) } == Gender.FEMALE)
                     radioButtonFemale.isChecked = true
-                weightEditText.setText(it.weight.toString())
-                heightEditText.setText(it.height.toString())
+                if(it.weight != null){weightEditText.setText(it.weight.toString())}
+                if(it.height != null)heightEditText.setText(it.height.toString())
                 smokingCheckBox.isChecked = it.smoking == true
                 alcoholCheckBox.isChecked = it.alcoholConsumption == true
                 diabetesCheckBox.isChecked = it.diabetes == true
