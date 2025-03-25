@@ -19,13 +19,17 @@ import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
 import com.example.edgecare.utils.AnonymizationUtils.calculateAgeFromYear
+import com.example.edgecare.utils.CPUMonitor
 import com.example.edgecare.utils.LatencyLogger
+import com.example.edgecare.utils.RAMMonitor
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -42,7 +46,7 @@ class MainContentFragment : Fragment() {
     private lateinit var chat : Chat
     private var chatId: Long = 9999L
 
-    override fun onCreateView(
+    override fun onCreateView  (
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
@@ -71,13 +75,44 @@ class MainContentFragment : Fragment() {
 
         // Set up click listener for the send button
         binding.sendButton.setOnClickListener {
-            val inputText = binding.mainVIewInputText.text.toString()
-            if (inputText.isNotEmpty()) {
-                binding.tipSection.visibility = View.GONE   // Hide the tip section
-                processInputText(inputText)
-                binding.mainVIewInputText.text.clear()
-            } else {
-                Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
+            CoroutineScope(Dispatchers.Main).launch {
+                val inputText = binding.mainVIewInputText.text.toString()
+                if (inputText.isNotEmpty()) {
+                    binding.tipSection.visibility = View.GONE   // Hide the tip section
+                    val questions = arrayOf(
+                        "I've been feeling unusually tired every day, even after a full night's sleep, and I don't do anything too physically demanding—just light housework and a desk job—could this be a sign of something serious or just stress-related?",
+                        "Lately, I’ve been getting frequent headaches in the late afternoon, especially after spending most of the day on my laptop for work—could this be due to screen time or something else I should get checked?",
+                        "I’ve noticed that after I eat, especially dinner, I tend to get bloated and feel uncomfortable for hours—my meals are usually pretty simple, so I’m wondering if this could be a digestion issue or maybe a food intolerance?",
+                        "Every morning when I wake up and stand up quickly, I feel a bit dizzy and sometimes need to sit down again—my diet and water intake seem fine to me, but should I be concerned about low blood pressure or something else?",
+                        "I work out 3–4 times a week, mostly cardio and light weights, but recently I’ve been having mild chest discomfort afterward—it's not severe, but it’s enough to make me worried, should I see a cardiologist?",
+                        "Over the past few weeks, I've been feeling anxious without any clear reason, and it’s starting to affect my concentration at work and my sleep—could this be a sign of an anxiety disorder, or should I look at my lifestyle first?",
+                        "My sleep has been really disturbed lately—I go to bed around the same time every night, but I wake up several times for no reason and feel exhausted the next day—could this be a sleep disorder?",
+                        "I’m generally a healthy eater, but I’ve noticed that every time I eat dairy products, I get mild stomach cramps and sometimes diarrhea—should I be tested for lactose intolerance or could this be something else?",
+                        "For the past month, I’ve been experiencing joint stiffness in the mornings that usually improves by midday—I’m 36 and moderately active, so I’m wondering if this could be early arthritis or just a temporary issue?",
+                        "I've had a persistent dry cough for about two weeks now—it’s not severe, but it hasn’t gone away, and I don’t smoke or have allergies—should I be concerned about something like asthma or even COVID?",
+                        "I spend most of my day sitting for work, and I’ve started to notice pain in my lower back by evening—I've tried adjusting my chair and posture, but it doesn’t seem to help much—what should I do to prevent this from getting worse?",
+                        "After I exercise, especially when it’s intense or includes running, I sometimes feel a tightness in my chest and wheezing—does this mean I could have exercise-induced asthma or should I get some tests done?",
+                        "My heart sometimes feels like it's skipping a beat or fluttering, especially when I'm resting in bed at night—it only lasts a few seconds but happens a few times a week—should I be worried about arrhythmia?",
+                        "Even though I eat regularly and include vegetables and protein in my meals, I’ve been losing weight unintentionally over the past two months—could this be a metabolic issue or something more serious?",
+                        "I’ve been having frequent urges to urinate even when I haven’t had much water to drink, and sometimes there's a slight burning sensation—could this be a UTI or related to something else like blood sugar levels?",
+                        "Most evenings, I feel a dull ache in my legs, especially after sitting or standing for too long—I'm not very active during the day, but I do walk occasionally—could this be poor circulation or something related to veins?",
+                        "My skin has become itchy and dry all over, and no matter how much moisturizer I use, it doesn’t seem to help—I haven’t changed soaps or detergents—could this be a sign of a skin condition or something internal like thyroid issues?",
+                        "I’ve been feeling more irritable and low-energy during the day, even though I haven’t made any major changes to my routine—is it possible this is related to hormones, or should I consider mental health support?",
+                        "Recently, I’ve noticed my hands tremble slightly when I try to hold something still, like a cup or my phone—it’s not all the time, but enough to notice—could this be a neurological issue or just stress?",
+                        "I feel like I’m constantly hungry even shortly after eating, and I’ve also been more thirsty than usual—I'm not eating excessively sugary foods, so I’m wondering if I should get checked for diabetes?"
+                    )
+
+                    for (question in questions) {
+                        processInputText(question)
+                        delay(60000L)
+                    }
+
+
+                    //                processInputText(inputText)
+                    binding.mainVIewInputText.text.clear()
+                } else {
+                    Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
@@ -155,6 +190,8 @@ class MainContentFragment : Fragment() {
             LatencyLogger.start("Health Reports Retrieving")
             val similarReportsList = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
             LatencyLogger.end("Health Reports Retrieving")
+            CPUMonitor.logCPUUsage("After Health Reports Retrieval")
+            RAMMonitor.logRAMUsage(requireContext(), "After Health Reports Retrieval")
 
             // Mask text
             LatencyLogger.start("Masking user Input and health reports")
@@ -166,6 +203,7 @@ class MainContentFragment : Fragment() {
 
             val maskedHealthReportsBuilder = StringBuilder()
             similarReportsList.forEach{report->
+//                CPUMonitor.logCPUUsage("Masking")
                 val features2 = DeIDModelUtils.prepareInputs(requireContext(), report)
                 val result2 = DeIDModelUtils.runInference(features2)
                 val maskedHealthReport = createMaskedString(result2)
@@ -176,6 +214,8 @@ class MainContentFragment : Fragment() {
             saveMessage(chat.id, maskedHealthReports,false)
 
             LatencyLogger.end("Masking user Input and health reports")
+            CPUMonitor.logCPUUsage("After Masking")
+            RAMMonitor.logRAMUsage(requireContext(), "After Masking")
 
 
             // send to server
@@ -189,8 +229,11 @@ class MainContentFragment : Fragment() {
 
                 chatAdapter.notifyItemInserted(chatMessages.size - 1)
                 binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                LatencyLogger.end("Total End-to-End Latency")
+                CPUMonitor.logCPUUsage("After Answer display")
+                RAMMonitor.logRAMUsage(requireContext(), "After Answer display")
             }
-            LatencyLogger.end("Total End-to-End Latency")
+
         }
     }
 
@@ -277,6 +320,11 @@ class MainContentFragment : Fragment() {
         chatAdapter.notifyDataSetChanged()
         binding.chatTopic.setText(newChat.chatName)
         chatBox.put(newChat)
+        LatencyLogger.logSummary()
+        CPUMonitor.logAverageUsage()
+        CPUMonitor.resetUsageData()
+        RAMMonitor.logAverageRAMUsage()
+        RAMMonitor.resetUsageData()
         return newChat
     }
 
