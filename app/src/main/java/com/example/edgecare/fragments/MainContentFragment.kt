@@ -153,11 +153,11 @@ class MainContentFragment : Fragment() {
             // Mask text
             val features = DeIDModelUtils.prepareInputs(requireContext(), text)
             val result = DeIDModelUtils.runInference(features)
-            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
-            chatMessages.add(ChatMessage(message = maskedText, isSentByUser =  false))
-            saveMessage(chat.id, maskedText,false)
+//            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
 
             val tokenizedString = createTokenizedString(result)
+            chatMessages.add(ChatMessage(message = tokenizedString, isSentByUser =  false))
+            saveMessage(chat.id, tokenizedString,false)
 
             // Similarity search for given text
             val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
@@ -200,11 +200,16 @@ class MainContentFragment : Fragment() {
                         val ageRange = token.toIntOrNull()?.let { anonymizeAge(it) }
                         if(ageRange !=null){newLabel = " RANGE : $ageRange YEARS"}
                     }
-//                    else if(label == "BIRTHDAY"){
-//                        val age = calculateAgeFromYear(token)
-//                        val ageRange = age?.let { anonymizeAge(it) }
-//                        if(ageRange !=null){newLabel = " AGE RANGE : $ageRange YEARS"}
-//                    }
+                    else if (label == "BIRTHDATE") {
+                        println("tokentokentoken")
+                        println(token)
+                        if (token.length == 4 && token.toIntOrNull() != null) {
+                            val age = 2025 - token.toInt()
+                            val ageRange = anonymizeAge(age)
+                            newLabel = " AGE RANGE : $ageRange YEARS"
+
+                        }
+                    }
                     result.append("[").append(label).append(newLabel).append("] ")
                     currentLabel = label
                 }

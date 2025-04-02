@@ -4,10 +4,11 @@
   "2":  "PERSON",
   "3":  "STAFF",
   "4":  "AGE",
-  "5":  "DATE",
-  "6":  "PHONE",
-  "7":  "ID",
-  "8":  "EMAIL",
-  "9":  "LOC",
-  "10":  "ORG"
+  "5":  "BIRTHDATE",
+  "6":  "DATE",
+  "7":  "PHONE",
+  "8":  "ID",
+  "9":  "EMAIL",
+  "10":  "LOC",
+  "11":  "ORG"
 }
