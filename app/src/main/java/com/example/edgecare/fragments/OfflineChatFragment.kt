@@ -1,11 +1,14 @@
 package com.example.edgecare.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
@@ -23,10 +26,12 @@ import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.util.Date
 
 
-
+private const val LOGTAG = "[ChatActivity-Kt]"
+private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
 
 class OfflineChatFragment : Fragment() {
 
@@ -40,13 +45,8 @@ class OfflineChatFragment : Fragment() {
     private lateinit var chat : Chat
     private var chatId: Long = 9999L
 
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
+    private val viewModel: ChatScreenViewModel by inject()
+    private var modelUnloaded = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,7 +79,7 @@ class OfflineChatFragment : Fragment() {
             val inputText = binding.mainVIewInputText.text.toString()
             if (inputText.isNotEmpty()) {
                 binding.tipSection.visibility = View.GONE   // Hide the tip section
-                //processInputText(inputText)
+                processInputText(inputText)
                 binding.mainVIewInputText.text.clear()
             } else {
                 Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
@@ -103,6 +103,11 @@ class OfflineChatFragment : Fragment() {
             binding.tipSection.visibility = View.GONE   // Hide the tip section
         }
 
+        //user input handling
+        var questionText: String = viewModel.questionTextDefaultVal ?: ""
+        val modelLoadingState by viewModel.modelLoadState.collectAsStateWithLifecycle()
+
+
         return view
 
         // Inflate the layout for this fragment
@@ -115,23 +120,25 @@ class OfflineChatFragment : Fragment() {
         saveMessage(chat.id, text,true)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+
+        //
+        viewModel.sendUserQuery(text)
+        lifecycleScope.launch {
+            val messages = viewModel.getChatMessages(chatId).first()
+            for (msg in messages) {
+                chatMessages.add(ChatMessage(message = msg.message, isSentByUser =  msg.isUserMessage))
+                saveMessage(chat.id, msg.message,msg.isUserMessage)
+                chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+            }
+
+        }
+
+
+
         /*
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
-
-            // Mask text
-            val features = DeIDModelUtils.prepareInputs(requireContext(), text)
-            val result = DeIDModelUtils.runInference(features)
-//            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
-
-            val tokenizedString = createTokenizedString(result)
-            chatMessages.add(ChatMessage(message = tokenizedString, isSentByUser =  false))
-            saveMessage(chat.id, tokenizedString,false)
-
-            // Similarity search for given text
-            val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
-            chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
-            saveMessage(chat.id, similarReports,false)
 
             // send to server
             // [TODO] - send maskedText with similarReports
@@ -213,6 +220,19 @@ class OfflineChatFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null // Avoid memory leaks
+    }
+    override fun onStart() {
+        super.onStart()
+        if (modelUnloaded) {
+            viewModel.loadModel()
+            LOGD("onStart() called - model loaded")
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        modelUnloaded = viewModel.unloadModel()
+        LOGD("onStop() called - model unloaded result: $modelUnloaded")
     }
 
 }
