@@ -10,6 +10,7 @@ import com.example.edgecare.R
 import com.example.edgecare.adapters.ChatHistoryAdapter
 import com.example.edgecare.databinding.ActivitySideBarBinding
 import com.example.edgecare.fragments.MainContentFragment
+import com.example.edgecare.fragments.OfflineChatFragment
 import com.example.edgecare.fragments.PersonaFragment
 import com.example.edgecare.fragments.ReportHandleFragment
 import com.example.edgecare.models.Chat
@@ -73,7 +74,8 @@ class MainActivity : AppCompatActivity() {
             binding.btnNewEdgeCare,
             binding.personaButton,
             binding.healthReportsButton,
-            binding.btnAppSettings
+            binding.btnAppSettings,
+            binding.btnOfflineChat
         )
 
         buttons.forEach { button ->
@@ -111,6 +113,15 @@ class MainActivity : AppCompatActivity() {
                 .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
             selectButton(binding.healthReportsButton.id)
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+
+        binding.btnOfflineChat.setOnClickListener {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.chatContentFrame, OfflineChatFragment())
+                .addToBackStack(null) // Add to back stack for navigation (optional)
+                .commit()
+            selectButton(binding.btnOfflineChat.id)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 

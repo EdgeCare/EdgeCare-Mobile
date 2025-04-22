@@ -1,0 +1,171 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".fragments.OfflineChatFragment">-->
+
+<!--    &lt;!&ndash; TODO: Update blank fragment layout &ndash;&gt;-->
+<!--    <TextView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:text="@string/hello_blank_fragment" />-->
+
+<!--</FrameLayout>-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:elevation="4dp"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="2"
+            android:layout_marginStart="72dp"
+            android:layout_gravity="start"
+            android:contentDescription="@string/appLogo"
+            android:src="@drawable/logo_with_name_no_background" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/newChatButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/icon"
+            android:src="@drawable/icon_add_24" />
+    </LinearLayout>
+
+
+    <!-- Tip -->
+    <LinearLayout
+        android:id="@+id/tipSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/tip_background"
+        android:elevation="4dp"
+        android:visibility="visible"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="25dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_tip_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/icon" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp"
+            android:text="@string/main_component_tip"
+            android:textColor="@color/textColor1"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/closeTipButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/icon_close_24"
+            android:contentDescription="@string/icon" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/textColor1"
+        android:elevation="4dp"
+        android:titleTextColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIconTint="@color/white">
+
+        <EditText
+            android:id="@+id/chatTopic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="Offline Chat"
+            android:textColor="@color/textColor2" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Chat Area -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:clipToPadding="false" />
+
+    <!-- Bottom Input Area -->
+    <LinearLayout
+        android:id="@+id/bottomInputArea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="10dp">
+
+        <EditText
+            android:id="@+id/mainVIewInputText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/input_text_hint"
+            android:background="@drawable/edit_text_style"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:padding="8dp"
+            android:paddingVertical="10dp"
+            android:textSize="16sp"
+            android:scrollbars="vertical"
+            android:gravity="top|start"
+            android:maxHeight="250dp"
+            android:overScrollMode="always" />
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/icon_send_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/icon"
+            android:layout_gravity="center_vertical"
+            android:padding="6dp"
+            android:layout_marginStart="6dp"
+            android:scaleType="fitCenter" />
+    </LinearLayout>
+</LinearLayout>
