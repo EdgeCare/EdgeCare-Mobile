@@ -3,6 +3,7 @@ package com.example.edgecare.api
 import android.content.Context
 import android.widget.Toast
 import com.example.edgecare.apiService
+import com.example.edgecare.models.ChatNameResponse
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
 import com.example.edgecare.models.UserPersona
@@ -47,27 +48,62 @@ fun sendUserMessage( chatId: Long, message: String, healthReports:String, contex
     }
 }
 
-fun sendUserPersona(userId: Long, persona: String, onResult: (response: Boolean?) -> Unit) {
-    //TODO- Set userID and token
-    val personaDetails = UserPersona(userId,persona,"Token")
-    apiService.sendUserPersona(personaDetails).enqueue(object : retrofit2.Callback<Boolean> {
-        override fun onResponse(
-            call: retrofit2.Call<Boolean>,
-            response: retrofit2.Response<Boolean>
-        ) {
-            println("response = $response")
-            if (response.isSuccessful) {
-                onResult(response.body())
-            } else {
+fun sendUserPersona(persona: String,context: Context, onResult: (response: Boolean?) -> Unit) {
+    //TODO- Set and token
+    val auth = AuthUtils()
+    auth.isTokenValid()
+    if(auth.getToken() == null){
+        Toast.makeText(context, "Please Login again", Toast.LENGTH_SHORT).show()
+    }
+    else {
+        val personaDetails = UserPersona(auth.getToken()!!.userId, persona, "Token")
+        apiService.sendUserPersona(personaDetails).enqueue(object : retrofit2.Callback<Boolean> {
+            override fun onResponse(
+                call: retrofit2.Call<Boolean>,
+                response: retrofit2.Response<Boolean>
+            ) {
+                println("response = $response")
+                if (response.isSuccessful) {
+                    onResult(response.body())
+                } else {
+                    onResult(null)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<Boolean>, t: Throwable) {
+                println("persona save request Failed")
                 onResult(null)
             }
-        }
+        })
+    }
+}
 
-        override fun onFailure(call: retrofit2.Call<Boolean>, t: Throwable) {
-            println("persona save request Failed")
-            onResult(null)
-        }
-    })
+fun getChatName(chatId: Long, context: Context, onResult: (response: ChatNameResponse?) -> Unit){
+    val auth = AuthUtils()
+    auth.isTokenValid()
+    if(auth.getToken() == null){
+        Toast.makeText(context, "Please Login again", Toast.LENGTH_SHORT).show()
+    }
+    else{
+        apiService.getChatName(auth.getToken()!!.userId.toInt(),chatId,auth.getToken()!!.accessToken).enqueue(object : retrofit2.Callback<ChatNameResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<ChatNameResponse>,
+                response: retrofit2.Response<ChatNameResponse>
+            ) {
+                println("response = $response")
+                if (response.isSuccessful) {
+                    onResult(response.body())
+                } else {
+                    onResult(null)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<ChatNameResponse>, t: Throwable) {
+                println("persona save request Failed")
+                onResult(null)
+            }
+        })
+    }
 }
 
 fun userLogin(email: String, password: String, onResult: (success: Boolean, message: String?,token:String?,userId:String) -> Unit) {

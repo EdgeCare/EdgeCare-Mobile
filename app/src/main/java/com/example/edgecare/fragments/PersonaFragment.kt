@@ -190,7 +190,7 @@ class PersonaFragment : Fragment() {
                     it.highBloodPressure = highBloodPressureCheckBox.isChecked
                 }
                 userDetailsBox.put(it)
-                sendUserPersona(it.id,personaToString(it)) { response ->
+                sendUserPersona(personaToString(it), requireContext()) { response ->
                     if (response == null) {
                         println("error while saving user details")
                     }
@@ -209,7 +209,7 @@ class PersonaFragment : Fragment() {
                 highBloodPressure = binding.highBloodPressureCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
-            sendUserPersona(userDetail.id,personaToString(userDetail)) { response ->
+            sendUserPersona(personaToString(userDetail),requireContext()) { response ->
                 if (response == null) {
                     println("error while saving user details")
                 }
