@@ -19,6 +19,8 @@ import com.example.edgecare.databinding.FragmentOfflineChatBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
+import com.example.edgecare.models.MyObjectBox
+import com.example.edgecare.models.SmallModelinfo
 import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
@@ -161,20 +163,26 @@ class OfflineChatFragment : Fragment() {
         // clear resources occupied by the previous model
         smolLMManager.close()
 
-        val model = modelsRepository.getModelFromId(chat.llmModelId)
-        if (chat.llmModelId == -1L || model == null) {
-            _showSelectModelListDialogState.value = true
+        val boxStore = ObjectBox.store
+        val modelInfoBox = boxStore.boxFor(SmallModelinfo::class.java)
+
+        val modelInfo: SmallModelinfo? = modelInfoBox.all.firstOrNull()
+
+        if (modelInfo == null) {
+            //Todo: Navigate to Insert Model Activity
+            Toast.makeText(requireContext(), "Please insert the GGUF model", Toast.LENGTH_SHORT).show()
             return //temp
         }
 
+
         smolLMManager.create(
             com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
-                model.path,
+                modelInfo.path,
                 0.05f,
                 1.0f,
                 false,
-                0,//context length auto set by the model
-                "",
+                modelInfo.contextSize.toLong(),//context length auto set by the model
+                modelInfo.chatTemplate,
                 4,
                 true,
                 false,
