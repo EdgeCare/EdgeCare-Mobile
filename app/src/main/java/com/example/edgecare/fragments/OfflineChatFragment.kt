@@ -141,10 +141,6 @@ class OfflineChatFragment : Fragment() {
 
         return view
     }
-    private fun checkIfModelExists(): Boolean {
-        // Replace this with your real logic
-        return false
-    }
 
     private fun startFilePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)

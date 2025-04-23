@@ -13,7 +13,7 @@ import kotlin.time.measureTime
 class SmolLMManager(
     //private val messagesDB: com.osh.sml.data.MessagesDB,
 ) {
-    private val instance = com.osh.smollm.SmolLM()
+    private val instance = com.example.smollm.SmolLM()
     private var responseGenerationJob: Job? = null
     private var modelInitJob: Job? = null
     //private var chat: com.osh.sml.data.Chat? = null

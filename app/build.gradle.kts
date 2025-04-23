@@ -70,6 +70,8 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.retrofitGson)
 
+    implementation(project(":smollm"))
+
     // Koin: dependency injection
     implementation(libs.koin.android)
     implementation(libs.koin.annotations)
