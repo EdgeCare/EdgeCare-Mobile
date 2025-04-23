@@ -25,6 +25,7 @@ import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.Date
@@ -45,8 +46,10 @@ class OfflineChatFragment : Fragment() {
     private lateinit var chat : Chat
     private var chatId: Long = 9999L
 
-    private val viewModel: ChatScreenViewModel by inject()
+    //private val viewModel: ChatScreenViewModel by inject()
     private var modelUnloaded = false
+    private lateinit var smolLMManager: com.example.edgecare.utils.SmolLMManager
+    private val findThinkTagRegex = Regex("<think>(.*?)</think>", RegexOption.DOT_MATCHES_ALL)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +59,10 @@ class OfflineChatFragment : Fragment() {
         arguments?.let {
             chatId = it.getLong(ARG_CHAT_ID, 0)
         }
+        //Init SmollmManage
+        smolLMManager = com.example.edgecare.utils.SmolLMManager()
+
+
         // Initialize View Binding
         _binding = FragmentOfflineChatBinding.inflate(inflater,container,false)
         val view = binding.root
@@ -103,16 +110,9 @@ class OfflineChatFragment : Fragment() {
             binding.tipSection.visibility = View.GONE   // Hide the tip section
         }
 
-        //user input handling
-        var questionText: String = viewModel.questionTextDefaultVal ?: ""
-        val modelLoadingState by viewModel.modelLoadState.collectAsStateWithLifecycle()
-
-
         return view
-
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_offline_chat, container, false)
     }
+
 
     private fun processInputText(text: String) {
         // Add user's message to the chat
@@ -121,40 +121,90 @@ class OfflineChatFragment : Fragment() {
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
-        //
-        viewModel.sendUserQuery(text)
-        lifecycleScope.launch {
-            val messages = viewModel.getChatMessages(chatId).first()
-            for (msg in messages) {
-                chatMessages.add(ChatMessage(message = msg.message, isSentByUser =  msg.isUserMessage))
-                saveMessage(chat.id, msg.message,msg.isUserMessage)
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-            }
-
-        }
-
-
-
-        /*
-        // Process the input and display the result
-        CoroutineScope(Dispatchers.Main).launch {
-
-            // send to server
-            // [TODO] - send maskedText with similarReports
-            sendUserMessage(chat.id,tokenizedString,similarReports,requireContext()) { response ->
-                if (response != null) {
-                    chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
-                    saveMessage(chat.id, response.content,false)
+        //send query and get ans
+        //CoroutineScope(Dispatchers.Main).launch {
+            smolLMManager.getResponse(
+                text,
+                responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
+                    "<blockquote>${matchResult.groupValues[1]}</blockquote>"
                 }
+                },
+                onPartialResponseGenerated = {
+                    //_partialResponse.value = it
+                },
+                onSuccess = { response ->
+                    //_isGeneratingResponse.value = false
+                    //responseGenerationsSpeed = response.generationSpeed
+                    //responseGenerationTimeSecs = response.generationTimeSecs
+                    chatMessages.add(ChatMessage(message = response, isSentByUser = false))
+                    saveMessage(chat.id, response, false)
 
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-            }
+                    chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                    binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                },
+                onCancelled = {
+                    // ignore CancellationException, as it was called because
+                    // `responseGenerationJob` was cancelled in the `stopGeneration` method
+                },
+                onError = { exception ->
+                    Toast.makeText(requireContext(), "Something Went wrong", Toast.LENGTH_SHORT)
+                        .show()
+                    LOGD("Generating Error: $exception")
+                },
+            )
+        //}
+
+    }
+
+
+    fun loadModel() {
+        // clear resources occupied by the previous model
+        smolLMManager.close()
+
+        val model = modelsRepository.getModelFromId(chat.llmModelId)
+        if (chat.llmModelId == -1L || model == null) {
+            _showSelectModelListDialogState.value = true
+            return //temp
         }
 
-         */
+        smolLMManager.create(
+            com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
+                model.path,
+                0.05f,
+                1.0f,
+                false,
+                0,//context length auto set by the model
+                "",
+                4,
+                true,
+                false,
+            ),
+            onError = { e ->
+                Toast.makeText(requireContext(), "Model loading failed!", Toast.LENGTH_SHORT).show()
+
+            },
+            onSuccess = {
+                Toast.makeText(requireContext(), "Model is loaded successfully!", Toast.LENGTH_SHORT).show()
+
+            },
+        )
     }
+
+    /**
+     * Clears the resources occupied by the model only
+     * if the inference is not in progress.
+     */
+    fun unloadModel(): Boolean =
+        if (!smolLMManager.isInferenceOn) {
+            smolLMManager.close()
+            //_modelLoadState.value = ModelLoadingState.NOT_LOADED
+            true
+        } else {
+            false
+        }
+
+
+
 
     private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
         val chatMessage = ChatMessage(
@@ -224,14 +274,14 @@ class OfflineChatFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         if (modelUnloaded) {
-            viewModel.loadModel()
+            loadModel()
             LOGD("onStart() called - model loaded")
         }
     }
 
     override fun onStop() {
         super.onStop()
-        modelUnloaded = viewModel.unloadModel()
+        modelUnloaded = unloadModel()
         LOGD("onStop() called - model unloaded result: $modelUnloaded")
     }
 
