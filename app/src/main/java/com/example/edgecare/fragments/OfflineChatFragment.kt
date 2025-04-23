@@ -1,6 +1,10 @@
 package com.example.edgecare.fragments
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -29,11 +33,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Paths
 import java.util.Date
 
 
-private const val LOGTAG = "[ChatActivity-Kt]"
+private const val LOGTAG = "[ChatActivity]"
 private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
 
 class OfflineChatFragment : Fragment() {
@@ -53,10 +61,29 @@ class OfflineChatFragment : Fragment() {
     private lateinit var smolLMManager: com.example.edgecare.utils.SmolLMManager
     private val findThinkTagRegex = Regex("<think>(.*?)</think>", RegexOption.DOT_MATCHES_ALL)
 
+    private val FILE_PICK_REQUEST_CODE = 1001
+    //private lateinit var boxStore: BoxStore
+    private lateinit var modelInfoBox: Box<SmallModelinfo>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        //Init Box for model Info
+        modelInfoBox=ObjectBox.store.boxFor(SmallModelinfo::class.java)
+        // Check model is available
+        val isModelAvailable = modelInfoBox.isEmpty
+        if (!isModelAvailable) {
+            startFilePicker()
+        }
+
+
+        //Suspended function for model loading
+        lifecycleScope.launch {
+            loadModel()
+        }
+
         // Retrieve the chatId from arguments
         arguments?.let {
             chatId = it.getLong(ARG_CHAT_ID, 0)
@@ -114,6 +141,73 @@ class OfflineChatFragment : Fragment() {
 
         return view
     }
+    private fun checkIfModelExists(): Boolean {
+        // Replace this with your real logic
+        return false
+    }
+
+    private fun startFilePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        startActivityForResult(intent, FILE_PICK_REQUEST_CODE)
+    }
+
+    // Get file result
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == FILE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val selectedFileUri = data?.data
+            // handle selected file
+            if (selectedFileUri != null) {
+                copyModelFile(selectedFileUri)
+                Toast.makeText(requireContext(), "File picked: $selectedFileUri", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun copyModelFile(
+        uri: Uri
+    ) {
+        var fileName = ""
+        context?.contentResolver?.query(uri, null, null, null, null)?.use { cursor ->
+            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            cursor.moveToFirst()
+            fileName = cursor.getString(nameIndex)
+        }
+        if (fileName.isNotEmpty()) {
+
+            CoroutineScope(Dispatchers.IO).launch {
+                context?.contentResolver?.openInputStream(uri).use { inputStream ->
+                    FileOutputStream(File(context?.filesDir, fileName)).use { outputStream ->
+                        inputStream?.copyTo(outputStream)
+                    }
+                }
+//                val ggufReader = GGUFReader()
+//                ggufReader.load(File(context?.filesDir, fileName).absolutePath)
+//                val contextSize = ggufReader.getContextSize() ?: -1
+//                val chatTemplate = ggufReader.getChatTemplate() ?: ""
+
+                val contextSize = 22222
+                val chatTemplate = "test"
+                // Create a new model info
+                val newModel = SmallModelinfo(
+                    name = fileName,
+                    url = "",
+                    path = Paths.get(context?.filesDir?.absolutePath, fileName).toString(),
+                    contextSize = contextSize.toInt(),
+                    chatTemplate = chatTemplate
+                )
+
+                // Add it to the database
+                modelInfoBox.put(newModel)
+                withContext(Dispatchers.Main) {
+
+                }
+            }
+        } else {
+            Toast.makeText(context, "Invalid_file)", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 
     private fun processInputText(text: String) {
@@ -163,8 +257,8 @@ class OfflineChatFragment : Fragment() {
         // clear resources occupied by the previous model
         smolLMManager.close()
 
-        val boxStore = ObjectBox.store
-        val modelInfoBox = boxStore.boxFor(SmallModelinfo::class.java)
+//        val boxStore = ObjectBox.store
+//        val modelInfoBox = boxStore.boxFor(SmallModelinfo::class.java)
 
         val modelInfo: SmallModelinfo? = modelInfoBox.all.firstOrNull()
 
@@ -285,6 +379,7 @@ class OfflineChatFragment : Fragment() {
             loadModel()
             LOGD("onStart() called - model loaded")
         }
+
     }
 
     override fun onStop() {
