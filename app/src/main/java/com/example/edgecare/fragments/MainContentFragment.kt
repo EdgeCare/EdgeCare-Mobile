@@ -237,13 +237,14 @@ class MainContentFragment : Fragment() {
             if (existingChat != null) {
                 return existingChat
             }
-            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
         }
         // return last Chat
-        val chatList = chatBox.all
-        if (!chatList.isNullOrEmpty()){
-            return chatList.last()
-        }
+//        val chatList = chatBox.all
+//        if (!chatList.isNullOrEmpty()){
+//            return chatList.last()
+//        }
+        deleteEmptyChats()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
@@ -292,6 +293,22 @@ class MainContentFragment : Fragment() {
         chatBox.put(newChat)
         return newChat
     }
+
+    private fun deleteEmptyChats() {
+        val chats = chatBox.all
+
+        for (chat in chats) {
+            val messageCount = chatMessageBox.query()
+                .equal(ChatMessage_.chatId, chat.id)
+                .build()
+                .count()
+
+            if (messageCount == 0L) {
+                chatBox.remove(chat)
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
