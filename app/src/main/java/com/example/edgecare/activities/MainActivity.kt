@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySideBarBinding
     private lateinit var chatBox: Box<Chat>
+    private var selectedChatId:Long = 999L          // set for 999 temporary
+    private lateinit var adapter:ChatHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,14 +29,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivitySideBarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up the sidebar toggle button
-        binding.sidebarToggleButton.setOnClickListener {
-            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                binding.drawerLayout.closeDrawer(GravityCompat.START)
-            } else {
-                binding.drawerLayout.openDrawer(GravityCompat.START)
-            }
-        }
 
         //setup main buttons in side nav bar
         setupStaticSidebarButtons()
@@ -51,24 +45,38 @@ class MainActivity : AppCompatActivity() {
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
         val allChats = chatBox.all
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(this)
-        val adapter = ChatHistoryAdapter(
-            chats = allChats,
+        adapter = ChatHistoryAdapter(
+            initialChats = allChats.asReversed(),
             onChatClicked = { chat ->
                 // On click, pass Chat.id to MainContentFragment
+                selectButton(-1)
+                selectedChatId = chat.id
                 openChatById(chat.id)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
             }
         )
         binding.historyRecyclerView.adapter = adapter
+
+        // Set up the sidebar toggle button
+        binding.sidebarToggleButton.setOnClickListener {
+            val allChats2 = chatBox.all.asReversed()
+            adapter.updateChatList(allChats2,selectedChatId)
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                binding.drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
     }
 
     private fun openChatById(chatId: Long) {
+        selectedChatId = chatId
         supportFragmentManager.beginTransaction()
             .replace(R.id.chatContentFrame, MainContentFragment.newInstance(chatId))
             .commit()
     }
 
-    private fun selectButton(selectedId: Int) {
+    private fun selectButton(selectedMenuId: Int) {
         val buttons = listOf(
             binding.btnNewEdgeCare,
             binding.personaButton,
@@ -77,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         buttons.forEach { button ->
-            if (button.id == selectedId) {
+            if (button.id == selectedMenuId) {
                 button.setBackgroundResource(R.drawable.side_nav_bar_selected_button_background)
             } else {
                 button.setBackgroundResource(R.drawable.side_nav_bar_button_background)
@@ -87,15 +95,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupStaticSidebarButtons() {
         binding.btnNewEdgeCare.setOnClickListener {
+            adapter.chatSelected(true)
+            selectedChatId = chatBox.all.last().id+1
+
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, MainContentFragment())
                 .addToBackStack(null) // Add to back stack for navigation (optional)
                 .commit()
-            selectButton(binding.btnNewEdgeCare.id)
+            selectButton(-1)
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         binding.personaButton.setOnClickListener {
+            selectedChatId = 999L
+            adapter.chatSelected(false)
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, PersonaFragment())
 //                .replace(R.id.chatContentFrame, PersonaNewFragment())
@@ -106,6 +119,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.healthReportsButton.setOnClickListener {
+            selectedChatId = 999L
+            adapter.chatSelected(false)
             supportFragmentManager.beginTransaction()
                 .replace(R.id.chatContentFrame, ReportHandleFragment())
                 .addToBackStack(null) // Add to back stack for navigation (optional)
