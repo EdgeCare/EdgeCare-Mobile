@@ -80,9 +80,9 @@ class MainContentFragment : Fragment() {
             }
         }
 
-        binding.newChatButton.setOnClickListener(){
-            chat = newChat()
-        }
+//        binding.newChatButton.setOnClickListener(){
+//            chat = newChat()
+//        }
 
 //        // Manually set the chat topic
 //        var typingTimer: Timer? = null
