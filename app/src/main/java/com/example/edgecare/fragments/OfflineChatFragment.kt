@@ -20,6 +20,7 @@ import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.models.SmallModelinfo
+import com.example.smollm.GGUFReader
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
@@ -61,12 +62,17 @@ class OfflineChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        //Init SmollmManage
+        smolLMManager = com.example.edgecare.utils.SmolLMManager()
         //Init Box for model Info
         modelInfoBox=ObjectBox.store.boxFor(SmallModelinfo::class.java)
         // Check model is available
-        val isModelAvailable = modelInfoBox.isEmpty
-        if (!isModelAvailable) {
+        val isNotModelAvailable = modelInfoBox.isEmpty
+        if (isNotModelAvailable) {
+            Toast.makeText(requireContext(), "Please Select GGUF model", Toast.LENGTH_SHORT).show()
             startFilePicker()
+        }else{
+            Toast.makeText(requireContext(), "Model Detected!", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -79,8 +85,6 @@ class OfflineChatFragment : Fragment() {
         arguments?.let {
             chatId = it.getLong(ARG_CHAT_ID, 0)
         }
-        //Init SmollmManage
-        smolLMManager = com.example.edgecare.utils.SmolLMManager()
 
 
         // Initialize View Binding
@@ -169,13 +173,13 @@ class OfflineChatFragment : Fragment() {
                         inputStream?.copyTo(outputStream)
                     }
                 }
-//                val ggufReader = GGUFReader()
-//                ggufReader.load(File(context?.filesDir, fileName).absolutePath)
-//                val contextSize = ggufReader.getContextSize() ?: -1
-//                val chatTemplate = ggufReader.getChatTemplate() ?: ""
+                val ggufReader = GGUFReader()
+                ggufReader.load(File(context?.filesDir, fileName).absolutePath)
+                val contextSize = ggufReader.getContextSize() ?: -1
+                val chatTemplate = ggufReader.getChatTemplate() ?: ""
 
-                val contextSize = 22222
-                val chatTemplate = "test"
+//                val contextSize = 22222
+//                val chatTemplate = "test"
                 // Create a new model info
                 val newModel = SmallModelinfo(
                     name = fileName,
@@ -242,7 +246,7 @@ class OfflineChatFragment : Fragment() {
 
     fun loadModel() {
         // clear resources occupied by the previous model
-        smolLMManager.close()
+        //smolLMManager.close()
 
 //        val boxStore = ObjectBox.store
 //        val modelInfoBox = boxStore.boxFor(SmallModelinfo::class.java)

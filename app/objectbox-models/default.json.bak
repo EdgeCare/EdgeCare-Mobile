@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:6652863456715701453",
-      "lastPropertyId": "3:2184592435534961125",
+      "lastPropertyId": "5:3440133494083722303",
       "name": "HealthReport",
       "properties": [
         {
@@ -20,18 +20,21 @@
           "type": 9
         },
         {
-          "id": "3:2184592435534961125",
-          "name": "embedding",
-          "indexId": "1:3728733707639735558",
-          "type": 28,
-          "flags": 8
+          "id": "4:4860984193829966081",
+          "name": "isPDF",
+          "type": 1
+        },
+        {
+          "id": "5:3440133494083722303",
+          "name": "pdfData",
+          "type": 23
         }
       ],
       "relations": []
     },
     {
       "id": "2:6013344539829201121",
-      "lastPropertyId": "8:3569108593016446670",
+      "lastPropertyId": "13:5161541589264807263",
       "name": "Persona",
       "properties": [
         {
@@ -74,24 +77,171 @@
           "id": "8:3569108593016446670",
           "name": "alcoholConsumption",
           "type": 1
+        },
+        {
+          "id": "9:1660201014011126254",
+          "name": "birthday",
+          "type": 9
+        },
+        {
+          "id": "10:2396454321734723084",
+          "name": "allergies",
+          "type": 9
+        },
+        {
+          "id": "11:7122725790277200309",
+          "name": "diabetes",
+          "type": 1
+        },
+        {
+          "id": "12:5049681908526322522",
+          "name": "highBloodPressure",
+          "type": 1
+        },
+        {
+          "id": "13:5161541589264807263",
+          "name": "sleepHours",
+          "type": 5
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:1098561210804963950",
+      "lastPropertyId": "4:621936748023890669",
+      "name": "AuthToken",
+      "properties": [
+        {
+          "id": "1:5957498296194280444",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1978586542135395305",
+          "name": "userId",
+          "type": 6
+        },
+        {
+          "id": "3:4201553057328386902",
+          "name": "accessToken",
+          "type": 9
+        },
+        {
+          "id": "4:621936748023890669",
+          "name": "expiresAt",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:8054928245846250964",
+      "lastPropertyId": "2:2060690702263819356",
+      "name": "Chat",
+      "properties": [
+        {
+          "id": "1:8347367890998012165",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2060690702263819356",
+          "name": "chatName",
+          "type": 9
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:5938195992731244060",
+          "name": "chatMessageList",
+          "targetId": "6:8639447195253880202"
+        }
+      ]
+    },
+    {
+      "id": "6:8639447195253880202",
+      "lastPropertyId": "5:7086902271979742065",
+      "name": "ChatMessage",
+      "properties": [
+        {
+          "id": "1:37688321448725384",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8594752725606519976",
+          "name": "chatId",
+          "type": 6
+        },
+        {
+          "id": "3:1189410875168427413",
+          "name": "message",
+          "type": 9
+        },
+        {
+          "id": "4:2117593926431708267",
+          "name": "timestamp",
+          "type": 10
+        },
+        {
+          "id": "5:7086902271979742065",
+          "name": "isSentByUser",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:2626551887770144136",
+      "lastPropertyId": "4:6594841232822730777",
+      "name": "HealthReportChunk",
+      "properties": [
+        {
+          "id": "1:5373144525337472601",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:4884901156090590642",
+          "name": "reportId",
+          "type": 6
+        },
+        {
+          "id": "3:7933300031221440991",
+          "name": "text",
+          "type": 9
+        },
+        {
+          "id": "4:6594841232822730777",
+          "name": "embedding",
+          "indexId": "2:5516593857930652997",
+          "type": 28,
+          "flags": 8
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "3:8017637254302418077",
-  "lastIndexId": "1:3728733707639735558",
-  "lastRelationId": "0:0",
+  "lastEntityId": "7:2626551887770144136",
+  "lastIndexId": "2:5516593857930652997",
+  "lastRelationId": "1:5938195992731244060",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [
     8017637254302418077
   ],
-  "retiredIndexUids": [],
+  "retiredIndexUids": [
+    3728733707639735558
+  ],
   "retiredPropertyUids": [
     3673610098866765321,
-    314132186413034112
+    314132186413034112,
+    2184592435534961125
   ],
   "retiredRelationUids": [],
   "version": 1
