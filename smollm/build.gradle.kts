@@ -14,7 +14,8 @@ android {
         consumerProguardFiles("consumer-rules.pro")
         externalNativeBuild {
             cmake {
-                cppFlags("")
+                arguments += "-DCMAKE_BUILD_TYPE=Release"
+                cppFlags += listOf()
             }
         }
     }
