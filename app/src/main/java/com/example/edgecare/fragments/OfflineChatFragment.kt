@@ -6,35 +6,26 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.runtime.LaunchedEffect
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.ObjectBox
-import com.example.edgecare.R
 import com.example.edgecare.adapters.ChatAdapter
-import com.example.edgecare.api.sendUserMessage
-import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.databinding.FragmentOfflineChatBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
-import com.example.edgecare.models.MyObjectBox
 import com.example.edgecare.models.SmallModelinfo
-import com.example.edgecare.utils.DeIDModelUtils
-import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
@@ -228,8 +219,8 @@ class OfflineChatFragment : Fragment() {
                     //_isGeneratingResponse.value = false
                     //responseGenerationsSpeed = response.generationSpeed
                     //responseGenerationTimeSecs = response.generationTimeSecs
-                    chatMessages.add(ChatMessage(message = response, isSentByUser = false))
-                    saveMessage(chat.id, response, false)
+                    chatMessages.add(ChatMessage(message = response.response, isSentByUser = false))
+                    saveMessage(chat.id, response.response, false)
 
                     chatAdapter.notifyItemInserted(chatMessages.size - 1)
                     binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
