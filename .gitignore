@@ -22,3 +22,4 @@ app/src/main/assets/vocab.txt
 app/src/main/assets/vocab-de-id.txt
 app/src/main/assets/edgeCare-de-identifier.onnx
 .idea/
+smollm/src/main/cpp/llama.cpp/

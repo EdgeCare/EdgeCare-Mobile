@@ -63,7 +63,7 @@ class SmolLMManager(
                         initParams.useMmap,
                         initParams.useMlock,
                     )
-                    com.osh.sml.llm.LOGD("Model loaded")
+
 
 
                     withContext(Dispatchers.Main) {
