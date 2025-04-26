@@ -9,11 +9,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.ObjectBox
+import com.example.edgecare.R
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.databinding.FragmentOfflineChatBinding
 import com.example.edgecare.models.Chat
@@ -54,7 +57,7 @@ class OfflineChatFragment : Fragment() {
     private val findThinkTagRegex = Regex("<think>(.*?)</think>", RegexOption.DOT_MATCHES_ALL)
 
     private val FILE_PICK_REQUEST_CODE = 1001
-    //private lateinit var boxStore: BoxStore
+    private lateinit var progressContainer: LinearLayout
     private lateinit var modelInfoBox: Box<SmallModelinfo>
 
     override fun onCreateView(
@@ -73,13 +76,12 @@ class OfflineChatFragment : Fragment() {
             startFilePicker()
         }else{
             Toast.makeText(requireContext(), "Model Detected!", Toast.LENGTH_SHORT).show()
+            //Suspended function for model loading
+            lifecycleScope.launch {
+                loadModel()
+            }
         }
 
-
-        //Suspended function for model loading
-        lifecycleScope.launch {
-            loadModel()
-        }
 
         // Retrieve the chatId from arguments
         arguments?.let {
@@ -90,6 +92,8 @@ class OfflineChatFragment : Fragment() {
         // Initialize View Binding
         _binding = FragmentOfflineChatBinding.inflate(inflater,container,false)
         val view = binding.root
+
+        progressContainer = view.findViewById(R.id.progressContainer)
 
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
         chatMessageBox = ObjectBox.store.boxFor(ChatMessage::class.java)
@@ -151,7 +155,7 @@ class OfflineChatFragment : Fragment() {
             // handle selected file
             if (selectedFileUri != null) {
                 copyModelFile(selectedFileUri)
-                Toast.makeText(requireContext(), "File picked: $selectedFileUri", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "File picked: $selectedFileUri", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -166,7 +170,7 @@ class OfflineChatFragment : Fragment() {
             fileName = cursor.getString(nameIndex)
         }
         if (fileName.isNotEmpty()) {
-
+            progressContainer.visibility = View.VISIBLE //show progress
             CoroutineScope(Dispatchers.IO).launch {
                 context?.contentResolver?.openInputStream(uri).use { inputStream ->
                     FileOutputStream(File(context?.filesDir, fileName)).use { outputStream ->
@@ -178,8 +182,6 @@ class OfflineChatFragment : Fragment() {
                 val contextSize = ggufReader.getContextSize() ?: -1
                 val chatTemplate = ggufReader.getChatTemplate() ?: ""
 
-//                val contextSize = 22222
-//                val chatTemplate = "test"
                 // Create a new model info
                 val newModel = SmallModelinfo(
                     name = fileName,
@@ -192,7 +194,12 @@ class OfflineChatFragment : Fragment() {
                 // Add it to the database
                 modelInfoBox.put(newModel)
                 withContext(Dispatchers.Main) {
-
+                    progressContainer.visibility = View.GONE  // hide progress
+                    Toast.makeText(requireContext(), "Model copied successfully!", Toast.LENGTH_SHORT).show()
+                    //Suspended function for model loading
+                    lifecycleScope.launch {
+                        loadModel()
+                    }
                 }
             }
         } else {
