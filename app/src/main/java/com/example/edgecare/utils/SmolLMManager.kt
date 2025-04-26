@@ -6,10 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.core.annotation.Single
 import kotlin.time.measureTime
 
-@Single
+
 class SmolLMManager(
     //private val messagesDB: com.osh.sml.data.MessagesDB,
 ) {

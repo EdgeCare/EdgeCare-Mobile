@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("io.objectbox")
     //alias(libs.plugins.compose.compiler)
-    id("com.google.devtools.ksp") version "2.0.0-1.0.24"
+    //id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 }
 
 android {
@@ -73,9 +73,9 @@ dependencies {
     implementation(project(":smollm"))
 
     // Koin: dependency injection
-    implementation(libs.koin.android)
-    implementation(libs.koin.annotations)
-    implementation(libs.koin.androidx.compose)
-    // implementation(libs.androidx.ui.text.google.fonts)
-    ksp(libs.koin.ksp.compiler)
+//    implementation(libs.koin.android)
+//    implementation(libs.koin.annotations)
+//    implementation(libs.koin.androidx.compose)
+//    // implementation(libs.androidx.ui.text.google.fonts)
+//    ksp(libs.koin.ksp.compiler)
 }
