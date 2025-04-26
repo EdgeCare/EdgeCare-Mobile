@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -72,7 +71,7 @@ class OfflineChatFragment : Fragment() {
         // Check model is available
         val isNotModelAvailable = modelInfoBox.isEmpty
         if (isNotModelAvailable) {
-            Toast.makeText(requireContext(), "Please Select GGUF model", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please Select GGUF model", Toast.LENGTH_LONG).show()
             startFilePicker()
         }else{
             Toast.makeText(requireContext(), "Model Detected!", Toast.LENGTH_SHORT).show()
@@ -253,10 +252,7 @@ class OfflineChatFragment : Fragment() {
 
     fun loadModel() {
         // clear resources occupied by the previous model
-        //smolLMManager.close()
-
-//        val boxStore = ObjectBox.store
-//        val modelInfoBox = boxStore.boxFor(SmallModelinfo::class.java)
+        smolLMManager.close()
 
         val modelInfo: SmallModelinfo? = modelInfoBox.all.firstOrNull()
 
@@ -284,7 +280,7 @@ class OfflineChatFragment : Fragment() {
 
             },
             onSuccess = {
-                Toast.makeText(requireContext(), "Model is loaded successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Model loaded successfully!", Toast.LENGTH_SHORT).show()
 
             },
         )
