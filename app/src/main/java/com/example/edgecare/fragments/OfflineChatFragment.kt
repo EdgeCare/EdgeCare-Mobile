@@ -214,26 +214,50 @@ class OfflineChatFragment : Fragment() {
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
-        //send query and get ans
-        //CoroutineScope(Dispatchers.Main).launch {
+        //send query and get response
+
+        // Add a "Thinking..." message first
+        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false))
+        chatAdapter.notifyItemInserted(chatMessages.size - 1)
+        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+        // Save the index where "Thinking..." is added
+        val thinkingMessageIndex = chatMessages.lastIndex
+
             smolLMManager.getResponse(
                 text,
                 responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
                     "<blockquote>${matchResult.groupValues[1]}</blockquote>"
                 }
                 },
-                onPartialResponseGenerated = {
-                    //_partialResponse.value = it
+                onPartialResponseGenerated = { partialResponseText ->
+                    // directly update your chat bubble with the latest partial text
+                    // Update the message at thinkingMessageIndex
+                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false)
+                    chatAdapter.notifyItemChanged(thinkingMessageIndex)
+                    binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 },
                 onSuccess = { response ->
                     //_isGeneratingResponse.value = false
                     //responseGenerationsSpeed = response.generationSpeed
                     //responseGenerationTimeSecs = response.generationTimeSecs
-                    chatMessages.add(ChatMessage(message = response.response, isSentByUser = false))
+
+                    if (thinkingMessageIndex in chatMessages.indices) {
+                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false)
+                        saveMessage(chat.id, response.response, false)
+                        chatAdapter.notifyItemChanged(thinkingMessageIndex)
+                        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                    } else {
+                        // No action. Don't create extra bubble.
+                        Log.w("Chat", "Thinking message missing. Ignoring final update.")
+                    }
+                    /*
+                    //chatMessages.add(ChatMessage(message = response.response, isSentByUser = false))
+                    chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false)
                     saveMessage(chat.id, response.response, false)
 
                     chatAdapter.notifyItemInserted(chatMessages.size - 1)
                     binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                     */
                 },
                 onCancelled = {
                     // ignore CancellationException, as it was called because
@@ -245,7 +269,6 @@ class OfflineChatFragment : Fragment() {
                     LOGD("Generating Error: $exception")
                 },
             )
-        //}
 
     }
 
