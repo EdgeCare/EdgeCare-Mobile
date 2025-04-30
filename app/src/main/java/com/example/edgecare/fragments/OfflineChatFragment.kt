@@ -62,9 +62,9 @@ class OfflineChatFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
-        //Init SmollmManage
+        //Init Smolm Manage
         smolLMManager = com.example.edgecare.utils.SmolLMManager()
         //Init Box for model Info
         modelInfoBox=ObjectBox.store.boxFor(SmallModelinfo::class.java)
@@ -97,16 +97,12 @@ class OfflineChatFragment : Fragment() {
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
         chatMessageBox = ObjectBox.store.boxFor(ChatMessage::class.java)
 
-        //Set to View.GONE to hide the top bar
-        binding.topAppBar.visibility = View.GONE
-
         chat = getOrCreateChat(chatId)
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
             binding.tipSection.visibility = View.GONE   // Hide the tip section
             chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
         }
-        binding.chatTopic.setText(chat.chatName)
 
         // Set up click listener for the send button
         binding.sendButton.setOnClickListener {
@@ -118,10 +114,6 @@ class OfflineChatFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
             }
-        }
-
-        binding.newChatButton.setOnClickListener(){
-            chat = newChat()
         }
 
         // Initialize Chat RecyclerView
@@ -322,9 +314,6 @@ class OfflineChatFragment : Fragment() {
             false
         }
 
-
-
-
     private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
         val chatMessage = ChatMessage(
             chatId = chatId,
@@ -357,11 +346,8 @@ class OfflineChatFragment : Fragment() {
             }
             Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
         }
-        // return last Chat
-        val chatList = chatBox.all
-        if (!chatList.isNullOrEmpty()){
-            return chatList.last()
-        }
+
+        deleteEmptyChats()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
@@ -376,14 +362,19 @@ class OfflineChatFragment : Fragment() {
             .find()
     }
 
-    private fun newChat():Chat{
-        val newChat = Chat()
-        binding.tipSection.visibility = View.VISIBLE   // Show the tip section
-        chatMessages.removeAll(chatMessages)
-        chatAdapter.notifyDataSetChanged()
-        binding.chatTopic.setText(newChat.chatName)
-        chatBox.put(newChat)
-        return newChat
+    private fun deleteEmptyChats() {
+        val chats = chatBox.all
+
+        for (chat in chats) {
+            val messageCount = chatMessageBox.query()
+                .equal(ChatMessage_.chatId, chat.id)
+                .build()
+                .count()
+
+            if (messageCount == 0L) {
+                chatBox.remove(chat)
+            }
+        }
     }
 
     override fun onDestroyView() {
