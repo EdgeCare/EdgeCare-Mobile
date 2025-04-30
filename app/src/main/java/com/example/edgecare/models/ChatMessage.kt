@@ -10,5 +10,6 @@ data class ChatMessage(
     var chatId: Long = 0, // Foreign key reference to the Chat
     var message: String = "",
     var timestamp: Date = Date(),
-    var isSentByUser: Boolean = true
+    var isSentByUser: Boolean = true,
+    var isLocalChat: Boolean = false
 )

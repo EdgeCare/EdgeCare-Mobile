@@ -34,7 +34,6 @@ import java.io.FileOutputStream
 import java.nio.file.Paths
 import java.util.Date
 
-
 private const val LOGTAG = "[ChatActivity]"
 private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
 
@@ -50,7 +49,6 @@ class OfflineChatFragment : Fragment() {
     private lateinit var chat : Chat
     private var chatId: Long = 9999L
 
-    //private val viewModel: ChatScreenViewModel by inject()
     private var modelUnloaded = false
     private lateinit var smolLMManager: com.example.edgecare.utils.SmolLMManager
     private val findThinkTagRegex = Regex("<think>(.*?)</think>", RegexOption.DOT_MATCHES_ALL)
@@ -64,7 +62,7 @@ class OfflineChatFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        //Init Smolm Manage
+        //Init Smollm Manage
         smolLMManager = com.example.edgecare.utils.SmolLMManager()
         //Init Box for model Info
         modelInfoBox=ObjectBox.store.boxFor(SmallModelinfo::class.java)
@@ -81,12 +79,10 @@ class OfflineChatFragment : Fragment() {
             }
         }
 
-
         // Retrieve the chatId from arguments
         arguments?.let {
             chatId = it.getLong(ARG_CHAT_ID, 0)
         }
-
 
         // Initialize View Binding
         _binding = FragmentOfflineChatBinding.inflate(inflater,container,false)
@@ -101,7 +97,7 @@ class OfflineChatFragment : Fragment() {
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
             binding.tipSection.visibility = View.GONE   // Hide the tip section
-            chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
+            chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser, isLocalChat = chatMessage.isLocalChat))
         }
 
         // Set up click listener for the send button
@@ -151,7 +147,7 @@ class OfflineChatFragment : Fragment() {
         }
     }
 
-    fun copyModelFile(
+    private fun copyModelFile(
         uri: Uri
     ) {
         var fileName = ""
@@ -198,18 +194,17 @@ class OfflineChatFragment : Fragment() {
         }
     }
 
-
     private fun processInputText(text: String) {
         // Add user's message to the chat
-        chatMessages.add(ChatMessage(message = text, isSentByUser = true))
-        saveMessage(chat.id, text,true)
+        chatMessages.add(ChatMessage(message = text, isSentByUser = true, isLocalChat = true))
+        saveMessage(chat.id, text, isSentByUser = true, isLocalChat = false)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
 
         //send query and get response
 
         // Add a "Thinking..." message first
-        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false))
+        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false, isLocalChat = false))
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         // Save the index where "Thinking..." is added
@@ -224,32 +219,24 @@ class OfflineChatFragment : Fragment() {
                 onPartialResponseGenerated = { partialResponseText ->
                     // directly update your chat bubble with the latest partial text
                     // Update the message at thinkingMessageIndex
-                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false)
+                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false, isLocalChat = true)
                     chatAdapter.notifyItemChanged(thinkingMessageIndex)
                     binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 },
                 onSuccess = { response ->
-                    //_isGeneratingResponse.value = false
-                    //responseGenerationsSpeed = response.generationSpeed
-                    //responseGenerationTimeSecs = response.generationTimeSecs
 
                     if (thinkingMessageIndex in chatMessages.indices) {
-                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false)
-                        saveMessage(chat.id, response.response, false)
+                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true)
+                        saveMessage(chat.id, response.response,
+                            isSentByUser = false,
+                            isLocalChat = true
+                        )
                         chatAdapter.notifyItemChanged(thinkingMessageIndex)
                         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                     } else {
                         // No action. Don't create extra bubble.
                         Log.w("Chat", "Thinking message missing. Ignoring final update.")
                     }
-                    /*
-                    //chatMessages.add(ChatMessage(message = response.response, isSentByUser = false))
-                    chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false)
-                    saveMessage(chat.id, response.response, false)
-
-                    chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                    binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-                     */
                 },
                 onCancelled = {
                     // ignore CancellationException, as it was called because
@@ -264,7 +251,6 @@ class OfflineChatFragment : Fragment() {
 
     }
 
-
     fun loadModel() {
         // clear resources occupied by the previous model
         smolLMManager.close()
@@ -276,7 +262,6 @@ class OfflineChatFragment : Fragment() {
             Toast.makeText(requireContext(), "Please insert the GGUF model", Toast.LENGTH_SHORT).show()
             return //temp
         }
-
 
         smolLMManager.create(
             com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
@@ -305,7 +290,7 @@ class OfflineChatFragment : Fragment() {
      * Clears the resources occupied by the model only
      * if the inference is not in progress.
      */
-    fun unloadModel(): Boolean =
+    private fun unloadModel(): Boolean =
         if (!smolLMManager.isInferenceOn) {
             smolLMManager.close()
             //_modelLoadState.value = ModelLoadingState.NOT_LOADED
@@ -314,12 +299,13 @@ class OfflineChatFragment : Fragment() {
             false
         }
 
-    private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean) {
+    private fun saveMessage(chatId: Long, message: String,  isSentByUser: Boolean, isLocalChat:Boolean) {
         val chatMessage = ChatMessage(
             chatId = chatId,
             message = message,
             timestamp = Date(),
-            isSentByUser = isSentByUser
+            isSentByUser = isSentByUser,
+            isLocalChat = isLocalChat
         )
         chatMessageBox.put(chatMessage)
     }
@@ -336,7 +322,6 @@ class OfflineChatFragment : Fragment() {
         }
     }
 
-
     private fun getOrCreateChat(chatId: Long): Chat {
         // If chatId == 9999L, we know there can't be an existing Chat with that ID
         if (chatId != 9999L) {
@@ -352,7 +337,6 @@ class OfflineChatFragment : Fragment() {
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
         return newChat
-
     }
 
     private fun getMessagesForChat(chatId: Long): List<ChatMessage> {
@@ -387,7 +371,6 @@ class OfflineChatFragment : Fragment() {
             loadModel()
             LOGD("onStart() called - model loaded")
         }
-
     }
 
     override fun onStop() {

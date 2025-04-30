@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
     android:orientation="horizontal">
 
     <!-- Set Default to user messages -->
-    <TextView
-        android:id="@+id/chatMessageTextView"
+    <LinearLayout
+        android:id="@+id/messageContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:background="@drawable/message_background_user"
-        android:padding="10dp"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/chatMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <!-- label for Offline messages -->
+        <TextView
+            android:id="@+id/modelTypeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/by_offline_model"
+            android:textSize="8sp"
+            android:textColor="@color/black"
+            android:alpha="0.4"
+            android:layout_gravity="end"
+            android:paddingTop="4dp"
+            android:visibility="gone"
+            tools:ignore="SmallSp" />
+    </LinearLayout>
+
 </LinearLayout>
