@@ -12,13 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.adapters.ChatAdapter
+import com.example.edgecare.api.getChatName
 import com.example.edgecare.api.sendUserMessage
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
-import com.example.edgecare.utils.AnonymizationUtils.calculateAgeFromYear
 import com.example.edgecare.utils.SimilaritySearchUtils
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -80,37 +80,38 @@ class MainContentFragment : Fragment() {
             }
         }
 
-        binding.newChatButton.setOnClickListener(){
-            chat = newChat()
-        }
+//        binding.newChatButton.setOnClickListener(){
+//            chat = newChat()
+//        }
 
-        var typingTimer: Timer? = null
-        val DELAY = 1000L // Delay 1000 milliseconds
-
-        binding.chatTopic.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Cancel any existing timer to reset the delay
-                typingTimer?.cancel()
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                typingTimer = Timer()
-                typingTimer?.schedule(object : TimerTask() {
-                    override fun run() {
-                        val newText = s.toString()
-                        if (newText.isNotBlank()) {
-                            if(newText!= chat.chatName){
-                                chat.chatName = newText
-                                println("New Chat Name : $newText")
-                                chatBox.put(chat)
-                            }
-                        }
-                    }
-                }, DELAY) // Start the timer with a 1-second delay
-            }
-        })
+//        // Manually set the chat topic
+//        var typingTimer: Timer? = null
+//        val DELAY = 1000L // Delay 1000 milliseconds
+//
+//        binding.chatTopic.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+//
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                // Cancel any existing timer to reset the delay
+//                typingTimer?.cancel()
+//            }
+//
+//            override fun afterTextChanged(s: Editable?) {
+//                typingTimer = Timer()
+//                typingTimer?.schedule(object : TimerTask() {
+//                    override fun run() {
+//                        val newText = s.toString()
+//                        if (newText.isNotBlank()) {
+//                            if(newText!= chat.chatName){
+//                                chat.chatName = newText
+//                                println("New Chat Name : $newText")
+//                                chatBox.put(chat)
+//                            }
+//                        }
+//                    }
+//                }, DELAY) // Start the timer with a 1-second delay
+//            }
+//        })
 
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
@@ -150,23 +151,31 @@ class MainContentFragment : Fragment() {
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
 
+            // Similarity search for given text
+            val similarReportsList = SimilaritySearchUtils.getTopSimilarHealthReports(text, requireContext())
+
             // Mask text
             val features = DeIDModelUtils.prepareInputs(requireContext(), text)
             val result = DeIDModelUtils.runInference(features)
-//            val maskedText = result.joinToString(separator = "\n") { "${it.first} -> ${it.second}" }
 
-            val tokenizedString = createTokenizedString(result)
-            chatMessages.add(ChatMessage(message = tokenizedString, isSentByUser =  false))
-            saveMessage(chat.id, tokenizedString,false)
+            val maskedString = createMaskedString(result)
+            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
+            saveMessage(chat.id, maskedString,false)
 
-            // Similarity search for given text
-            val similarReports:String = SimilaritySearchUtils.getMessageWithTopSimilarHealthReportChunkIds(text, requireContext())
-            chatMessages.add(ChatMessage(message = similarReports, isSentByUser =  false))
-            saveMessage(chat.id, similarReports,false)
+            val maskedHealthReportsBuilder = StringBuilder()
+            similarReportsList.forEach{report->
+                val features2 = DeIDModelUtils.prepareInputs(requireContext(), report)
+                val result2 = DeIDModelUtils.runInference(features2)
+                val maskedHealthReport = createMaskedString(result2)
+                maskedHealthReportsBuilder.append("Report chunk : $maskedHealthReport ,\n \n  ")
+            }
+            val maskedHealthReports = maskedHealthReportsBuilder.toString()
+
+            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
+            saveMessage(chat.id, maskedHealthReports,false)
 
             // send to server
-            // [TODO] - send maskedText with similarReports
-            sendUserMessage(chat.id,tokenizedString,similarReports,requireContext()) { response ->
+            sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
                 if (response != null) {
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)
@@ -178,7 +187,7 @@ class MainContentFragment : Fragment() {
         }
     }
 
-    private fun createTokenizedString(input: List<Pair<String, String>>): String {
+    private fun createMaskedString(input: List<Pair<String, String>>): String {
         val result = StringBuilder()
         var currentLabel: String? = null
 
@@ -186,10 +195,10 @@ class MainContentFragment : Fragment() {
             if (label == "O" && token !="[CLS]" && token != "[SEP]") {
                 // If label is "O", handle token concatenation based on "##"
                 if (token.startsWith("##")) {
-                    result.setLength(result.length - 1) // Remove trailing space
+//                    result.setLength(result.length - 1) // Remove trailing space
                     result.append(token.removePrefix("##"))
                 } else {
-                    result.append(token).append(" ")
+                    result.append(" ").append(token)
                 }
                 currentLabel = null // Reset current label
             } else if(token !="[CLS]" && token != "[SEP]")  {
@@ -210,7 +219,7 @@ class MainContentFragment : Fragment() {
 
                         }
                     }
-                    result.append("[").append(label).append(newLabel).append("] ")
+                    result.append(" [").append(label).append(newLabel).append("]")
                     currentLabel = label
                 }
 
@@ -228,13 +237,14 @@ class MainContentFragment : Fragment() {
             if (existingChat != null) {
                 return existingChat
             }
-            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
         }
         // return last Chat
-        val chatList = chatBox.all
-        if (!chatList.isNullOrEmpty()){
-            return chatList.last()
-        }
+//        val chatList = chatBox.all
+//        if (!chatList.isNullOrEmpty()){
+//            return chatList.last()
+//        }
+        deleteEmptyChats()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
@@ -253,10 +263,25 @@ class MainContentFragment : Fragment() {
     }
 
     private fun getMessagesForChat(chatId: Long): List<ChatMessage> {
-        return chatMessageBox.query(
+        val messageList= chatMessageBox.query(
             ChatMessage_.chatId equal chatId)
             .build()
             .find()
+
+        println("MessageList"+ messageList.size)
+        if(messageList.size>5 && chat.chatName=="New Chat"){
+                setChatName(chat)
+        }
+        return messageList
+    }
+
+    private fun setChatName(noNamedchat:Chat){
+        context?.let { getChatName(noNamedchat.id, it) { response ->
+            noNamedchat.chatName = response?.chatName.toString()
+            chatBox.put(noNamedchat)
+            println(noNamedchat.chatName)
+        }
+        }
     }
 
     private fun newChat():Chat{
@@ -268,6 +293,22 @@ class MainContentFragment : Fragment() {
         chatBox.put(newChat)
         return newChat
     }
+
+    private fun deleteEmptyChats() {
+        val chats = chatBox.all
+
+        for (chat in chats) {
+            val messageCount = chatMessageBox.query()
+                .equal(ChatMessage_.chatId, chat.id)
+                .build()
+                .count()
+
+            if (messageCount == 0L) {
+                chatBox.remove(chat)
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

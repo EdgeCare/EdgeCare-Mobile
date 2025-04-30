@@ -18,3 +18,8 @@ data class UserPersona(
     val details: String,
     val token: String = "TOKEN",
 )
+
+data class ChatNameResponse(
+    val chatName:String,
+    val status:String
+)

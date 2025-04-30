@@ -103,8 +103,8 @@ class PersonaFragment : Fragment() {
                     radioButtonMale.isChecked = true
                 else if (it.gender?.let { it1 -> Gender.fromDisplayName(it1) } == Gender.FEMALE)
                     radioButtonFemale.isChecked = true
-                weightEditText.setText(it.weight.toString())
-                heightEditText.setText(it.height.toString())
+                if(it.weight != null){weightEditText.setText(it.weight.toString())}
+                if(it.height != null)heightEditText.setText(it.height.toString())
                 smokingCheckBox.isChecked = it.smoking == true
                 alcoholCheckBox.isChecked = it.alcoholConsumption == true
                 diabetesCheckBox.isChecked = it.diabetes == true
@@ -190,7 +190,7 @@ class PersonaFragment : Fragment() {
                     it.highBloodPressure = highBloodPressureCheckBox.isChecked
                 }
                 userDetailsBox.put(it)
-                sendUserPersona(it.id,personaToString(it)) { response ->
+                sendUserPersona(personaToString(it), requireContext()) { response ->
                     if (response == null) {
                         println("error while saving user details")
                     }
@@ -209,7 +209,7 @@ class PersonaFragment : Fragment() {
                 highBloodPressure = binding.highBloodPressureCheckBox.isChecked
             )
             userDetailsBox.put(userDetail)
-            sendUserPersona(userDetail.id,personaToString(userDetail)) { response ->
+            sendUserPersona(personaToString(userDetail),requireContext()) { response ->
                 if (response == null) {
                     println("error while saving user details")
                 }
