@@ -118,6 +118,7 @@ class MainContentFragment : Fragment() {
             val result = DeIDModelUtils.runInference(features)
 
             val maskedString = createMaskedString(result)
+
 //            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
 //            saveMessage(chat.id, maskedString,false)
 
@@ -253,6 +254,22 @@ class MainContentFragment : Fragment() {
             }
         }
     }
+
+    private fun deleteEmptyChats() {
+        val chats = chatBox.all
+
+        for (chat in chats) {
+            val messageCount = chatMessageBox.query()
+                .equal(ChatMessage_.chatId, chat.id)
+                .build()
+                .count()
+
+            if (messageCount == 0L) {
+                chatBox.remove(chat)
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
