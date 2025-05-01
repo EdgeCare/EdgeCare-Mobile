@@ -118,8 +118,8 @@ class MainContentFragment : Fragment() {
             val result = DeIDModelUtils.runInference(features)
 
             val maskedString = createMaskedString(result)
-            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
-            saveMessage(chat.id, maskedString,false)
+//            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
+//            saveMessage(chat.id, maskedString,false)
 
             val maskedHealthReportsBuilder = StringBuilder()
             similarReportsList.forEach{report->
@@ -130,8 +130,8 @@ class MainContentFragment : Fragment() {
             }
             val maskedHealthReports = maskedHealthReportsBuilder.toString()
 
-            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
-            saveMessage(chat.id, maskedHealthReports,false)
+//            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
+//            saveMessage(chat.id, maskedHealthReports,false)
 
             // send to server
             sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
