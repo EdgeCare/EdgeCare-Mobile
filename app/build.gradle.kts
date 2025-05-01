@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("io.objectbox")
+    //alias(libs.plugins.compose.compiler)
+    //id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 }
 
 android {
@@ -29,12 +31,19 @@ android {
             )
         }
     }
+//    compileOptions {
+//        sourceCompatibility = JavaVersion.VERSION_1_8
+//        targetCompatibility = JavaVersion.VERSION_1_8
+//    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility=  JavaVersion.VERSION_17
+        targetCompatibility= JavaVersion.VERSION_17
     }
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//    }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         dataBinding = true
@@ -60,4 +69,13 @@ dependencies {
     implementation (libs.itextpdf)
     implementation (libs.retrofit)
     implementation (libs.retrofitGson)
+
+    implementation(project(":smollm"))
+
+    // Koin: dependency injection
+//    implementation(libs.koin.android)
+//    implementation(libs.koin.annotations)
+//    implementation(libs.koin.androidx.compose)
+//    // implementation(libs.androidx.ui.text.google.fonts)
+//    ksp(libs.koin.ksp.compiler)
 }

@@ -19,25 +19,26 @@ class LoginActivity: AppCompatActivity()  {
         val authTokenRepo = AuthUtils()
 
         binding.login.setOnClickListener {
-            val email = binding.loginEmail.text.toString()
-            val password = binding.loginPassword.text.toString()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
-            } else {
-                userLogin(email, password) { success, message, token, userId ->
-                    if (success) {
-                        if (token != null) {
-                            authTokenRepo.saveToken(userId.toLong(),token, 3600000)
-                        }
-                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT)
-                            .show()
-                        startActivity(Intent(this, MainActivity::class.java))
-                    } else {
-                        Toast.makeText(this, "Login failed: $message", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+            startActivity(Intent(this, MainActivity::class.java))//temporary
+//            val email = binding.loginEmail.text.toString()
+//            val password = binding.loginPassword.text.toString()
+//
+//            if (email.isEmpty() || password.isEmpty()) {
+//                Toast.makeText(this, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+//            } else {
+//                userLogin(email, password) { success, message, token, userId ->
+//                    if (success) {
+//                        if (token != null) {
+//                            authTokenRepo.saveToken(userId.toLong(),token, 3600000)
+//                        }
+//                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT)
+//                            .show()
+//                        startActivity(Intent(this, MainActivity::class.java))
+//                    } else {
+//                        Toast.makeText(this, "Login failed: $message", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//            }
         }
 
         binding.toSignUp.setOnClickListener {

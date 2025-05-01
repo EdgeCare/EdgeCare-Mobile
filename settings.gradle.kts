@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EdgeCare"
 include(":app")
- 
+include(":smollm")
