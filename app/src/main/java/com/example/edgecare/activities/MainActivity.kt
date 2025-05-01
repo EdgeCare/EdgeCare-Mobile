@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivitySideBarBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         //setup main buttons in side nav bar
         setupStaticSidebarButtons()
 

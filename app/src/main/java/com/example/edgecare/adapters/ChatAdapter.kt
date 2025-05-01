@@ -2,6 +2,7 @@ package com.example.edgecare.adapters
 
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.edgecare.R
@@ -26,10 +27,13 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
 
             if (message.isSentByUser) {
                 root.gravity = Gravity.END
-                chatMessageTextView.setBackgroundResource(R.drawable.message_background_user)
+                //  messageContainer.setBackgroundResource(R.drawable.message_background_user)
             } else {
                 root.gravity = Gravity.START
-                chatMessageTextView.setBackgroundResource(R.drawable.message_background_other)
+                messageContainer.setBackgroundResource(R.drawable.message_background_other)
+                if (message.isLocalChat){
+                    modelTypeTextView.visibility = View.VISIBLE
+                }
             }
         }
     }

@@ -1,8 +1,6 @@
 package com.example.edgecare.fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,8 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class MainContentFragment : Fragment() {
 
@@ -57,16 +53,12 @@ class MainContentFragment : Fragment() {
         chatBox = ObjectBox.store.boxFor(Chat::class.java)
         chatMessageBox = ObjectBox.store.boxFor(ChatMessage::class.java)
 
-        //Set to View.GONE to hide the top bar
-        binding.topAppBar.visibility = View.GONE
-
         chat = getOrCreateChat(chatId)
         val chatList : List<ChatMessage> = getMessagesForChat(chat.id)
         for(chatMessage in chatList){
             binding.tipSection.visibility = View.GONE   // Hide the tip section
             chatMessages.add(ChatMessage(message = chatMessage.message, isSentByUser = chatMessage.isSentByUser))
         }
-        binding.chatTopic.setText(chat.chatName)
 
         // Set up click listener for the send button
         binding.sendButton.setOnClickListener {
@@ -79,39 +71,6 @@ class MainContentFragment : Fragment() {
                 Toast.makeText(requireContext(), "Input is empty", Toast.LENGTH_SHORT).show()
             }
         }
-
-//        binding.newChatButton.setOnClickListener(){
-//            chat = newChat()
-//        }
-
-//        // Manually set the chat topic
-//        var typingTimer: Timer? = null
-//        val DELAY = 1000L // Delay 1000 milliseconds
-//
-//        binding.chatTopic.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                // Cancel any existing timer to reset the delay
-//                typingTimer?.cancel()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {
-//                typingTimer = Timer()
-//                typingTimer?.schedule(object : TimerTask() {
-//                    override fun run() {
-//                        val newText = s.toString()
-//                        if (newText.isNotBlank()) {
-//                            if(newText!= chat.chatName){
-//                                chat.chatName = newText
-//                                println("New Chat Name : $newText")
-//                                chatBox.put(chat)
-//                            }
-//                        }
-//                    }
-//                }, DELAY) // Start the timer with a 1-second delay
-//            }
-//        })
 
         // Initialize Chat RecyclerView
         chatAdapter = ChatAdapter(chatMessages)
@@ -159,8 +118,9 @@ class MainContentFragment : Fragment() {
             val result = DeIDModelUtils.runInference(features)
 
             val maskedString = createMaskedString(result)
-            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
-            saveMessage(chat.id, maskedString,false)
+
+//            chatMessages.add(ChatMessage(message = "Masked user message \n "+maskedString, isSentByUser =  false))
+//            saveMessage(chat.id, maskedString,false)
 
             val maskedHealthReportsBuilder = StringBuilder()
             similarReportsList.forEach{report->
@@ -171,8 +131,8 @@ class MainContentFragment : Fragment() {
             }
             val maskedHealthReports = maskedHealthReportsBuilder.toString()
 
-            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
-            saveMessage(chat.id, maskedHealthReports,false)
+//            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
+//            saveMessage(chat.id, maskedHealthReports,false)
 
             // send to server
             sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
@@ -239,11 +199,7 @@ class MainContentFragment : Fragment() {
             }
 //            Toast.makeText(requireContext(), "Chat $chatId cannot be found", Toast.LENGTH_SHORT).show()
         }
-        // return last Chat
-//        val chatList = chatBox.all
-//        if (!chatList.isNullOrEmpty()){
-//            return chatList.last()
-//        }
+
         deleteEmptyChats()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
@@ -284,14 +240,19 @@ class MainContentFragment : Fragment() {
         }
     }
 
-    private fun newChat():Chat{
-        val newChat = Chat()
-        binding.tipSection.visibility = View.VISIBLE   // Show the tip section
-        chatMessages.removeAll(chatMessages)
-        chatAdapter.notifyDataSetChanged()
-        binding.chatTopic.setText(newChat.chatName)
-        chatBox.put(newChat)
-        return newChat
+    private fun deleteEmptyChats() {
+        val chats = chatBox.all
+
+        for (chat in chats) {
+            val messageCount = chatMessageBox.query()
+                .equal(ChatMessage_.chatId, chat.id)
+                .build()
+                .count()
+
+            if (messageCount == 0L) {
+                chatBox.remove(chat)
+            }
+        }
     }
 
     private fun deleteEmptyChats() {

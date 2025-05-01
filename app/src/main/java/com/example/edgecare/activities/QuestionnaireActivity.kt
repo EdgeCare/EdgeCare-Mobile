@@ -12,10 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.R
+import com.example.edgecare.api.sendUserPersona
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
 import com.example.edgecare.models.Persona
 import com.example.edgecare.models.QuestionnaireQuestion
 import com.example.edgecare.questionsList
+import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
+import com.example.edgecare.utils.AnonymizationUtils.calculateAge
 import io.objectbox.Box
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -232,9 +235,24 @@ class QuestionnaireActivity : AppCompatActivity() {
         // Save the Persona object to the database
         userDetailsBox.put(userDetail)
 
+        sendUserPersona(personaToString(userDetail),this) { response ->
+            if (response == null) {
+                println("error while saving user details")
+            } else{
+                Toast.makeText(this, "Persona Details Saved", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    // for now this is repeated
+    private fun personaToString(persona: Persona): String {
+        val age = persona.birthday?.let { calculateAge(it) }
+        val ageString = age?.let { anonymizeAge(it) }
+        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
 }
