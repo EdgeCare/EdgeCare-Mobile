@@ -22,6 +22,7 @@ import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.models.SmallModelinfo
+import com.example.edgecare.utils.SimilaritySearchUtils
 import com.example.smollm.GGUFReader
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -195,8 +196,13 @@ class OfflineChatFragment : Fragment() {
     }
 
     private fun processInputText(text: String) {
+
+        // Similarity search for given text
+        val similarReportsList = SimilaritySearchUtils.getTopSimilarHealthReports(text, requireContext())
+        val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
+
         // Add user's message to the chat
-        chatMessages.add(ChatMessage(message = text, isSentByUser = true, isLocalChat = true))
+        chatMessages.add(ChatMessage(message = prompt, isSentByUser = true, isLocalChat = true))
         saveMessage(chat.id, text, isSentByUser = true, isLocalChat = false)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
@@ -250,6 +256,33 @@ class OfflineChatFragment : Fragment() {
             )
 
     }
+
+    fun buildPromptForChatbotWithUserMessage(
+        userMessage: String,
+        similarReportsList: List<String>
+    ): String {
+        val promptBuilder = StringBuilder()
+        promptBuilder.append("A user has submitted the following message describing their health condition:\n")
+        promptBuilder.append("\"$userMessage\"\n\n")
+
+        if (similarReportsList.isEmpty()) {
+            promptBuilder.append("No similar health reports were found.\n")
+            promptBuilder.append("Based on the user's message, provide appropriate medical advice or insights.")
+        } else {
+            promptBuilder.append("Here are health report summaries similar to the user's message. ")
+            //promptBuilder.append("Based on the user's input and the following reports, provide relevant medical insights, possible diagnoses, or suggestions:\n\n")
+
+            similarReportsList.forEachIndexed { index, report ->
+                promptBuilder.append("Report ${index + 1}:\n$report\n\n")
+            }
+
+            promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
+        }
+
+        return promptBuilder.toString()
+    }
+
+
 
     fun loadModel() {
         // clear resources occupied by the previous model
