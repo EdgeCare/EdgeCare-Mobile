@@ -7,14 +7,14 @@ import io.objectbox.annotation.Id
 data class Persona(
     @Id var id: Long = 0,
     var name: String? = null,
-    var age: Int? = null,
+//    var age: Int? = null,
     var birthday: String? = null,
     var gender: String? = null,
     var weight: Double? = null,
     var height: Double? = null,
 //    var medicalHistory: String?,
 //    var currentMedications: String?,
-    var allergies: String? = null,
+    var allergies: String? = "",
 //    var dietaryPreferences: String?,
 //    var activityLevel: String?,
 //    var healthGoals: String?,
@@ -24,7 +24,7 @@ data class Persona(
     var alcoholConsumption: Boolean? = null,
     // Optional fields can be nullable
 //    var familyMedicalHistory: String?,
-    var sleepHours: Int? = null,
+    var sleepHours: Double? = null,
 //    var stressLevel: String?,
 //    var specificSymptoms: String?
 )

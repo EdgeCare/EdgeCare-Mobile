@@ -118,6 +118,8 @@ class MainContentFragment : Fragment() {
         container?.removeAllViews()
         container?.addView(flow)
 
+
+
         questions.forEach { question ->
             val chip = inflater.inflate(R.layout.suggested_question_chip, container, false) as Button
             chip.text = question
@@ -144,10 +146,6 @@ class MainContentFragment : Fragment() {
         saveMessage(chat.id, text,true)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-
-        if(chatMessages.size<=4 || chat.chatName=="New Chat"){
-            setChatName(chat)
-        }
 
         // Process the input and display the result
         CoroutineScope(Dispatchers.Main).launch {
@@ -181,10 +179,13 @@ class MainContentFragment : Fragment() {
                 if (response != null) {
                     chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
                     saveMessage(chat.id, response.content,false)
+                    chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                    binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 }
 
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                if(chatMessages.size<=4 || chat.chatName=="New Chat"){
+                    setChatName(chat)
+                }
             }
         }
     }
@@ -277,8 +278,10 @@ class MainContentFragment : Fragment() {
     private fun setChatName(noNamedchat:Chat){
         context?.let { getChatName(noNamedchat.id, it) { response ->
             noNamedchat.chatName = response?.chatName.toString()
-            chatBox.put(noNamedchat)
-            println(noNamedchat.chatName)
+            if(noNamedchat.chatName != "null") {
+                chatBox.put(noNamedchat)
+                println(noNamedchat.chatName)
+            }
         }
         }
     }
