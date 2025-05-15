@@ -1,6 +1,7 @@
 package com.example.edgecare.api
 
 import com.example.edgecare.models.ChatNameResponse
+import com.example.edgecare.models.SampleQuestionResponse
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
 import com.example.edgecare.models.UserPersona
@@ -23,6 +24,12 @@ interface ApiService {
         @Query("chatId") chatId: Long,
         @Query("token") token: String
     ): Call<ChatNameResponse>
+
+    @GET("users/sampleQuestions")
+    fun getSampleQuestions(
+        @Query("userId") userId:Int,
+        @Query("token") token: String
+    ): Call<SampleQuestionResponse>
 
     @POST("auth/login")
     fun userLogIn(@Body loginRequest: UserCreateRequest): Call<TokenResponse>
