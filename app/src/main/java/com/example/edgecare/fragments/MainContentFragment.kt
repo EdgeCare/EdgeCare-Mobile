@@ -1,5 +1,10 @@
 package com.example.edgecare.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -118,9 +123,9 @@ class MainContentFragment : Fragment() {
         container?.removeAllViews()
         container?.addView(flow)
 
+        val ThreeQuestions = if (questions.size > 3) questions.take(3) else questions
 
-
-        questions.forEach { question ->
+        ThreeQuestions.forEach { question ->
             val chip = inflater.inflate(R.layout.suggested_question_chip, container, false) as Button
             chip.text = question
             chip.id = View.generateViewId()
@@ -174,17 +179,28 @@ class MainContentFragment : Fragment() {
 //            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
 //            saveMessage(chat.id, maskedHealthReports,false)
 
-            // send to server
-            sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
+            if(!isInternetAvailable(requireContext())){
+                Toast.makeText(requireContext(), "No internet connection. Please check your network settings.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                // send to server
+                sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
                 if (response != null) {
-                    chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
-                    saveMessage(chat.id, response.content,false)
-                    chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                    binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
-                }
+                        chatMessages.add(ChatMessage(message = response.content, isSentByUser = false))
+                        saveMessage(chat.id, response.content, false)
+                        chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Unable to connect to the server. Please try again later.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-                if(chatMessages.size<=4 || chat.chatName=="New Chat"){
-                    setChatName(chat)
+                    if (chatMessages.size <= 4 || chat.chatName == "New Chat") {
+                        setChatName(chat)
+                    }
                 }
             }
         }
@@ -309,6 +325,22 @@ class MainContentFragment : Fragment() {
             if (messageCount == 0L) {
                 chatBox.remove(chat)
             }
+        }
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            networkInfo != null && networkInfo.isConnected
         }
     }
 
