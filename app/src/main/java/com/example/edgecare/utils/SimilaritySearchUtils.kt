@@ -85,6 +85,7 @@ object SimilaritySearchUtils {
         if(output.isEmpty()){
             output.add("No similar health reports")
         }
+        println(output)
         return output
     }
 

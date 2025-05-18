@@ -202,7 +202,7 @@ class OfflineChatFragment : Fragment() {
         val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
 
         // Add user's message to the chat
-        chatMessages.add(ChatMessage(message = prompt, isSentByUser = true, isLocalChat = true))
+        chatMessages.add(ChatMessage(message = text, isSentByUser = true, isLocalChat = true))
         saveMessage(chat.id, text, isSentByUser = true, isLocalChat = false)
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
@@ -217,7 +217,7 @@ class OfflineChatFragment : Fragment() {
         val thinkingMessageIndex = chatMessages.lastIndex
 
             smolLMManager.getResponse(
-                text,
+                prompt,
                 responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
                     "<blockquote>${matchResult.groupValues[1]}</blockquote>"
                 }

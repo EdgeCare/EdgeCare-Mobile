@@ -3,12 +3,14 @@
   "1": "HOSP",
   "2":  "PERSON",
   "3":  "STAFF",
-  "4":  "AGE",
-  "5":  "BIRTHDATE",
-  "6":  "DATE",
-  "7":  "PHONE",
-  "8":  "ID",
-  "9":  "EMAIL",
-  "10":  "LOC",
-  "11":  "ORG"
+  "4":  "PHONE",
+  "5":  "ID",
+  "6":  "EMAIL",
+  "7":  "LOC",
+  "8":  "ORG",
+  "9":  "AGE",
+  "10":  "BIRTHDATE",
+  "11":  "DATE",
+  "12":  "TIMESTAMPS",
+  "13":  "URL"
 }
