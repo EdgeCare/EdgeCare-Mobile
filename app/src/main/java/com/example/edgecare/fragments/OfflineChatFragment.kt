@@ -201,6 +201,8 @@ class OfflineChatFragment : Fragment() {
         val similarReportsList = SimilaritySearchUtils.getTopSimilarHealthReports(text, requireContext())
         val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
 
+        val referred_reports_str=formatSimilarReports(similarReportsList)
+
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true, isLocalChat = true))
         saveMessage(chat.id, text, isSentByUser = true, isLocalChat = false)
@@ -210,7 +212,7 @@ class OfflineChatFragment : Fragment() {
         //send query and get response
 
         // Add a "Thinking..." message first
-        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false, isLocalChat = false))
+        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false, isLocalChat = false, additionalInfo = referred_reports_str))
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         // Save the index where "Thinking..." is added
@@ -225,7 +227,7 @@ class OfflineChatFragment : Fragment() {
                 onPartialResponseGenerated = { partialResponseText ->
                     // directly update your chat bubble with the latest partial text
                     // Update the message at thinkingMessageIndex
-                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false, isLocalChat = true)
+                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false, isLocalChat = true, additionalInfo = referred_reports_str)
                     chatAdapter.notifyItemChanged(thinkingMessageIndex)
                     binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 },
@@ -256,6 +258,13 @@ class OfflineChatFragment : Fragment() {
             )
 
     }
+
+    fun formatSimilarReports(similarReportsList: List<String>): String {
+        return similarReportsList.joinToString(separator = "\n%%%%%%%%%\n") { item ->
+            if (item.length > 50) item.substring(0, 50) else item
+        }
+    }
+
 
     fun buildPromptForChatbotWithUserMessage(
         userMessage: String,

@@ -162,7 +162,7 @@
     },
     {
       "id": "6:8639447195253880202",
-      "lastPropertyId": "5:7086902271979742065",
+      "lastPropertyId": "6:1631892405865340377",
       "name": "ChatMessage",
       "properties": [
         {
@@ -189,6 +189,11 @@
         {
           "id": "5:7086902271979742065",
           "name": "isSentByUser",
+          "type": 1
+        },
+        {
+          "id": "6:1631892405865340377",
+          "name": "isLocalChat",
           "type": 1
         }
       ],
