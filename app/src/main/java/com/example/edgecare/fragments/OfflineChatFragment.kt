@@ -271,21 +271,28 @@ class OfflineChatFragment : Fragment() {
         similarReportsList: List<String>
     ): String {
         val promptBuilder = StringBuilder()
-        promptBuilder.append("A user has submitted the following message describing their health condition:\n")
-        promptBuilder.append("\"$userMessage\"\n\n")
+//        promptBuilder.append("A user has submitted the following message describing their health condition:\n")
+//        promptBuilder.append("\"$userMessage\"\n\n")
 
         if (similarReportsList.isEmpty()) {
-            promptBuilder.append("No similar health reports were found.\n")
-            promptBuilder.append("Based on the user's message, provide appropriate medical advice or insights.")
+//            promptBuilder.append("No similar health reports were found.\n")
+//            promptBuilder.append("Based on the user's message, provide appropriate medical advice or insights.")
+            promptBuilder.append("\"$userMessage\"\n\n")
         } else {
-            promptBuilder.append("Here are health report summaries similar to the user's message. ")
-            //promptBuilder.append("Based on the user's input and the following reports, provide relevant medical insights, possible diagnoses, or suggestions:\n\n")
+            if ("No similar health reports" in similarReportsList.get(0)) {
+                promptBuilder.append("\"$userMessage\"\n\n")
+            } else {
+                promptBuilder.append("A user has submitted the following message describing their health condition:\n")
+                promptBuilder.append("\"$userMessage\"\n\n")
+                promptBuilder.append("Here are health report summaries similar to the user's message. ")
+                //promptBuilder.append("Based on the user's input and the following reports, provide relevant medical insights, possible diagnoses, or suggestions:\n\n")
 
-            similarReportsList.forEachIndexed { index, report ->
-                promptBuilder.append("Report ${index + 1}:\n$report\n\n")
+                similarReportsList.forEachIndexed { index, report ->
+                    promptBuilder.append("Report ${index + 1}:\n$report\n\n")
+                }
+
+                promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
             }
-
-            promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
         }
 
         return promptBuilder.toString()
