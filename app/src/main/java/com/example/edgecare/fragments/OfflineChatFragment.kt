@@ -234,7 +234,7 @@ class OfflineChatFragment : Fragment() {
                 onSuccess = { response ->
 
                     if (thinkingMessageIndex in chatMessages.indices) {
-                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true)
+                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true, additionalInfo = referred_reports_str)
                         saveMessage(chat.id, response.response,
                             isSentByUser = false,
                             isLocalChat = true
@@ -260,8 +260,8 @@ class OfflineChatFragment : Fragment() {
     }
 
     fun formatSimilarReports(similarReportsList: List<String>): String {
-        return similarReportsList.joinToString(separator = "\n%%%%%%%%%\n") { item ->
-            if (item.length > 50) item.substring(0, 50) else item
+        return similarReportsList.joinToString(separator = "\n----------------------------\n") { item ->
+            if (item.length > 200) item.substring(0, 200) else item
         }
     }
 
