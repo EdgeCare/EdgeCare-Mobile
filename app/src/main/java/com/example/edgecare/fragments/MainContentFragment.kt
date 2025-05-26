@@ -1,16 +1,26 @@
 package com.example.edgecare.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.ObjectBox
+import com.example.edgecare.R
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.api.getChatName
+import com.example.edgecare.api.getSampleQuestions
 import com.example.edgecare.api.sendUserMessage
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
@@ -100,7 +110,42 @@ class MainContentFragment : Fragment() {
         }
     }
 
+    private fun showSuggestedQuestions(questions: List<String>) {
+        binding.suggestedQuestionsContainer.visibility = View.VISIBLE
+        val container = view?.findViewById<ConstraintLayout>(R.id.suggestedQuestionsContainer)
+        val flow = view?.findViewById<androidx.constraintlayout.helper.widget.Flow>(R.id.suggestedQuestionsFlow)
+        val context = container?.context ?: return
+
+        val chipIds = mutableListOf<Int>()
+        val inflater = LayoutInflater.from(context)
+
+        // Remove previous views if any
+        container?.removeAllViews()
+        container?.addView(flow)
+
+        val ThreeQuestions = if (questions.size > 3) questions.take(3) else questions
+
+        ThreeQuestions.forEach { question ->
+            val chip = inflater.inflate(R.layout.suggested_question_chip, container, false) as Button
+            chip.text = question
+            chip.id = View.generateViewId()
+            chip.setOnClickListener {
+                val inputText = view?.findViewById<EditText>(R.id.mainVIewInputText)
+                inputText?.setText(question)
+                inputText?.setSelection(question.length)
+            }
+            chipIds.add(chip.id)
+            container?.addView(chip)
+        }
+
+        // Update Flow with new chip IDs
+        flow?.referencedIds = chipIds.toIntArray()
+    }
+
+
     private fun processInputText(text: String) {
+        binding.suggestedQuestionsContainer.visibility = View.GONE
+
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true))
         saveMessage(chat.id, text,true)
@@ -134,15 +179,29 @@ class MainContentFragment : Fragment() {
 //            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
 //            saveMessage(chat.id, maskedHealthReports,false)
 
-            // send to server
-            sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
+            if(!isInternetAvailable(requireContext())){
+                Toast.makeText(requireContext(), "No internet connection. Please check your network settings.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                // send to server
+                sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
                 if (response != null) {
-                    chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
-                    saveMessage(chat.id, response.content,false)
-                }
+                        chatMessages.add(ChatMessage(message = response.content, isSentByUser = false))
+                        saveMessage(chat.id, response.content, false)
+                        chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Unable to connect to the server. Please try again later.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                    if (chatMessages.size <= 4 || chat.chatName == "New Chat") {
+                        setChatName(chat)
+                    }
+                }
             }
         }
     }
@@ -201,6 +260,7 @@ class MainContentFragment : Fragment() {
         }
 
         deleteEmptyChats()
+        getQuestions()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
@@ -234,8 +294,21 @@ class MainContentFragment : Fragment() {
     private fun setChatName(noNamedchat:Chat){
         context?.let { getChatName(noNamedchat.id, it) { response ->
             noNamedchat.chatName = response?.chatName.toString()
-            chatBox.put(noNamedchat)
-            println(noNamedchat.chatName)
+            if(noNamedchat.chatName != "null") {
+                chatBox.put(noNamedchat)
+                println(noNamedchat.chatName)
+            }
+        }
+        }
+    }
+
+    private fun getQuestions(){
+        context?.let { getSampleQuestions(it) { response ->
+            if (response != null && response.questions.isNotEmpty()) {
+                println("question list size"+response.questions.size)
+                println(response.questions)
+                showSuggestedQuestions(response.questions)
+            }
         }
         }
     }
@@ -252,6 +325,22 @@ class MainContentFragment : Fragment() {
             if (messageCount == 0L) {
                 chatBox.remove(chat)
             }
+        }
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            networkInfo != null && networkInfo.isConnected
         }
     }
 

@@ -105,6 +105,8 @@ class PersonaFragment : Fragment() {
                     radioButtonFemale.isChecked = true
                 if(it.weight != null){weightEditText.setText(it.weight.toString())}
                 if(it.height != null)heightEditText.setText(it.height.toString())
+                if(it.sleepHours != null)sleepHoursEditText.setText(it.sleepHours.toString())
+                allergiesEditText.setText(it.allergies)
                 smokingCheckBox.isChecked = it.smoking == true
                 alcoholCheckBox.isChecked = it.alcoholConsumption == true
                 diabetesCheckBox.isChecked = it.diabetes == true
@@ -117,6 +119,8 @@ class PersonaFragment : Fragment() {
                 radioButtonFemale.isEnabled = false
                 weightEditText.isEnabled = false
                 heightEditText.isEnabled = false
+                sleepHoursEditText.isEnabled = false
+                allergiesEditText.isEnabled = false
                 smokingCheckBox.isEnabled = false
                 alcoholCheckBox.isEnabled = false
                 diabetesCheckBox.isEnabled= false
@@ -135,6 +139,8 @@ class PersonaFragment : Fragment() {
             radioButtonFemale.isEnabled = true
             weightEditText.isEnabled = true
             heightEditText.isEnabled = true
+            sleepHoursEditText.isEnabled = true
+            allergiesEditText.isEnabled = true
             smokingCheckBox.isEnabled = true
             alcoholCheckBox.isEnabled = true
             diabetesCheckBox.isEnabled= true
@@ -171,6 +177,12 @@ class PersonaFragment : Fragment() {
                 heightEditText.error = "Please enter a valid height (1-300) cm"
                 return false
             }
+
+            val sleepHours = sleepHoursEditText.text.toString().toDoubleOrNull()
+            if (sleepHours == null || sleepHours <= 0 || sleepHours > 24) {
+                sleepHoursEditText.error = "Please enter a valid sleeping hour count"
+                return false
+            }
         }
         return true
     }
@@ -184,6 +196,8 @@ class PersonaFragment : Fragment() {
                     it.gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName
                     it.weight = weightEditText.text.toString().toDouble()
                     it.height = heightEditText.text.toString().toDouble()
+                    it.sleepHours = sleepHoursEditText.text.toString().toDouble()
+                    it.allergies = allergiesEditText.text.toString()
                     it.smoking = smokingCheckBox.isChecked
                     it.alcoholConsumption = alcoholCheckBox.isChecked
                     it.diabetes = diabetesCheckBox.isChecked
@@ -203,6 +217,8 @@ class PersonaFragment : Fragment() {
                 gender = if (binding.radioButtonMale.isChecked) Gender.MALE.displayName else Gender.FEMALE.displayName,
                 weight = binding.weightEditText.text.toString().toDouble(),
                 height = binding.heightEditText.text.toString().toDouble(),
+                sleepHours = binding.sleepHoursEditText.text.toString().toDouble(),
+                allergies = binding.allergiesEditText.text.toString(),
                 smoking = binding.smokingCheckBox.isChecked,
                 alcoholConsumption = binding.alcoholCheckBox.isChecked,
                 diabetes = binding.diabetesCheckBox.isChecked,
@@ -220,7 +236,7 @@ class PersonaFragment : Fragment() {
     private fun personaToString(persona: Persona): String {
         val age = persona.birthday?.let { calculateAge(it) }
         val ageString = age?.let { anonymizeAge(it) }
-        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
+        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Sleeping hours: ${persona.sleepHours?: "N/A"}, Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
     override fun onDestroyView() {

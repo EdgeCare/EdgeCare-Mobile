@@ -71,6 +71,33 @@
             android:contentDescription="@string/icon" />
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/suggestedQuestionsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:visibility="visible">
+
+        <!-- This Flow dynamically arranges the buttons -->
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/suggestedQuestionsFlow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:flow_wrapMode="aligned"
+            app:flow_horizontalGap="8dp"
+            app:flow_verticalGap="8dp"
+            app:flow_maxElementsWrap="3"
+            app:flow_horizontalAlign="start"
+            app:flow_verticalAlign="top" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
     <!-- Chat Area -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"

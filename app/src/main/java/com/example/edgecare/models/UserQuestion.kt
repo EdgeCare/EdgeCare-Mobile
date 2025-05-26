@@ -23,3 +23,8 @@ data class ChatNameResponse(
     val chatName:String,
     val status:String
 )
+
+data class SampleQuestionResponse(
+    val statue:String,
+    val questions:List<String>,
+)

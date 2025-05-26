@@ -146,7 +146,7 @@ class QuestionnaireActivity : AppCompatActivity() {
                 binding.inputContainer.addView(numberInputView)
 
                 val editText = numberInputView.findViewById<EditText>(R.id.questionnaireNumberInput)
-                editText.setText((question.answer as? Int)?.toString() ?: "")
+                editText.setText((question.answer as? Double)?.toString() ?: "")
             }
             "date" -> {
                 // Show "Next" button
@@ -198,7 +198,7 @@ class QuestionnaireActivity : AppCompatActivity() {
             }
             "number" -> {
                 val editText = inputContainer.findViewById<EditText>(R.id.questionnaireNumberInput)
-                question.answer = editText?.text?.toString()?.toIntOrNull()
+                question.answer = editText?.text?.toString()?.toDoubleOrNull()
             }
             "select" -> {
                 // Do nothing here; answers are saved on button click
@@ -252,7 +252,7 @@ class QuestionnaireActivity : AppCompatActivity() {
     private fun personaToString(persona: Persona): String {
         val age = persona.birthday?.let { calculateAge(it) }
         val ageString = age?.let { anonymizeAge(it) }
-        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
+        return """ Age range: ${ageString ?: "N/A"} , Gender: ${persona.gender ?: "N/A"} , Weight: ${persona.weight ?: "N/A"} kg , Height: ${persona.height ?: "N/A"} cm , Sleep hours: ${persona.sleepHours ?: "N/A"} , Allergies: ${persona.allergies ?: "None"} , Diabetes: ${if (persona.diabetes == true) "Yes" else "No"} , High Blood Pressure: ${if (persona.highBloodPressure == true) "Yes" else "No"} , Smoking: ${if (persona.smoking == true) "Yes" else "No"} , Alcohol Consumption: ${if (persona.alcoholConsumption == true) "Yes" else "No"} ,Sleep Hours: ${persona.sleepHours ?: "N/A"} hours """.trimIndent()
     }
 
 }
