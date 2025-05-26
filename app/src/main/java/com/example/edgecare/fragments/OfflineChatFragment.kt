@@ -260,7 +260,7 @@ class OfflineChatFragment : Fragment() {
     }
 
     fun formatSimilarReports(similarReportsList: List<String>): String {
-        return similarReportsList.joinToString(separator = "\n----------------------------\n") { item ->
+        return similarReportsList.joinToString(separator = "\n===========Next report chunk:\n") { item ->
             if (item.length > 200) item.substring(0, 200) else item
         }
     }
