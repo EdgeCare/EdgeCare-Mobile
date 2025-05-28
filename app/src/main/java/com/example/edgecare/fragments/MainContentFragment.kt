@@ -214,7 +214,7 @@ class MainContentFragment : Fragment() {
         var currentLabel: String? = null
 
         for ((token, label) in input) {
-            if (label == "O" && token !="[CLS]" && token != "[SEP]") {
+            if ( (label == "O" || label == "TIMESTAMPS" ) && token !="[CLS]" && token != "[SEP]" ) {
                 // If label is "O", handle token concatenation based on "##"
                 if (token.startsWith("##")) {
 //                    result.setLength(result.length - 1) // Remove trailing space
@@ -227,7 +227,7 @@ class MainContentFragment : Fragment() {
                 // If the label is not "O", add the label and process token
                 if (currentLabel != label ) {
                     var newLabel  = ""
-                    if(label == "AGE"){
+                    if (label == "AGE"){
                         val ageRange = token.toIntOrNull()?.let { anonymizeAge(it) }
                         if(ageRange !=null){newLabel = " RANGE : $ageRange YEARS"}
                     }
