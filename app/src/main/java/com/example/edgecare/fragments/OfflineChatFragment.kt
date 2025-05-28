@@ -334,6 +334,7 @@ class OfflineChatFragment : Fragment() {
 
         deleteEmptyChats()
         val newChat = Chat()
+        newChat.chatName = "Offline Chat"
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
         return newChat
