@@ -144,6 +144,8 @@ class MainContentFragment : Fragment() {
 
 
     private fun processInputText(text: String) {
+        setSendButtonLoading(true)
+
         binding.suggestedQuestionsContainer.visibility = View.GONE
 
         // Add user's message to the chat
@@ -190,6 +192,7 @@ class MainContentFragment : Fragment() {
                         saveMessage(chat.id, response.content, false)
                         chatAdapter.notifyItemInserted(chatMessages.size - 1)
                         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                        setSendButtonLoading(false)
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -304,7 +307,7 @@ class MainContentFragment : Fragment() {
 
     private fun getQuestions(){
         context?.let { getSampleQuestions(it) { response ->
-            if (response != null && response.questions.isNotEmpty()) {
+            if (response != null && response.questions.isNotEmpty() && chatMessages.isEmpty()) {
                 println("question list size"+response.questions.size)
                 println(response.questions)
                 showSuggestedQuestions(response.questions)
@@ -325,6 +328,15 @@ class MainContentFragment : Fragment() {
             if (messageCount == 0L) {
                 chatBox.remove(chat)
             }
+        }
+    }
+
+    private fun setSendButtonLoading(isLoading: Boolean) {
+        binding.sendButton.isEnabled = !isLoading
+        if (isLoading){
+            binding.sendLoading.visibility = View.VISIBLE
+        } else {
+            binding.sendLoading.visibility = View.GONE
         }
     }
 
