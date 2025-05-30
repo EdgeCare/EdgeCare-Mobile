@@ -133,16 +133,35 @@
             android:maxHeight="250dp"
             android:overScrollMode="always" />
 
-        <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/icon_send_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/icon"
-            android:layout_gravity="center_vertical"
-            android:padding="6dp"
+        <!-- Send-button + spinner container -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="6dp"
-            android:scaleType="fitCenter" />
+            android:layout_gravity="center_vertical">
+
+            <!-- Spinner (hidden by default) -->
+            <ProgressBar
+                android:id="@+id/sendLoading"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/buttonPrimary"
+                android:visibility="gone"/>
+
+            <!-- send icon -->
+            <ImageButton
+                android:id="@+id/sendButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/icon_send_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/icon"
+                android:layout_gravity="center_vertical"
+                android:padding="6dp"
+                android:layout_marginStart="6dp"
+                android:scaleType="fitCenter" />
+
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
