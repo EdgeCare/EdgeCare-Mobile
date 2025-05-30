@@ -19,6 +19,7 @@ import com.example.edgecare.databinding.ActivityReportHandleBinding
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.models.HealthReportChunk
 import com.example.edgecare.models.HealthReportChunk_
+import com.example.edgecare.utils.CryptoHelper
 import com.example.edgecare.utils.EmbeddingUtils
 import com.example.edgecare.utils.FileUtils
 import io.objectbox.Box
@@ -94,14 +95,14 @@ class ReportHandleFragment : Fragment() {
 
                 if (pdfData != null) {
                     // Save the PDF in ObjectBox
-                    report = HealthReport(isPDF = true, text = text, pdfData = pdfData)
+                    report = HealthReport(isPDF = true, text = CryptoHelper.encrypt(text), pdfData = pdfData)
                     healthReportBox.put(report)
                 }
             }
 
             if (!text.isNullOrEmpty()) {
                 if(mimeType!="application/pdf" ) {
-                    report = HealthReport(text = text)
+                    report = HealthReport(text = CryptoHelper.encrypt(text))
                     healthReportBox.put(report)
                 }
                 saveHealthReportChunks(text, report.id)
@@ -154,7 +155,15 @@ class ReportHandleFragment : Fragment() {
 
 
     private fun loadHealthReports() {
-        val reports = healthReportBox.all
+        val reports = healthReportBox.all.map { report ->
+            val decryptedText = try {
+                CryptoHelper.decrypt(report.text)
+            } catch (e: Exception) {
+                "[Decryption Failed]"
+            }
+            report.copy(text = decryptedText)
+        }
+
         if(reports.size>0){
             setupRecyclerView()
             adapter.submitList(reports)
