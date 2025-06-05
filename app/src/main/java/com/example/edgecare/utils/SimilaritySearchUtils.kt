@@ -89,6 +89,26 @@ object SimilaritySearchUtils {
         return output
     }
 
+    // returns the top health reports as a SimilarReportChunk list.
+    fun getSimilarHealthReportsWithAdditionalInfo(text: String, context: Context):List<SimilarReportChunk>{
+        //Similarity Search for health reports
+        val embeddings = EmbeddingUtils.computeEmbedding(text,context)
+        val nonNullableEmbeddings: FloatArray = embeddings ?: FloatArray(0) // Default to empty array
+        val healthReportChunk = ObjectBox.store.boxFor(HealthReportChunk::class.java)
+        val similarReports = findMostSimilarReports(nonNullableEmbeddings, healthReportChunk,2 )
+        val output =mutableListOf<SimilarReportChunk>()
+        similarReports.forEach { (id, similarity) ->
+            val chunk = healthReportChunk.get(id)
+            output.add(SimilarReportChunk(id, similarity, chunk.text))
+        }
+
+        if(output.isEmpty()){
+            //output.add("No similar health reports")
+        }
+        println(output)
+        return output
+    }
+
     // Used Object box nearestNeighbors search. Does not work when the health reports are dynamically updates.
     fun findSimilarReports(text:String, context: Context ){
         val healthReportChunkBox = ObjectBox.store.boxFor(HealthReportChunk::class.java)

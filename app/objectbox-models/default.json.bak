@@ -162,7 +162,7 @@
     },
     {
       "id": "6:8639447195253880202",
-      "lastPropertyId": "6:1631892405865340377",
+      "lastPropertyId": "7:9182198525800867348",
       "name": "ChatMessage",
       "properties": [
         {
@@ -195,6 +195,11 @@
           "id": "6:1631892405865340377",
           "name": "isLocalChat",
           "type": 1
+        },
+        {
+          "id": "7:9182198525800867348",
+          "name": "additionalInfo",
+          "type": 9
         }
       ],
       "relations": []

@@ -22,6 +22,7 @@ import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.models.SmallModelinfo
+import com.example.edgecare.utils.SimilarReportChunk
 import com.example.edgecare.utils.SimilaritySearchUtils
 import com.example.smollm.GGUFReader
 import io.objectbox.Box
@@ -57,6 +58,7 @@ class OfflineChatFragment : Fragment() {
     private val FILE_PICK_REQUEST_CODE = 1001
     private lateinit var progressContainer: LinearLayout
     private lateinit var modelInfoBox: Box<SmallModelinfo>
+    private val similarityThreshold = 0.15f
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -198,9 +200,13 @@ class OfflineChatFragment : Fragment() {
     private fun processInputText(text: String) {
 
         // Similarity search for given text
-        val similarReportsList = SimilaritySearchUtils.getTopSimilarHealthReports(text, requireContext())
-        val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
+        val similarReportsDataList = SimilaritySearchUtils.getSimilarHealthReportsWithAdditionalInfo(text, requireContext())
+        //filter out by a threshold
+        val similarReportsList = similarReportsDataList
+            .filter { it.similarity > similarityThreshold }
+            .map { it.text }
 
+        val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
         val referred_reports_str=formatSimilarReports(similarReportsList)
 
         // Add user's message to the chat
@@ -271,17 +277,13 @@ class OfflineChatFragment : Fragment() {
         similarReportsList: List<String>
     ): String {
         val promptBuilder = StringBuilder()
-//        promptBuilder.append("A user has submitted the following message describing their health condition:\n")
-//        promptBuilder.append("\"$userMessage\"\n\n")
 
         if (similarReportsList.isEmpty()) {
-//            promptBuilder.append("No similar health reports were found.\n")
-//            promptBuilder.append("Based on the user's message, provide appropriate medical advice or insights.")
+            val initPrompt="You're a helpful friend. Just talk like a normal person in everyday conversation. No code, no technical stuff unless asked. Respond casually like you're chatting with someone you know."
+            promptBuilder.append(initPrompt)
+            promptBuilder.append("User says: ")
             promptBuilder.append("\"$userMessage\"\n\n")
         } else {
-            if ("No similar health reports" in similarReportsList.get(0)) {
-                promptBuilder.append("\"$userMessage\"\n\n")
-            } else {
                 promptBuilder.append("A user has submitted the following message describing their health condition:\n")
                 promptBuilder.append("\"$userMessage\"\n\n")
                 promptBuilder.append("Here are health report summaries similar to the user's message. ")
@@ -292,7 +294,7 @@ class OfflineChatFragment : Fragment() {
                 }
 
                 promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
-            }
+
         }
 
         return promptBuilder.toString()
@@ -330,7 +332,34 @@ class OfflineChatFragment : Fragment() {
             },
             onSuccess = {
                 Toast.makeText(requireContext(), "Model loaded successfully!", Toast.LENGTH_SHORT).show()
+                //initConversation()
 
+            },
+        )
+    }
+
+    fun initConversation(){
+        val initPrompt="You're a helpful friend. Just talk like a normal person in everyday conversation. No code, no technical stuff unless asked. Respond casually like you're chatting with someone you know."
+        smolLMManager.getResponse(
+            initPrompt,
+            responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
+                "<blockquote>${matchResult.groupValues[1]}</blockquote>"
+            }
+            },
+            onPartialResponseGenerated = { partialResponseText ->
+            },
+            onSuccess = { response ->
+                Toast.makeText(requireContext(), "Conversation initiated successfully!", Toast.LENGTH_SHORT).show()
+                println("Init response = $response")
+            },
+            onCancelled = {
+                // ignore CancellationException, as it was called because
+                // `responseGenerationJob` was cancelled in the `stopGeneration` method
+            },
+            onError = { exception ->
+                Toast.makeText(requireContext(), "Initializing the conversation is failed", Toast.LENGTH_SHORT)
+                    .show()
+                LOGD("Generating Error: $exception")
             },
         )
     }
