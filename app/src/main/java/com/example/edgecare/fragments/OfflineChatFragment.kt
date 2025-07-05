@@ -34,7 +34,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 private const val LOGTAG = "[ChatActivity]"
 private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
@@ -59,6 +61,9 @@ class OfflineChatFragment : Fragment() {
     private lateinit var progressContainer: LinearLayout
     private lateinit var modelInfoBox: Box<SmallModelinfo>
     private val similarityThreshold = 0.15f
+
+    val dateFormat = SimpleDateFormat("M/d-HH:mm", Locale.getDefault())
+    val currentTime = dateFormat.format(Date())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -417,6 +422,7 @@ class OfflineChatFragment : Fragment() {
         deleteEmptyChats()
         val newChat = Chat()
         newChat.isOffline=true
+        newChat.chatName="Offline Chat@ $currentTime"
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
         return newChat
