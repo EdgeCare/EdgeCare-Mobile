@@ -318,7 +318,7 @@ class OfflineChatFragment : Fragment() {
             com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
                 modelInfo.path,
                 0.05f,
-                1.0f,
+                0.2f, //reduced temp for more factual responses
                 false,
                 modelInfo.contextSize.toLong(),//context length auto set by the model
                 modelInfo.chatTemplate,
