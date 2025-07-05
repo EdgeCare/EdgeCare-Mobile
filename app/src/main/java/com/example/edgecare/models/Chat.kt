@@ -8,6 +8,7 @@ import io.objectbox.relation.ToMany
 data class Chat(
     @Id var id: Long = 0,
     var chatName: String = "New Chat",
+    var isOffline: Boolean = false
 ){
     lateinit var chatMessageList: ToMany<ChatMessage>
 }
