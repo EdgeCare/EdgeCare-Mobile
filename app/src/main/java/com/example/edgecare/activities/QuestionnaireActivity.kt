@@ -16,7 +16,7 @@ import com.example.edgecare.api.sendUserPersona
 import com.example.edgecare.databinding.ActivityQuestionnaireBinding
 import com.example.edgecare.models.Persona
 import com.example.edgecare.models.QuestionnaireQuestion
-import com.example.edgecare.questionsList
+import com.example.edgecare.models.questionsList
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
 import com.example.edgecare.utils.AnonymizationUtils.calculateAge
 import io.objectbox.Box

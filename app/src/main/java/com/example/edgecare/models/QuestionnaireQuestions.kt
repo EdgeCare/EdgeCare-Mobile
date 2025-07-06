@@ -1,6 +1,4 @@
-package com.example.edgecare
-
-import com.example.edgecare.models.QuestionnaireQuestion
+package com.example.edgecare.models
 
 // Note - used "###" for replacing it with user's first name
 val questionsList = listOf(
