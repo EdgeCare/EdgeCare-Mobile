@@ -49,11 +49,6 @@
           "type": 9
         },
         {
-          "id": "3:1528306570334327383",
-          "name": "age",
-          "type": 5
-        },
-        {
           "id": "4:3728617748919745537",
           "name": "gender",
           "type": 9
@@ -101,7 +96,7 @@
         {
           "id": "13:5161541589264807263",
           "name": "sleepHours",
-          "type": 5
+          "type": 8
         }
       ],
       "relations": []
@@ -167,7 +162,7 @@
     },
     {
       "id": "6:8639447195253880202",
-      "lastPropertyId": "7:9182198525800867348",
+      "lastPropertyId": "8:4393424381299606981",
       "name": "ChatMessage",
       "properties": [
         {
@@ -205,6 +200,11 @@
           "id": "7:9182198525800867348",
           "name": "additionalInfo",
           "type": 9
+        },
+        {
+          "id": "8:4393424381299606981",
+          "name": "isCompletedResponse",
+          "type": 1
         }
       ],
       "relations": []
@@ -295,7 +295,8 @@
   "retiredPropertyUids": [
     3673610098866765321,
     314132186413034112,
-    2184592435534961125
+    2184592435534961125,
+    1528306570334327383
   ],
   "retiredRelationUids": [],
   "version": 1

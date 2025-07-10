@@ -44,7 +44,7 @@ class ChatAdapter(private val messages: List<ChatMessage>) :
             } else {
                 root.gravity = Gravity.START
                 messageContainer.setBackgroundResource(R.drawable.message_background_other)
-                if (message.isLocalChat){
+                if (message.isLocalChat && message.isCompletedResponse){
                     modelTypeTextView.visibility = View.VISIBLE
                     infoIcon.visibility = View.VISIBLE
                     infoIcon.setOnClickListener {

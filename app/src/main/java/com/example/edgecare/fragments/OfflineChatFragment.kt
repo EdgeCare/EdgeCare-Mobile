@@ -245,7 +245,7 @@ class OfflineChatFragment : Fragment() {
                 onSuccess = { response ->
 
                     if (thinkingMessageIndex in chatMessages.indices) {
-                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true, additionalInfo = referred_reports_str)
+                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true, isCompletedResponse = true, additionalInfo = referred_reports_str)
                         saveMessage(chat.id, response.response,
                             isSentByUser = false,
                             isLocalChat = true
