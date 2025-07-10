@@ -24,6 +24,11 @@ data class ChatNameResponse(
     val status:String
 )
 
+data class ReportAnalysisResponse(
+    val reportSummary:String,
+    val status:String
+)
+
 data class SampleQuestionResponse(
     val statue:String,
     val questions:List<String>,

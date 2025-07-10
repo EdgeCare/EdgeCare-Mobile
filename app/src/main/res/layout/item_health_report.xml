@@ -44,6 +44,16 @@
                 android:textColor="@color/white"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp" />
+            <Button
+                android:id="@+id/buttonSummaryReport"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/buttonPrimary"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="4dp"
+                android:text="Summary"
+                android:textColor="@color/white" />
 
             <Button
                 android:id="@+id/buttonDeleteReport"
