@@ -14,6 +14,7 @@
     <color name="textColor2">#FFFFFFFF</color>
     <color name="textColor3">#3E9EFF</color>
     <color name="textColor4">#000080</color>
+    <color name="suggestion_background">#82BBF6</color>
 
 
 </resources>

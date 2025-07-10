@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.databinding.ActivityViewFullReportBinding
+import com.example.edgecare.utils.CryptoHelper
 import io.objectbox.Box
 import java.io.File
 
@@ -46,7 +47,12 @@ class ViewFullReportActivity : AppCompatActivity() {
         } else if (report != null) {
             binding.textViewContent.visibility= View.VISIBLE
             binding.textViewTitle.text = "Report ID: ${report.id}"
-            binding.textViewContent.text = report.text
+            val decryptedText = try {
+                CryptoHelper.decrypt(report.text)
+            } catch (e: Exception) {
+                "[Decryption Failed]"
+            }
+            binding.textViewContent.text = decryptedText
         } else {
             binding.textViewContent.visibility= View.VISIBLE
             binding.textViewContent.text = "Report not found."

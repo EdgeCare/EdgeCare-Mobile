@@ -71,6 +71,7 @@
             android:contentDescription="@string/icon" />
     </LinearLayout>
 
+
     <!-- Chat Area -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
@@ -79,6 +80,24 @@
         android:layout_weight="1"
         android:padding="8dp"
         android:clipToPadding="false" />
+
+    <!-- Suggestions Container -->
+    <!-- Suggestions -->
+    <HorizontalScrollView
+        android:id="@+id/suggestionScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp"
+        android:overScrollMode="never">
+
+        <LinearLayout
+            android:id="@+id/suggestionContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical" />
+    </HorizontalScrollView>
 
     <!-- Bottom Input Area -->
     <LinearLayout
@@ -106,16 +125,35 @@
             android:maxHeight="250dp"
             android:overScrollMode="always" />
 
-        <ImageButton
-            android:id="@+id/sendButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/icon_send_24"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/icon"
-            android:layout_gravity="center_vertical"
-            android:padding="6dp"
+        <!-- Send-button + spinner container -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="6dp"
-            android:scaleType="fitCenter" />
+            android:layout_gravity="center_vertical">
+
+            <!-- Spinner (hidden by default) -->
+            <ProgressBar
+                android:id="@+id/sendLoading"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminateTint="@color/buttonPrimary"
+                android:visibility="gone"/>
+
+            <!-- send icon -->
+            <ImageButton
+                android:id="@+id/sendButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/icon_send_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/icon"
+                android:layout_gravity="center_vertical"
+                android:padding="6dp"
+                android:layout_marginStart="6dp"
+                android:scaleType="fitCenter" />
+
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

@@ -6,4 +6,4 @@
     android:layout_height="wrap_content"
     android:hint="Enter a number"
     android:importantForAutofill="no"
-    android:inputType="number" />
+    android:inputType= "numberDecimal"/>

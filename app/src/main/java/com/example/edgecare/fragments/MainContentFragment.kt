@@ -1,16 +1,25 @@
 package com.example.edgecare.fragments
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkInfo
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.utils.DeIDModelUtils
 import com.example.edgecare.ObjectBox
+import com.example.edgecare.R
 import com.example.edgecare.adapters.ChatAdapter
 import com.example.edgecare.api.getChatName
+import com.example.edgecare.api.getSampleQuestions
 import com.example.edgecare.api.sendUserMessage
 import com.example.edgecare.databinding.ActivityMainContentBinding
 import com.example.edgecare.models.Chat
@@ -18,6 +27,9 @@ import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
 import com.example.edgecare.utils.SimilaritySearchUtils
+import android.graphics.Color
+import androidx.core.content.ContextCompat
+import com.google.android.material.button.MaterialButton
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
@@ -111,7 +123,50 @@ class MainContentFragment : Fragment() {
         }
     }
 
+    private fun showSuggestedQuestions(questions: List<String>) {
+        binding.suggestionContainer.visibility = View.VISIBLE
+        binding.suggestionContainer.removeAllViews() // Clear any previous suggestions
+
+        questions.forEach { question ->
+            val button = MaterialButton(binding.root.context).apply {
+                text = question
+                setBackgroundColor(
+                    ContextCompat.getColor(context, R.color.suggestion_background)) // Light background
+                setTextColor(Color.BLACK)
+                cornerRadius = 25
+                elevation = 6f
+                setPadding(40, 40, 40, 40)
+
+
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(8, 8, 8, 8)
+                }
+                layoutParams = params
+
+                maxWidth = 650  // Restrict button width (in pixels)
+                minWidth = 0
+                minHeight = 300
+
+                setOnClickListener {
+                    val inputText = binding.root.findViewById<EditText>(R.id.mainVIewInputText)
+                    inputText?.setText(question)
+                    inputText?.setSelection(question.length)
+                }
+            }
+
+            binding.suggestionContainer.addView(button)
+        }
+    }
+
+
     private fun processInputText(text: String) {
+        setSendButtonLoading(true)
+
+        binding.suggestionContainer.visibility = View.GONE
+
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true))
         saveMessage(chat.id, text,true)
@@ -145,15 +200,30 @@ class MainContentFragment : Fragment() {
 //            chatMessages.add(ChatMessage(message = "Similar health reports \n "+maskedHealthReports, isSentByUser =  false))
 //            saveMessage(chat.id, maskedHealthReports,false)
 
-            // send to server
-            sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
+            if(!isInternetAvailable(requireContext())){
+                Toast.makeText(requireContext(), "No internet connection. Please check your network settings.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                // send to server
+                sendUserMessage(chat.id,maskedString,maskedHealthReports,requireContext()) { response ->
                 if (response != null) {
-                    chatMessages.add(ChatMessage(message = response.content, isSentByUser =  false))
-                    saveMessage(chat.id, response.content,false)
-                }
+                        chatMessages.add(ChatMessage(message = response.content, isSentByUser = false))
+                        saveMessage(chat.id, response.content, false)
+                        chatAdapter.notifyItemInserted(chatMessages.size - 1)
+                        binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                        setSendButtonLoading(false)
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Unable to connect to the server. Please try again later.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
-                chatAdapter.notifyItemInserted(chatMessages.size - 1)
-                binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
+                    if (chatMessages.size <= 4 || chat.chatName == "New Chat") {
+                        setChatName(chat)
+                    }
+                }
             }
         }
     }
@@ -163,7 +233,7 @@ class MainContentFragment : Fragment() {
         var currentLabel: String? = null
 
         for ((token, label) in input) {
-            if (label == "O" && token !="[CLS]" && token != "[SEP]") {
+            if ( (label == "O" || label == "TIMESTAMPS" ) && token !="[CLS]" && token != "[SEP]" ) {
                 // If label is "O", handle token concatenation based on "##"
                 if (token.startsWith("##")) {
 //                    result.setLength(result.length - 1) // Remove trailing space
@@ -176,7 +246,7 @@ class MainContentFragment : Fragment() {
                 // If the label is not "O", add the label and process token
                 if (currentLabel != label ) {
                     var newLabel  = ""
-                    if(label == "AGE"){
+                    if (label == "AGE"){
                         val ageRange = token.toIntOrNull()?.let { anonymizeAge(it) }
                         if(ageRange !=null){newLabel = " RANGE : $ageRange YEARS"}
                     }
@@ -212,6 +282,7 @@ class MainContentFragment : Fragment() {
         }
 
         deleteEmptyChats()
+        getQuestions()
         val newChat = Chat()
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
@@ -245,8 +316,21 @@ class MainContentFragment : Fragment() {
     private fun setChatName(noNamedchat:Chat){
         context?.let { getChatName(noNamedchat.id, it) { response ->
             noNamedchat.chatName = response?.chatName.toString()
-            chatBox.put(noNamedchat)
-            println(noNamedchat.chatName)
+            if(noNamedchat.chatName != "null") {
+                chatBox.put(noNamedchat)
+                println(noNamedchat.chatName)
+            }
+        }
+        }
+    }
+
+    private fun getQuestions(){
+        context?.let { getSampleQuestions(it) { response ->
+            if (response != null && response.questions.isNotEmpty() && chatMessages.isEmpty()) {
+                println("question list size"+response.questions.size)
+                println(response.questions)
+                showSuggestedQuestions(response.questions)
+            }
         }
         }
     }
@@ -263,6 +347,31 @@ class MainContentFragment : Fragment() {
             if (messageCount == 0L) {
                 chatBox.remove(chat)
             }
+        }
+    }
+
+    private fun setSendButtonLoading(isLoading: Boolean) {
+        binding.sendButton.isEnabled = !isLoading
+        if (isLoading){
+            binding.sendLoading.visibility = View.VISIBLE
+        } else {
+            binding.sendLoading.visibility = View.GONE
+        }
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            networkInfo != null && networkInfo.isConnected
         }
     }
 

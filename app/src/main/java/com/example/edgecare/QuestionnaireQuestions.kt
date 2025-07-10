@@ -54,5 +54,11 @@ val questionsList = listOf(
         "sleepHours",
         "number",
         "Provide an approximate number in hours"
+    ),
+        QuestionnaireQuestion(
+        8,
+        "Do you have any allergies to mention?",
+        "allergies",
+        "text"
     )
 )

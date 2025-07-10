@@ -127,6 +127,35 @@
                 android:background="@drawable/edit_text_style"
                 android:layout_marginBottom="10dp" />
 
+            <!-- Sleeping hours Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sleeping hours"
+                android:textColor="#000080" />
+            <EditText
+                android:id="@+id/sleepHoursEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Allergies  Field -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Allergies"
+                android:textColor="#000080"
+                android:layout_marginTop="10dp" />
+            <EditText
+                android:id="@+id/allergiesEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:background="@drawable/edit_text_style"
+                android:layout_marginBottom="10dp" />
+
             <!-- Smoking Field -->
             <CheckBox
                 android:id="@+id/smokingCheckBox"

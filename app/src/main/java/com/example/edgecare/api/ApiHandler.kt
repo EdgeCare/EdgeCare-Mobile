@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.example.edgecare.apiService
 import com.example.edgecare.models.ChatNameResponse
+import com.example.edgecare.models.SampleQuestionResponse
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
 import com.example.edgecare.models.UserPersona
@@ -100,6 +101,34 @@ fun getChatName(chatId: Long, context: Context, onResult: (response: ChatNameRes
 
             override fun onFailure(call: retrofit2.Call<ChatNameResponse>, t: Throwable) {
                 println("persona save request Failed")
+                onResult(null)
+            }
+        })
+    }
+}
+
+fun getSampleQuestions( context: Context, onResult: (response: SampleQuestionResponse?) -> Unit){
+    val auth = AuthUtils()
+    auth.isTokenValid()
+    if(auth.getToken() == null){
+        Toast.makeText(context, "Please Login again", Toast.LENGTH_SHORT).show()
+    }
+    else{
+        apiService.getSampleQuestions(auth.getToken()!!.userId.toInt(),auth.getToken()!!.accessToken).enqueue(object : retrofit2.Callback<SampleQuestionResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<SampleQuestionResponse>,
+                response: retrofit2.Response<SampleQuestionResponse>
+            ) {
+                println("response = $response")
+                if (response.isSuccessful) {
+                    onResult(response.body())
+                } else {
+                    onResult(null)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<SampleQuestionResponse>, t: Throwable) {
+                println("sample question request failed")
                 onResult(null)
             }
         })
