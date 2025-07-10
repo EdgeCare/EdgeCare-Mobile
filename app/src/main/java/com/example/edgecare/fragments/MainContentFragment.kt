@@ -9,10 +9,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.utils.DeIDModelUtils
@@ -28,6 +27,9 @@ import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.utils.AnonymizationUtils.anonymizeAge
 import com.example.edgecare.utils.SimilaritySearchUtils
+import android.graphics.Color
+import androidx.core.content.ContextCompat
+import com.google.android.material.button.MaterialButton
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
 import kotlinx.coroutines.CoroutineScope
@@ -111,42 +113,48 @@ class MainContentFragment : Fragment() {
     }
 
     private fun showSuggestedQuestions(questions: List<String>) {
-        binding.suggestedQuestionsContainer.visibility = View.VISIBLE
-        val container = view?.findViewById<ConstraintLayout>(R.id.suggestedQuestionsContainer)
-        val flow = view?.findViewById<androidx.constraintlayout.helper.widget.Flow>(R.id.suggestedQuestionsFlow)
-        val context = container?.context ?: return
+        binding.suggestionContainer.visibility = View.VISIBLE
+        binding.suggestionContainer.removeAllViews() // Clear any previous suggestions
 
-        val chipIds = mutableListOf<Int>()
-        val inflater = LayoutInflater.from(context)
+        questions.forEach { question ->
+            val button = MaterialButton(binding.root.context).apply {
+                text = question
+                setBackgroundColor(
+                    ContextCompat.getColor(context, R.color.suggestion_background)) // Light background
+                setTextColor(Color.BLACK)
+                cornerRadius = 25
+                elevation = 6f
+                setPadding(40, 40, 40, 40)
 
-        // Remove previous views if any
-        container?.removeAllViews()
-        container?.addView(flow)
 
-        val ThreeQuestions = if (questions.size > 3) questions.take(3) else questions
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(8, 8, 8, 8)
+                }
+                layoutParams = params
 
-        ThreeQuestions.forEach { question ->
-            val chip = inflater.inflate(R.layout.suggested_question_chip, container, false) as Button
-            chip.text = question
-            chip.id = View.generateViewId()
-            chip.setOnClickListener {
-                val inputText = view?.findViewById<EditText>(R.id.mainVIewInputText)
-                inputText?.setText(question)
-                inputText?.setSelection(question.length)
+                maxWidth = 650  // Restrict button width (in pixels)
+                minWidth = 0
+                minHeight = 300
+
+                setOnClickListener {
+                    val inputText = binding.root.findViewById<EditText>(R.id.mainVIewInputText)
+                    inputText?.setText(question)
+                    inputText?.setSelection(question.length)
+                }
             }
-            chipIds.add(chip.id)
-            container?.addView(chip)
-        }
 
-        // Update Flow with new chip IDs
-        flow?.referencedIds = chipIds.toIntArray()
+            binding.suggestionContainer.addView(button)
+        }
     }
 
 
     private fun processInputText(text: String) {
         setSendButtonLoading(true)
 
-        binding.suggestedQuestionsContainer.visibility = View.GONE
+        binding.suggestionContainer.visibility = View.GONE
 
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true))
