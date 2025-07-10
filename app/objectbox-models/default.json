@@ -137,7 +137,7 @@
     },
     {
       "id": "5:8054928245846250964",
-      "lastPropertyId": "2:2060690702263819356",
+      "lastPropertyId": "3:4785186066454331235",
       "name": "Chat",
       "properties": [
         {
@@ -150,6 +150,11 @@
           "id": "2:2060690702263819356",
           "name": "chatName",
           "type": 9
+        },
+        {
+          "id": "3:4785186066454331235",
+          "name": "isOffline",
+          "type": 1
         }
       ],
       "relations": [
@@ -162,7 +167,7 @@
     },
     {
       "id": "6:8639447195253880202",
-      "lastPropertyId": "5:7086902271979742065",
+      "lastPropertyId": "7:9182198525800867348",
       "name": "ChatMessage",
       "properties": [
         {
@@ -190,6 +195,16 @@
           "id": "5:7086902271979742065",
           "name": "isSentByUser",
           "type": 1
+        },
+        {
+          "id": "6:1631892405865340377",
+          "name": "isLocalChat",
+          "type": 1
+        },
+        {
+          "id": "7:9182198525800867348",
+          "name": "additionalInfo",
+          "type": 9
         }
       ],
       "relations": []

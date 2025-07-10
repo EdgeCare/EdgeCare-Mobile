@@ -97,6 +97,17 @@ class MainContentFragment : Fragment() {
             binding.tipSection.visibility = View.GONE   // Hide the tip section
         }
 
+        if(chat.isOffline){
+            binding.sendButton.isEnabled = false
+            binding.sendButton.alpha = 0.5f
+
+            binding.mainVIewInputText.isEnabled = false
+            binding.mainVIewInputText.alpha = 0.5f
+
+            Toast.makeText(requireContext(), "Offline chat reuse is currently not supported!", Toast.LENGTH_LONG).show()
+
+        }
+
         return view
     }
 

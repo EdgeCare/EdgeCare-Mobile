@@ -162,7 +162,7 @@
     },
     {
       "id": "6:8639447195253880202",
-      "lastPropertyId": "5:7086902271979742065",
+      "lastPropertyId": "7:9182198525800867348",
       "name": "ChatMessage",
       "properties": [
         {
@@ -190,6 +190,16 @@
           "id": "5:7086902271979742065",
           "name": "isSentByUser",
           "type": 1
+        },
+        {
+          "id": "6:1631892405865340377",
+          "name": "isLocalChat",
+          "type": 1
+        },
+        {
+          "id": "7:9182198525800867348",
+          "name": "additionalInfo",
+          "type": 9
         }
       ],
       "relations": []
@@ -224,9 +234,48 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "8:4610991723069852406",
+      "lastPropertyId": "6:6647588844423545648",
+      "name": "SmallModelinfo",
+      "properties": [
+        {
+          "id": "1:964829577482688245",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8454417098422579268",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:8320912732119094295",
+          "name": "url",
+          "type": 9
+        },
+        {
+          "id": "4:2215460351981160309",
+          "name": "path",
+          "type": 9
+        },
+        {
+          "id": "5:2254491378812959034",
+          "name": "contextSize",
+          "type": 5
+        },
+        {
+          "id": "6:6647588844423545648",
+          "name": "chatTemplate",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "7:2626551887770144136",
+  "lastEntityId": "8:4610991723069852406",
   "lastIndexId": "2:5516593857930652997",
   "lastRelationId": "1:5938195992731244060",
   "lastSequenceId": "0:0",

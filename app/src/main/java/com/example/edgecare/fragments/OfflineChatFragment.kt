@@ -22,6 +22,8 @@ import com.example.edgecare.models.Chat
 import com.example.edgecare.models.ChatMessage
 import com.example.edgecare.models.ChatMessage_
 import com.example.edgecare.models.SmallModelinfo
+import com.example.edgecare.utils.SimilarReportChunk
+import com.example.edgecare.utils.SimilaritySearchUtils
 import com.example.smollm.GGUFReader
 import io.objectbox.Box
 import io.objectbox.kotlin.equal
@@ -32,7 +34,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Paths
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 private const val LOGTAG = "[ChatActivity]"
 private val LOGD: (String) -> Unit = { Log.d(LOGTAG, it) }
@@ -56,6 +60,10 @@ class OfflineChatFragment : Fragment() {
     private val FILE_PICK_REQUEST_CODE = 1001
     private lateinit var progressContainer: LinearLayout
     private lateinit var modelInfoBox: Box<SmallModelinfo>
+    private val similarityThreshold = 0.15f
+
+    val dateFormat = SimpleDateFormat("M/d-HH:mm", Locale.getDefault())
+    val currentTime = dateFormat.format(Date())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -195,6 +203,17 @@ class OfflineChatFragment : Fragment() {
     }
 
     private fun processInputText(text: String) {
+
+        // Similarity search for given text
+        val similarReportsDataList = SimilaritySearchUtils.getSimilarHealthReportsWithAdditionalInfo(text, requireContext())
+        //filter out by a threshold
+        val similarReportsList = similarReportsDataList
+            .filter { it.similarity > similarityThreshold }
+            .map { it.text }
+
+        val prompt = buildPromptForChatbotWithUserMessage(text,similarReportsList)
+        val referred_reports_str=formatSimilarReports(similarReportsList)
+
         // Add user's message to the chat
         chatMessages.add(ChatMessage(message = text, isSentByUser = true, isLocalChat = true))
         saveMessage(chat.id, text, isSentByUser = true, isLocalChat = false)
@@ -204,14 +223,14 @@ class OfflineChatFragment : Fragment() {
         //send query and get response
 
         // Add a "Thinking..." message first
-        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false, isLocalChat = false))
+        chatMessages.add(ChatMessage(message = "Thinking...", isSentByUser = false, isLocalChat = false, additionalInfo = referred_reports_str))
         chatAdapter.notifyItemInserted(chatMessages.size - 1)
         binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
         // Save the index where "Thinking..." is added
         val thinkingMessageIndex = chatMessages.lastIndex
 
             smolLMManager.getResponse(
-                text,
+                prompt,
                 responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
                     "<blockquote>${matchResult.groupValues[1]}</blockquote>"
                 }
@@ -219,14 +238,14 @@ class OfflineChatFragment : Fragment() {
                 onPartialResponseGenerated = { partialResponseText ->
                     // directly update your chat bubble with the latest partial text
                     // Update the message at thinkingMessageIndex
-                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false, isLocalChat = true)
+                    chatMessages[thinkingMessageIndex] = ChatMessage(message = partialResponseText, isSentByUser = false, isLocalChat = true, additionalInfo = referred_reports_str)
                     chatAdapter.notifyItemChanged(thinkingMessageIndex)
                     binding.chatRecyclerView.scrollToPosition(chatMessages.size - 1)
                 },
                 onSuccess = { response ->
 
                     if (thinkingMessageIndex in chatMessages.indices) {
-                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true)
+                        chatMessages[thinkingMessageIndex] = ChatMessage(message = response.response, isSentByUser = false, isLocalChat = true, additionalInfo = referred_reports_str)
                         saveMessage(chat.id, response.response,
                             isSentByUser = false,
                             isLocalChat = true
@@ -251,6 +270,47 @@ class OfflineChatFragment : Fragment() {
 
     }
 
+    fun formatSimilarReports(similarReportsList: List<String>): String {
+        if (similarReportsList.isEmpty()) {
+            return "No reports used"
+        }
+
+        return similarReportsList.joinToString(separator = "\n===========Next report chunk:\n") { item ->
+            if (item.length > 200) item.substring(0, 200) else item
+        }
+    }
+
+
+    fun buildPromptForChatbotWithUserMessage(
+        userMessage: String,
+        similarReportsList: List<String>
+    ): String {
+        val promptBuilder = StringBuilder()
+
+        if (similarReportsList.isEmpty()) {
+            val initPrompt="You're a helpful friend. Just talk like a normal person in everyday conversation. No code, no technical stuff unless asked. Respond casually like you're chatting with someone you know."
+            promptBuilder.append(initPrompt)
+            promptBuilder.append("User says: ")
+            promptBuilder.append("\"$userMessage\"\n\n")
+        } else {
+                promptBuilder.append("A user has submitted the following message describing their health condition:\n")
+                promptBuilder.append("\"$userMessage\"\n\n")
+                promptBuilder.append("Here are health report summaries similar to the user's message. ")
+                //promptBuilder.append("Based on the user's input and the following reports, provide relevant medical insights, possible diagnoses, or suggestions:\n\n")
+
+                similarReportsList.forEachIndexed { index, report ->
+                    promptBuilder.append("Report ${index + 1}:\n$report\n\n")
+                }
+
+                promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
+
+        }
+
+        return promptBuilder.toString()
+    }
+
+
+
     fun loadModel() {
         // clear resources occupied by the previous model
         smolLMManager.close()
@@ -267,7 +327,7 @@ class OfflineChatFragment : Fragment() {
             com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
                 modelInfo.path,
                 0.05f,
-                1.0f,
+                0.2f, //reduced temp for more factual responses
                 false,
                 modelInfo.contextSize.toLong(),//context length auto set by the model
                 modelInfo.chatTemplate,
@@ -281,7 +341,34 @@ class OfflineChatFragment : Fragment() {
             },
             onSuccess = {
                 Toast.makeText(requireContext(), "Model loaded successfully!", Toast.LENGTH_SHORT).show()
+                //initConversation()
 
+            },
+        )
+    }
+
+    fun initConversation(){
+        val initPrompt="You're a helpful friend. Just talk like a normal person in everyday conversation. No code, no technical stuff unless asked. Respond casually like you're chatting with someone you know."
+        smolLMManager.getResponse(
+            initPrompt,
+            responseTransform = {findThinkTagRegex.replace(it) { matchResult ->
+                "<blockquote>${matchResult.groupValues[1]}</blockquote>"
+            }
+            },
+            onPartialResponseGenerated = { partialResponseText ->
+            },
+            onSuccess = { response ->
+                Toast.makeText(requireContext(), "Conversation initiated successfully!", Toast.LENGTH_SHORT).show()
+                println("Init response = $response")
+            },
+            onCancelled = {
+                // ignore CancellationException, as it was called because
+                // `responseGenerationJob` was cancelled in the `stopGeneration` method
+            },
+            onError = { exception ->
+                Toast.makeText(requireContext(), "Initializing the conversation is failed", Toast.LENGTH_SHORT)
+                    .show()
+                LOGD("Generating Error: $exception")
             },
         )
     }
@@ -334,7 +421,10 @@ class OfflineChatFragment : Fragment() {
 
         deleteEmptyChats()
         val newChat = Chat()
-        newChat.chatName = "Offline Chat"
+
+        newChat.isOffline=true
+        newChat.chatName="Offline Chat@ $currentTime"
+
         chatMessages.removeAll(chatMessages)
         chatBox.put(newChat)
         return newChat
