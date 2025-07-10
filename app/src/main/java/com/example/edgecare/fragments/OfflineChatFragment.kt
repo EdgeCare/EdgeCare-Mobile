@@ -288,7 +288,7 @@ class OfflineChatFragment : Fragment() {
         val promptBuilder = StringBuilder()
 
         if (similarReportsList.isEmpty()) {
-            val initPrompt="You're a helpful friend. Just talk like a normal person in everyday conversation. No code, no technical stuff unless asked. Respond casually like you're chatting with someone you know."
+            val initPrompt="You're a helpful medical assistant. No code, no technical stuff unless asked."
             promptBuilder.append(initPrompt)
             promptBuilder.append("User says: ")
             promptBuilder.append("\"$userMessage\"\n\n")
@@ -302,7 +302,7 @@ class OfflineChatFragment : Fragment() {
                     promptBuilder.append("Report ${index + 1}:\n$report\n\n")
                 }
 
-                promptBuilder.append("Taking into account the user's message and these reports, what would be your professional medical advice?")
+                promptBuilder.append("You're a helpful medical assistant.Taking into account the user's message and these reports, what would be your professional medical advice?")
 
         }
 
@@ -326,9 +326,9 @@ class OfflineChatFragment : Fragment() {
         smolLMManager.create(
             com.example.edgecare.utils.SmolLMManager.SmolLMInitParams(
                 modelInfo.path,
-                0.05f,
-                0.2f, //reduced temp for more factual responses
-                false,
+                0.1f,
+                0.4f, //reduced temp for more factual responses
+                true,
                 modelInfo.contextSize.toLong(),//context length auto set by the model
                 modelInfo.chatTemplate,
                 4,
