@@ -12,5 +12,6 @@ data class ChatMessage(
     var timestamp: Date = Date(),
     var isSentByUser: Boolean = true,
     var isLocalChat: Boolean = false,
-    val additionalInfo: String = "" // <-- New field
+    var isCompletedResponse: Boolean = false,
+    val additionalInfo: String = ""
 )
