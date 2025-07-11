@@ -17,7 +17,8 @@ object SimilaritySearchUtils {
      * @return A similarity score between -1 and 1.
      */
     private fun cosineSimilarity(vector1: FloatArray, vector2: FloatArray): Float {
-        if (vector1.size != vector2.size) throw IllegalArgumentException("Vectors must be the same size")
+        //Todo
+        if (vector1.size != vector2.size) return 0f
 
         val dotProduct = vector1.zip(vector2).map { (a, b) -> a * b }.sum()
         val magnitude1 = kotlin.math.sqrt(vector1.map { it * it }.sum())

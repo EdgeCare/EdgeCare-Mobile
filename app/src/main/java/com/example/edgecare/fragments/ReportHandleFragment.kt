@@ -107,6 +107,9 @@ class ReportHandleFragment : Fragment() {
                     generateHealthReportSummary(text){summary ->
                         report.summary = summary
                         healthReportBox.put(report)
+                        saveHealthReportChunks(text, report.id)
+                        loadHealthReports()
+                        Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
                     }
 
                 }
@@ -118,11 +121,12 @@ class ReportHandleFragment : Fragment() {
                     generateHealthReportSummary(text){summary ->
                         report.summary = summary
                         healthReportBox.put(report)
+                        saveHealthReportChunks(text, report.id)
+                        loadHealthReports()
+                        Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
                     }
                 }
-                saveHealthReportChunks(text, report.id)
-                loadHealthReports()
-                Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
+
             } else {
                 Toast.makeText(requireContext(), "Failed to save health report", Toast.LENGTH_SHORT).show()
             }
