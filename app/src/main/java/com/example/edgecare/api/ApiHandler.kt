@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.example.edgecare.apiService
 import com.example.edgecare.models.ChatNameResponse
+import com.example.edgecare.models.ReportAnalysisResponse
 import com.example.edgecare.models.SampleQuestionResponse
 import com.example.edgecare.models.UserCreateRequest
 import com.example.edgecare.models.TokenResponse
@@ -101,6 +102,34 @@ fun getChatName(chatId: Long, context: Context, onResult: (response: ChatNameRes
 
             override fun onFailure(call: retrofit2.Call<ChatNameResponse>, t: Throwable) {
                 println("persona save request Failed")
+                onResult(null)
+            }
+        })
+    }
+}
+
+fun getReportAnalysis(healthReport: String, context: Context, onResult: (response: ReportAnalysisResponse?) -> Unit){
+    val auth = AuthUtils()
+    auth.isTokenValid()
+    if(auth.getToken() == null){
+        Toast.makeText(context, "Please Login again", Toast.LENGTH_SHORT).show()
+    }
+    else{
+        apiService.getReportAnalysis(auth.getToken()!!.userId.toInt(),healthReport,auth.getToken()!!.accessToken).enqueue(object : retrofit2.Callback<ReportAnalysisResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<ReportAnalysisResponse>,
+                response: retrofit2.Response<ReportAnalysisResponse>
+            ) {
+                println("response = $response")
+                if (response.isSuccessful) {
+                    onResult(response.body())
+                } else {
+                    onResult(null)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<ReportAnalysisResponse>, t: Throwable) {
+                println("Heath Report analysis failed")
                 onResult(null)
             }
         })

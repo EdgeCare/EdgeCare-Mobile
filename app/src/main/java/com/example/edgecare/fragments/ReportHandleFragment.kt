@@ -2,12 +2,19 @@ package com.example.edgecare.fragments
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
@@ -15,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.edgecare.ObjectBox
 import com.example.edgecare.activities.ViewFullReportActivity
 import com.example.edgecare.adapters.HealthReportAdapter
+import com.example.edgecare.api.getReportAnalysis
 import com.example.edgecare.databinding.ActivityReportHandleBinding
 import com.example.edgecare.models.HealthReport
 import com.example.edgecare.models.HealthReportChunk
@@ -96,18 +104,29 @@ class ReportHandleFragment : Fragment() {
                 if (pdfData != null) {
                     // Save the PDF in ObjectBox
                     report = HealthReport(isPDF = true, text = CryptoHelper.encrypt(text), pdfData = pdfData)
-                    healthReportBox.put(report)
+                    generateHealthReportSummary(text){summary ->
+                        report.summary = summary
+                        healthReportBox.put(report)
+                        saveHealthReportChunks(text, report.id)
+                        loadHealthReports()
+                        Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
 
             if (!text.isNullOrEmpty()) {
                 if(mimeType!="application/pdf" ) {
                     report = HealthReport(text = CryptoHelper.encrypt(text))
-                    healthReportBox.put(report)
+                    generateHealthReportSummary(text){summary ->
+                        report.summary = summary
+                        healthReportBox.put(report)
+                        saveHealthReportChunks(text, report.id)
+                        loadHealthReports()
+                        Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                saveHealthReportChunks(text, report.id)
-                loadHealthReports()
-                Toast.makeText(requireContext(), "Health report saved successfully", Toast.LENGTH_SHORT).show()
+
             } else {
                 Toast.makeText(requireContext(), "Failed to save health report", Toast.LENGTH_SHORT).show()
             }
@@ -128,6 +147,9 @@ class ReportHandleFragment : Fragment() {
             },
             onDeleteClick = { report ->
                 deleteHealthReport(report.id)
+            },
+            onSummaryClick = { report ->
+                showReportSummary(report.summary)
             }
         )
         binding.recyclerView.adapter = adapter
@@ -202,6 +224,102 @@ class ReportHandleFragment : Fragment() {
             show()
         }
     }
+
+    private fun showReportSummary(summary:String){
+        println("Report summary")
+        println(summary)
+        showFormattedReportSummaryPopup(requireContext(),summary)
+    }
+
+    private fun generateHealthReportSummary(text: String, callback: (String) -> Unit) {
+        context?.let { ctx ->
+            getReportAnalysis(text, ctx) { response ->
+                if (response != null) {
+                    callback(response.reportSummary)
+                } else {
+                    callback("Error")
+                }
+            }
+        } ?: run {
+            callback("Error: Context is null")
+        }
+    }
+
+    private fun showFormattedReportSummaryPopup(context: Context, rawSummary: String) {
+
+        // Convert **bold** sections to actual bold text using SpannableStringBuilder
+        val formattedSummary = formatSummaryWithBold(rawSummary)
+
+        val textView = TextView(context).apply {
+            text = formattedSummary
+            setPadding(32, 32, 32, 32)
+            textSize = 16f
+        }
+
+        val scrollView = ScrollView(context).apply {
+            addView(textView)
+        }
+
+        AlertDialog.Builder(context)
+            .setTitle("Health Report Summary")
+            .setView(scrollView)
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    fun formatSummaryWithBold(summary: String): SpannableStringBuilder {
+        val spannable = SpannableStringBuilder()
+
+        // Split summary by lines to apply bullet points
+        val lines = summary.lines()
+
+        for (line in lines) {
+            if (line.isBlank()) continue
+
+            spannable.append("")
+
+            var startIndex = 0
+            var workingLine = line
+
+            while (true) {
+                val boldStart = workingLine.indexOf("**", startIndex)
+                if (boldStart == -1) {
+                    spannable.append(workingLine.substring(startIndex))
+                    break
+                }
+
+                val boldEnd = workingLine.indexOf("**", boldStart + 2)
+                if (boldEnd == -1) {
+                    // No matching end marker, treat as normal text
+                    spannable.append(workingLine.substring(startIndex))
+                    break
+                }
+
+                // Append text before bold
+                spannable.append(workingLine.substring(startIndex, boldStart))
+
+                // Append bold text
+                val boldText = workingLine.substring(boldStart + 2, boldEnd)
+                val boldStartInSpannable = spannable.length
+                spannable.append(boldText)
+                spannable.setSpan(
+                    StyleSpan(Typeface.BOLD),
+                    boldStartInSpannable,
+                    boldStartInSpannable + boldText.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                startIndex = boldEnd + 2
+            }
+
+            spannable.append("\n")
+        }
+
+        return spannable
+    }
+
+
+
 
     private fun saveHealthReportChunks(text: String, reportId:Long){
         val chunkSize = 50

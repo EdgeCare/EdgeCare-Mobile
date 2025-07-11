@@ -8,5 +8,6 @@ data class HealthReport(
     @Id var id: Long = 0,
     var isPDF:Boolean=false,
     var text: String = "",
+    var summary:String ="",
     var pdfData: ByteArray? = null
 )

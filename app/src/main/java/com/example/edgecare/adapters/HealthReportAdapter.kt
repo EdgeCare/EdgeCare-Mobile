@@ -8,7 +8,8 @@ import com.example.edgecare.databinding.ItemHealthReportBinding
 
 class HealthReportAdapter(
     private val onViewClick: (HealthReport) -> Unit,
-    private val onDeleteClick: (HealthReport) -> Unit
+    private val onDeleteClick: (HealthReport) -> Unit,
+    private val onSummaryClick:(HealthReport) -> Unit
 ) : RecyclerView.Adapter<HealthReportAdapter.HealthReportViewHolder>() {
 
     private var reports: List<HealthReport> = emptyList()
@@ -46,6 +47,9 @@ class HealthReportAdapter(
             }
             binding.buttonDeleteReport.setOnClickListener {
                 onDeleteClick(report)
+            }
+            binding.buttonSummaryReport.setOnClickListener{
+                onSummaryClick(report)
             }
         }
     }
